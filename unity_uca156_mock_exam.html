@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCA-156 Unity Certified Associate — Mock Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111318;
+    --card: #161b22;
+    --border: #21262d;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --gold: #f59e0b;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* ---- GRID NOISE BG ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,15,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .logo { font-size: 13px; font-weight: 700; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+  .header-stats { display: flex; gap: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .stat { display: flex; flex-direction: column; align-items: center; }
+  .stat-val { font-size: 16px; font-weight: 700; }
+  .stat-val.c { color: var(--correct); }
+  .stat-val.w { color: var(--wrong); }
+  .stat-val.t { color: var(--accent); }
+  .stat-label { color: var(--muted); font-size: 10px; letter-spacing: 1px; }
+
+  /* ---- HERO ---- */
+  #hero {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: calc(100vh - 60px);
+    text-align: center; padding: 40px 20px;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 24px;
+    text-transform: uppercase; font-family: 'JetBrains Mono', monospace;
+  }
+  h1 {
+    font-size: clamp(32px, 6vw, 72px);
+    font-weight: 800; line-height: 1.05;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 16px;
+  }
+  .hero-sub {
+    color: var(--muted); font-size: 16px; max-width: 500px; line-height: 1.6;
+    margin-bottom: 40px;
+  }
+  .hero-info {
+    display: flex; gap: 32px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center;
+  }
+  .info-chip {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 12px 20px; border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    display: flex; flex-direction: column; gap: 2px; align-items: center;
+  }
+  .info-chip span:first-child { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .info-chip span:last-child { color: var(--muted); letter-spacing: 1px; }
+
+  /* MODE SELECTOR */
+  .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 720px; width: 100%; margin-bottom: 32px; }
+  .mode-card {
+    background: var(--card); border: 2px solid var(--border);
+    border-radius: 14px; padding: 24px 20px; cursor: pointer;
+    transition: all 0.2s; text-align: left;
+  }
+  .mode-card:hover, .mode-card.active { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+  .mode-icon { font-size: 28px; margin-bottom: 10px; }
+  .mode-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .mode-desc { color: var(--muted); font-size: 12px; line-height: 1.4; }
+
+  .topic-select {
+    width: 100%; max-width: 720px; margin-bottom: 24px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 16px; border-radius: 10px;
+    font-family: 'Syne', sans-serif; font-size: 14px;
+    appearance: none;
+  }
+  .btn-start {
+    background: var(--accent); color: var(--bg);
+    border: none; padding: 16px 48px; border-radius: 10px;
+    font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+    cursor: pointer; letter-spacing: 1px;
+    transition: all 0.2s; text-transform: uppercase;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,0.3); }
+
+  /* ---- EXAM SCREEN ---- */
+  #exam-screen { display: none; position: relative; z-index: 1; padding: 24px 16px; max-width: 860px; margin: 0 auto; }
+
+  .progress-bar-wrap { background: var(--border); height: 4px; border-radius: 4px; margin-bottom: 24px; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 4px; transition: width 0.4s; }
+
+  .q-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  }
+  .q-num { color: var(--accent); font-weight: 700; }
+  .q-topic {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 6px; color: var(--muted); font-size: 11px;
+  }
+
+  .q-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; margin-bottom: 20px;
+  }
+  .q-text { font-size: 17px; line-height: 1.65; font-weight: 600; margin-bottom: 28px; }
+  .q-code {
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; line-height: 1.6; margin-bottom: 20px; color: #a9b7c6;
+    white-space: pre-wrap; overflow-x: auto;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option {
+    background: var(--surface); border: 2px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; cursor: pointer;
+    display: flex; align-items: flex-start; gap: 14px;
+    transition: all 0.15s; font-size: 14px; line-height: 1.5;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+  .option.correct { border-color: var(--correct); background: rgba(34,197,94,0.1); }
+  .option.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.1); }
+  .option.disabled { cursor: not-allowed; }
+  .opt-letter {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .option.correct .opt-letter { background: var(--correct); border-color: var(--correct); color: #fff; }
+  .option.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+  .explanation {
+    background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 12px; padding: 20px; margin-top: 20px;
+    font-size: 14px; line-height: 1.65; display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--accent); }
+
+  .btn-row { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 28px; border-radius: 10px; border: none;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+  }
+  .btn-next { background: var(--accent); color: var(--bg); }
+  .btn-next:hover { box-shadow: 0 4px 20px rgba(0,229,255,0.3); transform: translateY(-1px); }
+  .btn-skip { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  .btn-quit { background: var(--surface); color: var(--wrong); border: 1px solid var(--border); }
+
+  /* ---- RESULTS ---- */
+  #results-screen {
+    display: none; position: relative; z-index: 1;
+    max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center;
+  }
+  .score-circle {
+    width: 160px; height: 160px; border-radius: 50%;
+    border: 6px solid var(--accent);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 0 auto 32px;
+    background: radial-gradient(circle, rgba(0,229,255,0.1), transparent);
+  }
+  .score-pct { font-size: 42px; font-weight: 800; color: var(--accent); }
+  .score-label { font-size: 12px; color: var(--muted); letter-spacing: 2px; }
+  .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 32px 0; }
+  .res-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .res-val { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+  .res-lbl { color: var(--muted); font-size: 12px; letter-spacing: 1px; }
+  .pass-badge {
+    display: inline-block; padding: 10px 32px; border-radius: 30px;
+    font-weight: 800; font-size: 18px; letter-spacing: 2px; margin-bottom: 24px;
+  }
+  .pass { background: rgba(34,197,94,0.15); border: 2px solid var(--correct); color: var(--correct); }
+  .fail { background: rgba(239,68,68,0.15); border: 2px solid var(--wrong); color: var(--wrong); }
+
+  .topic-breakdown { text-align: left; margin: 32px 0; }
+  .topic-breakdown h3 { margin-bottom: 16px; font-size: 14px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .topic-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; }
+  .topic-name { width: 180px; flex-shrink: 0; color: var(--muted); }
+  .topic-bar-bg { flex: 1; background: var(--border); border-radius: 4px; height: 8px; }
+  .topic-bar { height: 100%; border-radius: 4px; background: var(--accent); }
+  .topic-pct { width: 40px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  .review-list { text-align: left; margin-top: 32px; }
+  .review-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin-bottom: 12px;
+    font-size: 13px;
+  }
+  .review-item.ok { border-left: 3px solid var(--correct); }
+  .review-item.bad { border-left: 3px solid var(--wrong); }
+  .review-q { font-weight: 600; margin-bottom: 8px; }
+  .review-detail { color: var(--muted); font-size: 12px; }
+  .review-detail span { font-weight: 600; }
+  .review-correct { color: var(--correct); }
+  .review-wrong { color: var(--wrong); }
+
+  /* FLASH CARD MODE */
+  .flashcard {
+    perspective: 1000px; width: 100%; max-width: 600px; margin: 0 auto 24px; height: 280px; cursor: pointer;
+  }
+  .flashcard-inner {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d; transition: transform 0.6s;
+  }
+  .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .flashcard-front, .flashcard-back {
+    position: absolute; inset: 0;
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; backface-visibility: hidden;
+  }
+  .flashcard-back { transform: rotateY(180deg); background: rgba(0,229,255,0.05); border-color: var(--accent); }
+  .fc-hint { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .fc-text { font-size: 16px; line-height: 1.6; font-weight: 600; }
+
+  /* NAV DRAWER */
+  #topic-nav {
+    position: fixed; left: 0; top: 60px; bottom: 0; width: 220px;
+    background: var(--surface); border-right: 1px solid var(--border);
+    overflow-y: auto; z-index: 50; transform: translateX(-100%); transition: transform 0.3s;
+    padding: 16px;
+  }
+  #topic-nav.open { transform: translateX(0); }
+  .nav-section { margin-bottom: 16px; }
+  .nav-section-title { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; padding: 0 4px; }
+  .nav-item {
+    padding: 8px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    transition: all 0.15s; color: var(--muted);
+  }
+  .nav-item:hover { background: var(--card); color: var(--text); }
+  .hamburger {
+    background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  }
+
+  /* SCROLL BTN */
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 200;
+    background: var(--accent); color: var(--bg);
+    width: 44px; height: 44px; border-radius: 50%; border: none;
+    font-size: 18px; cursor: pointer; display: none; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,229,255,0.4);
+  }
+  .scroll-top.show { display: flex; }
+
+  @media (max-width: 600px) {
+    .hero-info { gap: 12px; }
+    .results-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .res-val { font-size: 24px; }
+    .mode-grid { grid-template-columns: 1fr 1fr; }
+    .topic-name { width: 120px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <button class="hamburger" id="nav-toggle">☰ <span>TOPICS</span></button>
+    <div class="logo">UCA-156</div>
+  </div>
+  <div class="header-stats" id="header-stats" style="display:none">
+    <div class="stat"><div class="stat-val t" id="h-total">0</div><div class="stat-label">TOTAL</div></div>
+    <div class="stat"><div class="stat-val c" id="h-correct">0</div><div class="stat-label">CORRECT</div></div>
+    <div class="stat"><div class="stat-val w" id="h-wrong">0</div><div class="stat-label">WRONG</div></div>
+    <div class="stat"><div class="stat-val" id="h-pct" style="color:var(--gold)">0%</div><div class="stat-label">SCORE</div></div>
+  </div>
+</header>
+
+<nav id="topic-nav">
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-badge">🎮 Pearson VUE Exam Prep</div>
+  <h1>Unity Certified<br>Associate Exam</h1>
+  <p class="hero-sub">500+ mock questions covering all 16 exam domains. Answers with full explanations.</p>
+  <div class="hero-info">
+    <div class="info-chip"><span id="q-count-display">504</span><span>QUESTIONS</span></div>
+    <div class="info-chip"><span>16</span><span>DOMAINS</span></div>
+    <div class="info-chip"><span>70%</span><span>PASS SCORE</span></div>
+    <div class="info-chip"><span>3</span><span>STUDY MODES</span></div>
+  </div>
+  <div class="mode-grid">
+    <div class="mode-card active" data-mode="exam" onclick="selectMode(this,'exam')">
+      <div class="mode-icon">📋</div>
+      <div class="mode-title">Full Exam</div>
+      <div class="mode-desc">All 504 questions in exam order. Closest to the real test.</div>
+    </div>
+    <div class="mode-card" data-mode="random" onclick="selectMode(this,'random')">
+      <div class="mode-icon">🔀</div>
+      <div class="mode-title">Random Quiz</div>
+      <div class="mode-desc">50 random questions from any topic. Great for daily practice.</div>
+    </div>
+    <div class="mode-card" data-mode="topic" onclick="selectMode(this,'topic')">
+      <div class="mode-icon">🎯</div>
+      <div class="mode-title">Topic Focus</div>
+      <div class="mode-desc">Choose a specific domain to drill weak areas.</div>
+    </div>
+    <div class="mode-card" data-mode="flash" onclick="selectMode(this,'flash')">
+      <div class="mode-icon">⚡</div>
+      <div class="mode-title">Flashcards</div>
+      <div class="mode-desc">Flip through concept cards for fast review.</div>
+    </div>
+  </div>
+  <select class="topic-select" id="topic-select" style="display:none">
+    <option value="all">All Topics</option>
+  </select>
+  <button class="btn-start" onclick="startExam()">START EXAM →</button>
+</div>
+
+<!-- EXAM SCREEN -->
+<div id="exam-screen">
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+  <div class="q-meta">
+    <span class="q-num" id="q-num">Q1 / 504</span>
+    <span class="q-topic" id="q-topic">Animation</span>
+  </div>
+  <div class="q-card">
+    <div class="q-text" id="q-text"></div>
+    <pre class="q-code" id="q-code" style="display:none"></pre>
+    <div class="options" id="options"></div>
+    <div class="explanation" id="explanation"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-quit" onclick="quitExam()">✕ Quit</button>
+    <button class="btn btn-skip" id="btn-skip" onclick="skipQuestion()">Skip →</button>
+    <button class="btn btn-next" id="btn-next" onclick="nextQuestion()" style="display:none">Next Question →</button>
+  </div>
+</div>
+
+<!-- FLASHCARD SCREEN -->
+<div id="flash-screen" style="display:none; position:relative;z-index:1;padding:40px 20px;max-width:700px;margin:0 auto;text-align:center;">
+  <h2 style="margin-bottom:24px;font-size:18px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">FLASHCARD MODE</h2>
+  <div class="flashcard" id="flashcard" onclick="flipCard()">
+    <div class="flashcard-inner">
+      <div class="flashcard-front">
+        <div class="fc-hint">QUESTION — CLICK TO REVEAL</div>
+        <div class="fc-text" id="fc-front"></div>
+      </div>
+      <div class="flashcard-back">
+        <div class="fc-hint">✓ ANSWER</div>
+        <div class="fc-text" id="fc-back"></div>
+      </div>
+    </div>
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:20px;" id="fc-counter"></div>
+  <div style="display:flex;gap:12px;justify-content:center;">
+    <button class="btn btn-skip" onclick="fcPrev()">← Prev</button>
+    <button class="btn btn-next" onclick="fcNext()">Next →</button>
+    <button class="btn btn-quit" onclick="quitExam()">✕ Quit</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-screen">
+  <div class="score-circle">
+    <div class="score-pct" id="r-pct">0%</div>
+    <div class="score-label">SCORE</div>
+  </div>
+  <div class="pass-badge" id="pass-badge">—</div>
+  <p style="color:var(--muted);margin-bottom:8px;font-size:14px;">The real exam requires <strong style="color:var(--text)">~70%</strong> to pass.</p>
+  <div class="results-grid">
+    <div class="res-card"><div class="res-val c" id="r-correct">0</div><div class="res-lbl">CORRECT</div></div>
+    <div class="res-card"><div class="res-val w" id="r-wrong">0</div><div class="res-lbl">WRONG</div></div>
+    <div class="res-card"><div class="res-val" style="color:var(--muted)" id="r-skip">0</div><div class="res-lbl">SKIPPED</div></div>
+  </div>
+  <div class="topic-breakdown" id="topic-breakdown">
+    <h3>Performance by Domain</h3>
+    <div id="topic-bars"></div>
+  </div>
+  <div class="review-list" id="review-list">
+    <h3 style="margin-bottom:16px;font-size:14px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Question Review</h3>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+    <button class="btn btn-next" onclick="restartExam()">↺ Restart</button>
+    <button class="btn btn-skip" onclick="goHome()">⌂ Home</button>
+  </div>
+</div>
+
+<button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ===================== QUESTION BANK =====================
+const ALL_QUESTIONS = [
+// ============== 1. ANIMATION ==============
+{topic:"Animation",q:"What is the purpose of an Animator Controller in Unity?",opts:["It controls the physics of a Rigidbody","It manages animation states and transitions for a GameObject","It handles user input for animations","It bakes lighting for animated objects"],ans:1,exp:"An <strong>Animator Controller</strong> is a state machine asset that manages which animation clip plays and defines transitions between states based on parameters."},
+{topic:"Animation",q:"Which component must be attached to a GameObject to use an Animator Controller?",opts:["Animation component","Rigidbody component","Animator component","Sprite Renderer"],ans:2,exp:"The <strong>Animator component</strong> references an Animator Controller asset and drives the animation state machine on the GameObject."},
+{topic:"Animation",q:"Where do you apply an Animator Controller to a GameObject?",opts:["In the Project window","By dragging it onto the Animator component in the Inspector","In the Animation window","Via the File menu"],ans:1,exp:"You drag the Animator Controller asset into the <strong>Controller</strong> field of the Animator component in the Inspector window."},
+{topic:"Animation",q:"Which of the following is NOT a valid Animator parameter type?",opts:["Float","Bool","String","Trigger"],ans:2,exp:"Animator parameters are <strong>Float, Int, Bool, and Trigger</strong>. There is no String parameter type in the Animator."},
+{topic:"Animation",q:"What does a Trigger parameter do in the Animator?",opts:["It stays true until manually set to false","It fires once and resets automatically after a transition","It loops continuously","It pauses the animation"],ans:1,exp:"A <strong>Trigger</strong> is a boolean parameter that gets reset to false automatically once a transition consuming it fires."},
+{topic:"Animation",q:"What is the 'Any State' node used for in the Animator?",opts:["To play all animations simultaneously","To create a transition that can fire from any current state","To mark the default state","To blend animations together"],ans:1,exp:"<strong>Any State</strong> allows a transition to fire regardless of which state is currently active—useful for 'death' or 'hit' animations."},
+{topic:"Animation",q:"How do you create a new Animation State in the Animator Controller?",opts:["File > New State","Right-click in the Animator window and select Create State > Empty","Edit > Add State","In the Inspector, click Add State"],ans:1,exp:"Right-clicking the Animator window grid gives options including <strong>Create State > Empty</strong> to add a new state."},
+{topic:"Animation",q:"What color is the default/entry state in the Animator Controller window?",opts:["Blue","Yellow","Orange","Green"],ans:2,exp:"The default state is shown in <strong>orange</strong> in the Animator window to distinguish it from other states."},
+{topic:"Animation",q:"What is a Transition Condition in the Animator?",opts:["A physics force applied during animation","A rule that must be true for a transition between states to occur","A way to blend two animations","A delay timer"],ans:1,exp:"<strong>Conditions</strong> are parameter-based rules (e.g., Float > 0.5) that must be satisfied before the Animator moves to the next state."},
+{topic:"Animation",q:"What does the 'Has Exit Time' option on a Transition do?",opts:["Forces the transition to wait until the animation finishes a percentage of its clip","Disables all conditions","Makes the animation loop","Sets the transition offset"],ans:0,exp:"<strong>Has Exit Time</strong> means the transition will not fire until the animation has played to a specified normalized time (0-1), allowing smooth exits."},
+{topic:"Animation",q:"What is Transition Duration in the Animator?",opts:["The total length of the animation clip","The blending time between two animation states","The delay before the condition is checked","The frame rate of the animation"],ans:1,exp:"<strong>Transition Duration</strong> controls how long the cross-fade between the source and destination animation states lasts."},
+{topic:"Animation",q:"Which window is used to visually edit Animator Controller state machines?",opts:["Animation window","Animator window","Inspector window","Project window"],ans:1,exp:"The <strong>Animator window</strong> (Window > Animation > Animator) displays the state machine graph for editing states and transitions."},
+{topic:"Animation",q:"What is the difference between the Animation window and the Animator window?",opts:["They are identical","Animation window edits keyframe curves; Animator window manages the state machine","Animator window edits keyframes; Animation window manages states","Animation window is for 2D only"],ans:1,exp:"The <strong>Animation window</strong> edits individual clip keyframes and curves. The <strong>Animator window</strong> manages the state machine that controls which clip plays."},
+{topic:"Animation",q:"In Unity's Animator, what is a 'Sub-State Machine'?",opts:["A physics-driven animation system","A nested group of states within the Animator Controller","A script controlling animation speed","A particle system triggered by animation"],ans:1,exp:"A <strong>Sub-State Machine</strong> is a container that groups related states together inside the Animator, keeping the graph clean."},
+{topic:"Animation",q:"Which parameter type is best for blending between walk and run based on speed?",opts:["Bool","Trigger","Float","Int"],ans:2,exp:"A <strong>Float</strong> parameter (e.g., 'Speed') is ideal for blend trees that smoothly interpolate between walk and run based on a continuous value."},
+
+// ============== 2. ASSET MANAGEMENT ==============
+{topic:"Asset Management",q:"What is a Prefab in Unity?",opts:["A pre-built texture asset","A reusable GameObject template stored as a project asset","A type of scene file","An audio container"],ans:1,exp:"A <strong>Prefab</strong> is a reusable asset that stores a complete GameObject configuration, allowing you to instantiate copies that all share the same base settings."},
+{topic:"Asset Management",q:"How do you create a Prefab from an existing scene GameObject?",opts:["Right-click the GameObject > Export as Prefab","Drag the GameObject from the Hierarchy into the Project window","File > Save As Prefab","Select it and press Ctrl+P"],ans:1,exp:"Dragging a GameObject from the <strong>Hierarchy</strong> into the <strong>Project window</strong> converts it into a Prefab asset."},
+{topic:"Asset Management",q:"What does the blue highlight on a GameObject in the Hierarchy indicate?",opts:["It has a script error","It is a Prefab instance","It is selected","It is disabled"],ans:1,exp:"GameObjects shown in <strong>blue</strong> in the Hierarchy are instances of a Prefab, linking them to a Prefab asset."},
+{topic:"Asset Management",q:"Which file format does Unity use for scene files?",opts:[".unity",".scene",".prefab",".asset"],ans:0,exp:"Unity scene files use the <strong>.unity</strong> extension and are serialized in YAML text format by default."},
+{topic:"Asset Management",q:"How do you load a scene at runtime via script?",opts:["Application.LoadScene()","Scene.Load()","SceneManager.LoadScene()","GameObject.LoadScene()"],ans:2,exp:"<strong>SceneManager.LoadScene()</strong> (in UnityEngine.SceneManagement) is the correct API for loading scenes at runtime."},
+{topic:"Asset Management",q:"What compression format provides the best quality for background music in Unity?",opts:["PCM","ADPCM","Vorbis","MP3"],ans:2,exp:"<strong>Vorbis</strong> (OGG) offers excellent compression-to-quality ratio and is Unity's recommended format for music streamed from disk."},
+{topic:"Asset Management",q:"What does 'Decompress on Load' do for an Audio Clip?",opts:["Compresses the audio at runtime","Decompresses the entire clip into memory when loaded","Streams the audio directly from disk","Converts to MP3 format"],ans:1,exp:"<strong>Decompress on Load</strong> uncompresses the audio file fully into RAM on load, best for short sound effects needing instant playback."},
+{topic:"Asset Management",q:"Which model import formats does Unity natively support?",opts:["Only .fbx","Only .obj","FBX, OBJ, DAE, 3DS among others","Only FBX and OBJ"],ans:2,exp:"Unity supports multiple formats including <strong>FBX, OBJ, DAE (Collada), 3DS, DXF, and Maya/Max files</strong> via its importer pipeline."},
+{topic:"Asset Management",q:"What is the Sprite Editor used for?",opts:["Editing 3D model UVs","Slicing sprite sheets and defining sprite borders and pivots","Adjusting audio waveforms","Baking lightmaps"],ans:1,exp:"The <strong>Sprite Editor</strong> lets you slice sprite sheets into individual sprites and configure pivot points and borders for 9-sliced sprites."},
+{topic:"Asset Management",q:"What is a Prefab Variant?",opts:["A Prefab with a script override","A Prefab that inherits from a base Prefab but can have its own overrides","A duplicate Prefab with a different name","A Prefab linked to another scene"],ans:1,exp:"A <strong>Prefab Variant</strong> inherits from a base Prefab. Changes to the base propagate to variants, but variants can override specific properties."},
+{topic:"Asset Management",q:"What does 'Apply' do when editing a Prefab instance in the scene?",opts:["Deletes the Prefab","Pushes instance overrides back to the Prefab asset","Creates a new Prefab","Disconnects the instance from the Prefab"],ans:1,exp:"Clicking <strong>Apply</strong> (or using Override > Apply All) writes the instance changes back to the source Prefab asset, updating all instances."},
+{topic:"Asset Management",q:"What is the purpose of the Meta file (.meta) created alongside every Unity asset?",opts:["It stores the asset's thumbnail","It stores import settings and the GUID used to reference the asset","It is a backup of the asset","It contains asset documentation"],ans:1,exp:"<strong>.meta files</strong> store the unique GUID and import settings for each asset, ensuring references remain valid even if the asset is moved."},
+{topic:"Asset Management",q:"Which audio Load Type is best for large background music files to save memory?",opts:["Decompress on Load","Compressed in Memory","Streaming","Preload Audio Data"],ans:2,exp:"<strong>Streaming</strong> reads audio data from disk in real-time, minimizing memory usage—ideal for long music tracks."},
+{topic:"Asset Management",q:"What happens when you 'Unpack' a Prefab instance?",opts:["The GameObject is deleted","The instance is disconnected from the Prefab asset and becomes a regular GameObject","The Prefab is deleted from the project","The instance is duplicated"],ans:1,exp:"<strong>Unpacking</strong> a Prefab breaks the link to the source asset, converting the instance to an independent GameObject."},
+
+// ============== 3. AUDIO ==============
+{topic:"Audio",q:"What does an Audio Mixer do in Unity?",opts:["Plays audio clips directly","Routes, mixes, and applies effects to multiple audio sources","Converts audio formats","Records audio input"],ans:1,exp:"The <strong>Audio Mixer</strong> is a mixing board system that routes audio from Audio Sources through groups, allowing volume control, effects, and ducking."},
+{topic:"Audio",q:"Which Audio Effect is used to simulate the sound of a large cathedral or cave?",opts:["Chorus","Echo","Reverb","Distortion"],ans:2,exp:"<strong>Reverb</strong> simulates the natural reflections of sound in a space, creating the impression of rooms like cathedrals or caves."},
+{topic:"Audio",q:"What is an Audio Reverb Zone?",opts:["A script that plays audio on trigger","A volume of space that applies reverb settings to any audio source inside it","A type of Audio Mixer group","An Audio Source with looping enabled"],ans:1,exp:"An <strong>Audio Reverb Zone</strong> is a component that defines a 3D area; Audio Sources inside this zone automatically receive the zone's reverb preset."},
+{topic:"Audio",q:"What does the Doppler Effect simulate in Unity audio?",opts:["Volume change based on distance","Pitch change of a moving audio source relative to the listener","Echo of sound off walls","The speed of sound in different materials"],ans:1,exp:"The <strong>Doppler Effect</strong> simulates how a moving sound source appears to increase in pitch as it approaches and decrease as it moves away, matching real-world physics."},
+{topic:"Audio",q:"How do you make an Audio Source loop continuously?",opts:["Set Loop to true in the Audio Source component","Call AudioSource.Play() in Update()","Use a Coroutine to restart it","Set Pitch to 0"],ans:0,exp:"Enabling the <strong>Loop</strong> checkbox on the Audio Source component makes the clip repeat indefinitely when it finishes."},
+{topic:"Audio",q:"What Audio Source property controls how quickly volume fades with distance?",opts:["Spatial Blend","Volume Rolloff","Min Distance","Priority"],ans:1,exp:"<strong>Volume Rolloff</strong> (Logarithmic, Linear, or Custom) determines how sound attenuates over distance from the listener."},
+{topic:"Audio",q:"What does Spatial Blend = 1 mean on an Audio Source?",opts:["The sound is fully 2D (panned only)","The sound is fully 3D (distance-attenuated)","The sound is muted","The sound is at 50% volume"],ans:1,exp:"A <strong>Spatial Blend</strong> of 1 makes the audio source fully 3D, meaning volume and panning depend on the source's position relative to the Audio Listener."},
+{topic:"Audio",q:"Where is the Audio Listener component typically placed?",opts:["On the main camera","On every Audio Source","On the Audio Mixer","On the Ground plane"],ans:0,exp:"The <strong>Audio Listener</strong> (like a microphone) is attached to the <strong>Main Camera</strong> by default, representing the player's ears in the scene."},
+{topic:"Audio",q:"What is the purpose of the Audio Source 'Priority' setting?",opts:["Determines the pitch of the clip","Determines which sounds get dropped when the voice limit is reached","Controls the volume","Sets the Doppler level"],ans:1,exp:"<strong>Priority</strong> (0=highest, 256=lowest) determines which Audio Sources Unity keeps active when the maximum number of simultaneous voices is reached."},
+{topic:"Audio",q:"Which Audio Mixer feature lets one sound lower the volume of another (e.g., music ducking during dialogue)?",opts:["Send/Receive effect","Duck Volume (Ducking)","Reverb Zone","Audio Echo Filter"],ans:1,exp:"<strong>Duck Volume</strong> in the Audio Mixer lowers a group's volume when a signal is received, enabling dialogue to automatically reduce music volume."},
+
+// ============== 4. EDITOR INTERFACE ==============
+{topic:"Editor Interface",q:"What is the purpose of the Hierarchy window?",opts:["Shows all assets in the project","Shows all GameObjects in the current scene and their parent-child relationships","Shows the render output","Shows script errors"],ans:1,exp:"The <strong>Hierarchy window</strong> displays every GameObject in the active scene in a tree structure that reflects parent-child relationships."},
+{topic:"Editor Interface",q:"Which Unity window shows properties of the currently selected asset or GameObject?",opts:["Project window","Console window","Inspector window","Scene window"],ans:2,exp:"The <strong>Inspector window</strong> displays and allows editing of all components and properties on the selected GameObject or asset."},
+{topic:"Editor Interface",q:"What does the Project window display?",opts:["Scene GameObjects","All assets in the Assets folder","Only scripts","Only textures and models"],ans:1,exp:"The <strong>Project window</strong> is a file browser for the project's <strong>Assets folder</strong>, showing all assets like scripts, textures, prefabs, and audio."},
+{topic:"Editor Interface",q:"How do you focus the Scene View Camera on a selected GameObject?",opts:["Press F in the Scene view","Double-click in Hierarchy","Press Ctrl+G","Right-click > Focus"],ans:0,exp:"Pressing <strong>F</strong> while the Scene view is active frames the selected GameObject in the view (also works with Ctrl+Shift+F to align to view)."},
+{topic:"Editor Interface",q:"What does the Console window display?",opts:["Asset import logs only","Errors, warnings, and debug messages from scripts","The current frame rate","The collision events"],ans:1,exp:"The <strong>Console window</strong> shows Debug.Log messages, warnings (yellow), and errors (red) from scripts and the Editor itself."},
+{topic:"Editor Interface",q:"What is the purpose of the Gizmos menu in the Scene view?",opts:["Toggle physics simulation","Show/hide visual helpers like icons, grid, and component gizmos","Change the render pipeline","Toggle audio playback"],ans:1,exp:"The <strong>Gizmos</strong> dropdown in the Scene view lets you toggle visual debugging helpers like Camera frustum icons, Light icons, and custom gizmos."},
+{topic:"Editor Interface",q:"What does 'Reset' do on a component in the Inspector?",opts:["Deletes the component","Returns the component's values to their default state","Reloads the script","Disables the component"],ans:1,exp:"Right-clicking a component header and selecting <strong>Reset</strong> returns all its serialized values to their factory defaults."},
+{topic:"Editor Interface",q:"How do you parent one GameObject to another in the Hierarchy?",opts:["Drag the child onto the parent in the Hierarchy","Use Transform.SetParent() only","Right-click > Assign Parent","Press Ctrl+P"],ans:0,exp:"Dragging a GameObject onto another in the <strong>Hierarchy</strong> makes the dragged object a <strong>child</strong> of the target."},
+{topic:"Editor Interface",q:"What is the Asset Store used for?",opts:["Submitting bug reports","Purchasing and downloading free or paid Unity packages and assets","Managing Unity licenses","Uploading games for distribution"],ans:1,exp:"The <strong>Asset Store</strong> is Unity's marketplace where developers can find free and paid assets, tools, plugins, and templates to accelerate development."},
+{topic:"Editor Interface",q:"Which keyboard shortcut is used to orbit the camera in the Scene view?",opts:["Hold Alt + left-click drag","Hold Ctrl + right-click drag","Hold Shift + scroll","Q key"],ans:0,exp:"Holding <strong>Alt + left mouse button drag</strong> orbits the Scene view camera around the current pivot point."},
+{topic:"Editor Interface",q:"What does creating an 'Empty GameObject' give you?",opts:["A GameObject with a Rigidbody only","A GameObject with only a Transform component","A Prefab with no mesh","A UI Canvas"],ans:1,exp:"An <strong>Empty GameObject</strong> has only a <strong>Transform component</strong> and no mesh or other components—useful as containers or logical anchors."},
+{topic:"Editor Interface",q:"What does the zoom tool (scroll wheel) do in the Scene view?",opts:["Rotates the camera","Moves the camera forward/backward along its view axis","Pans the camera left/right","Changes field of view"],ans:1,exp:"Scrolling the mouse wheel in the Scene view <strong>zooms</strong> in and out by moving the camera forward or backward along its look direction."},
+{topic:"Editor Interface",q:"What is the purpose of Editor Layouts in Unity?",opts:["To change the game's resolution","To save and restore window arrangements for different workflows","To set build platform","To configure physics settings"],ans:1,exp:"<strong>Layouts</strong> save the positions and sizes of all Editor windows, letting you quickly switch between arrangements (e.g., coding vs. level design)."},
+{topic:"Editor Interface",q:"What type of icon indicates an empty Prefab in the Project window?",opts:["A filled blue cube","A hollow/outlined blue cube","A red cube","A green sphere"],ans:1,exp:"An <strong>empty Prefab</strong> (Prefab asset with no content) is shown as a hollow/outlined blue cube icon in the Project window."},
+{topic:"Editor Interface",q:"Which toolbar button is used to switch between Translate, Rotate, and Scale tools?",opts:["Q, W, E, R keys","The Gizmos dropdown","The Layers menu","The Render Mode button"],ans:0,exp:"<strong>Q</strong> = Hand (pan), <strong>W</strong> = Move, <strong>E</strong> = Rotate, <strong>R</strong> = Scale, <strong>T</strong> = Rect, <strong>Y</strong> = Transform (all)."},
+
+// ============== 5. EMPLOYMENT ==============
+{topic:"Employment",q:"What is a Non-Disclosure Agreement (NDA) in game development?",opts:["A contract ensuring developers are paid","A legal agreement keeping confidential information secret","A license for using third-party assets","An employment contract specifying hours"],ans:1,exp:"An <strong>NDA</strong> is a legal contract that prevents employees or contractors from disclosing confidential company information, trade secrets, or unreleased game details."},
+{topic:"Employment",q:"What is 'Intellectual Property' (IP) in the context of game development?",opts:["Physical hardware owned by the studio","Creations of the mind—games, characters, code, art—protected by law","The studio's internet connection","Employee personal knowledge"],ans:1,exp:"<strong>Intellectual Property</strong> includes copyrights, trademarks, and patents protecting creative works like game code, art, characters, and brand names."},
+{topic:"Employment",q:"In game development critique, what is 'constructive feedback'?",opts:["Praising all aspects of the work","Identifying specific problems with actionable suggestions for improvement","Only criticizing without solutions","Comparing the work unfavorably to competitors"],ans:1,exp:"<strong>Constructive feedback</strong> specifically identifies issues and proposes concrete ways to improve, helping the developer grow rather than just pointing out flaws."},
+{topic:"Employment",q:"Which production role is primarily responsible for writing game dialogue and narrative?",opts:["Technical Artist","Narrative Designer / Writer","QA Tester","Sound Designer"],ans:1,exp:"A <strong>Narrative Designer</strong> or <strong>Writer</strong> crafts the story, dialogue trees, lore, and written content that gives the game its narrative."},
+{topic:"Employment",q:"What does a QA Tester primarily do in game production?",opts:["Write shaders","Design levels","Find, document, and report bugs and game defects","Compose music"],ans:2,exp:"<strong>QA (Quality Assurance) Testers</strong> systematically play the game to discover bugs, glitches, and design issues, documenting them for developers to fix."},
+
+// ============== 6. GAME ART ==============
+{topic:"Game Art",q:"What is 'concept art' in game development?",opts:["The final in-game artwork","Early visual exploration art that defines the look and feel of game elements","Code prototypes for game systems","3D models ready for the game engine"],ans:1,exp:"<strong>Concept art</strong> is created early in production to visualize characters, environments, and mood before actual game assets are made."},
+{topic:"Game Art",q:"What is a 'unifying color' in environment design?",opts:["A bright accent color used for UI","A dominant color or palette shared across a scene to create visual cohesion","The background color of the game window","The color of the skybox"],ans:1,exp:"A <strong>unifying color</strong> ties a scene together by appearing across multiple elements (sky, lighting, reflections), creating a coherent and harmonious look."},
+{topic:"Game Art",q:"How does a warm color palette (reds, oranges) generally affect game mood?",opts:["Creates a cold, eerie atmosphere","Suggests danger, energy, warmth, or aggression","Makes the game look futuristic","Creates a calm, serene feeling"],ans:1,exp:"<strong>Warm colors</strong> (reds, oranges, yellows) evoke energy, urgency, danger, and warmth—commonly used in action games and tense moments."},
+{topic:"Game Art",q:"What does 'LOD' (Level of Detail) mean for 3D models?",opts:["The polygon count of the final render","Multiple versions of a model with decreasing polygon counts used at increasing distances","The texture resolution of a model","The animation complexity of a character"],ans:1,exp:"<strong>LOD</strong> uses simpler mesh versions for distant objects, reducing GPU load. Unity's LOD Group component manages automatic LOD switching."},
+{topic:"Game Art",q:"Which technique reduces draw calls by combining multiple meshes into one?",opts:["Occlusion Culling","Static Batching","Dynamic Lighting","Skinning"],ans:1,exp:"<strong>Static Batching</strong> combines non-moving meshes sharing the same material into single draw calls, significantly improving rendering performance."},
+
+// ============== 7. GAME DESIGN PRINCIPLES ==============
+{topic:"Game Design",q:"What distinguishes a 'casual game' from a 'hardcore game'?",opts:["Casual games have better graphics","Casual games have simple mechanics, short sessions, and broad accessibility","Hardcore games are always multiplayer","Casual games are only on mobile"],ans:1,exp:"<strong>Casual games</strong> are defined by easy-to-learn mechanics, short play sessions, and wide accessibility—targeting non-traditional gamers (e.g., Candy Crush)."},
+{topic:"Game Design",q:"In a third-person game, where is the camera typically positioned?",opts:["Inside the character's head","Behind and above the character","Directly above (top-down)","First-person perspective"],ans:1,exp:"<strong>Third-person</strong> cameras are positioned behind and above the player character, showing the character model in the world."},
+{topic:"Game Design",q:"What is a Real-Time Strategy (RTS) game?",opts:["A game where players take turns","A game where players manage resources and units simultaneously in real time","A racing game with strategy elements","A role-playing game with real-time combat"],ans:1,exp:"In <strong>RTS games</strong>, all players act simultaneously in real time, managing economies, building structures, and commanding units (e.g., StarCraft, Age of Empires)."},
+{topic:"Game Design",q:"What are 'NPCs' in game design?",opts:["Network Protocol Characters","Non-Player Characters controlled by AI","New Player Characters during tutorial","Navigation Path Controllers"],ans:1,exp:"<strong>NPCs (Non-Player Characters)</strong> are AI-controlled characters that populate the game world, including enemies, merchants, and quest givers."},
+{topic:"Game Design",q:"What input method do most console games use for primary control?",opts:["Keyboard and mouse","Gamepad/Controller","Touchscreen","Motion sensors only"],ans:1,exp:"Console games are primarily designed for <strong>gamepad controllers</strong> with thumbsticks, triggers, bumpers, and face buttons."},
+{topic:"Game Design",q:"What is a 'game mechanic'?",opts:["The physical engine running the game","A rule or system players interact with to affect the game state","The visual style of the game","The audio system"],ans:1,exp:"A <strong>game mechanic</strong> is any rule, action, or system that players engage with—like jumping, collecting items, or managing resources."},
+{topic:"Game Design",q:"What differentiates 'PvP' from 'PvE' gameplay?",opts:["PvP has better graphics","PvP = players compete against each other; PvE = players vs AI enemies","PvE is only offline; PvP is always online","They are the same"],ans:1,exp:"<strong>PvP (Player vs Player)</strong> pits human players against each other, while <strong>PvE (Player vs Environment)</strong> has players fighting AI-controlled enemies and challenges."},
+
+// ============== 8. INDUSTRY AWARENESS ==============
+{topic:"Industry",q:"What is the primary role of a 'Technical Artist'?",opts:["Writing server backend code","Bridging art and programming—optimizing assets, writing shaders, and building art pipelines","Designing game levels exclusively","Managing the QA team"],ans:1,exp:"A <strong>Technical Artist</strong> bridges the gap between art and engineering, handling shader writing, performance optimization, rigging, and tool development."},
+{topic:"Industry",q:"What phase does 'Alpha' represent in the game production cycle?",opts:["Initial concept and pitch","Feature-complete but buggy—internal testing begins","All bugs fixed, ready for release","Post-launch content updates"],ans:1,exp:"<strong>Alpha</strong> means the game has all (or most) planned features implemented but is still buggy and unstable—internal QA testing typically begins."},
+{topic:"Industry",q:"What phase is 'Gold Master' in game production?",opts:["Early prototype","The version approved for manufacturing/release","Beta testing phase","Post-release update"],ans:1,exp:"<strong>Gold Master</strong> (or 'Going Gold') means the final, approved build is ready for distribution—physically or digitally."},
+{topic:"Industry",q:"Which console manufacturer makes the PlayStation?",opts:["Microsoft","Nintendo","Sony","Sega"],ans:2,exp:"<strong>Sony Interactive Entertainment</strong> manufactures the PlayStation console family (PS4, PS5)."},
+{topic:"Industry",q:"What differentiates a game console from a PC for gaming?",opts:["Consoles have more powerful CPUs","Consoles are closed, fixed-hardware platforms optimized for gaming, vs. open, upgradeable PC hardware","PCs cannot play games","Consoles always have better graphics"],ans:1,exp:"<strong>Consoles</strong> have fixed, standardized hardware configurations optimized for gaming with curated software ecosystems, while PCs are open and upgradeable."},
+{topic:"Industry",q:"What is 'Pre-production' in the game development cycle?",opts:["Shipping the game","Mass content creation after the prototype is proven","Planning, prototyping, and defining the game's core concept and scope","Post-launch live service"],ans:2,exp:"<strong>Pre-production</strong> involves defining the game concept, creating prototypes, assembling the team, and establishing the production pipeline."},
+
+// ============== 9. LIGHTING ==============
+{topic:"Lighting",q:"What is Global Illumination (GI) in Unity?",opts:["A way to turn all lights on at once","A lighting technique that simulates indirect light bouncing between surfaces","A post-processing effect","A real-time shadow system"],ans:1,exp:"<strong>Global Illumination</strong> simulates how light bounces off surfaces to illuminate other surfaces indirectly, creating realistic ambient lighting."},
+{topic:"Lighting",q:"What is 'Baked GI' in Unity?",opts:["GI calculated and updated every frame","GI pre-calculated and stored in lightmaps—only works on static objects","GI applied only to dynamic objects","GI generated from HDR images"],ans:1,exp:"<strong>Baked GI</strong> pre-computes indirect lighting offline and stores the result in <strong>Lightmaps</strong>—textures baked onto static geometry for performance."},
+{topic:"Lighting",q:"What are Lightmaps?",opts:["Textures applied to dynamic characters","Pre-baked textures that store lighting information applied to static geometry","Real-time shadow maps","Normal maps for lighting calculation"],ans:1,exp:"<strong>Lightmaps</strong> are textures baked during the lighting build process that store irradiance (light intensity) data for static scene objects."},
+{topic:"Lighting",q:"What does 'Generate Lightmap UVs' do on a model import setting?",opts:["Creates a new mesh","Generates a second UV channel dedicated to lightmap baking","Applies a texture to the model","Optimizes the mesh polygon count"],ans:1,exp:"<strong>Generate Lightmap UVs</strong> auto-creates a UV2 channel with non-overlapping UV islands required for accurate lightmap baking."},
+{topic:"Lighting",q:"What are the three main light types in Unity?",opts:["Ambient, Specular, Diffuse","Directional, Point, Spot","Sun, Moon, Stars","Area, Volume, Baked"],ans:1,exp:"Unity's primary light types are <strong>Directional</strong> (sun-like, infinite), <strong>Point</strong> (omnidirectional, like a bulb), and <strong>Spot</strong> (cone-shaped, like a flashlight). Area lights also exist but only in baked GI."},
+{topic:"Lighting",q:"What does Light Intensity control?",opts:["The color of the light","The brightness/power of the light source","The shadow softness","The range of a spot light"],ans:1,exp:"<strong>Intensity</strong> controls the brightness of a light source. Higher values produce brighter illumination on affected surfaces."},
+{topic:"Lighting",q:"What is a Culling Mask on a Light component?",opts:["A texture applied to the light","Specifies which Layers the light affects","Controls shadow resolution","The light's color filter"],ans:1,exp:"<strong>Culling Mask</strong> uses Unity's Layer system to limit which GameObjects a light illuminates, enabling fine-grained control over lighting setups."},
+{topic:"Lighting",q:"What is the difference between Hard and Soft shadows?",opts:["Hard shadows have no border; Soft shadows have blurred edges","Soft shadows are more expensive than hard shadows; hard shadows have sharp edges","They are identical","Soft shadows only work with baked GI"],ans:0,exp:"<strong>Hard shadows</strong> have sharp edges; <strong>Soft shadows</strong> have blurred, penumbra-like edges simulating real-world shadow softness—at higher performance cost."},
+{topic:"Lighting",q:"Which light type is best for simulating sunlight in an outdoor scene?",opts:["Point Light","Spot Light","Directional Light","Area Light"],ans:2,exp:"A <strong>Directional Light</strong> casts parallel rays with infinite range, simulating the sun—all objects receive light from the same angle regardless of position."},
+{topic:"Lighting",q:"What does marking a GameObject as 'Static' do for lighting?",opts:["Makes it unselectable","Allows it to contribute to and receive baked lighting","Makes it invisible","Prevents it from being batched"],ans:1,exp:"Marking a GameObject <strong>Static</strong> (specifically Contribute GI) allows it to participate in lightmap baking, both casting and receiving baked GI."},
+
+// ============== 10. MATERIALS AND EFFECTS ==============
+{topic:"Materials",q:"What is the 'Albedo' of a material?",opts:["The shininess of a surface","The base/diffuse color or texture of a material","The transparency level","The emission brightness"],ans:1,exp:"<strong>Albedo</strong> (Latin for 'whiteness') is the base color of a surface before any lighting calculations—it defines the intrinsic color and texture."},
+{topic:"Materials",q:"What does the 'Metallic' property in Unity's Standard Shader control?",opts:["The polygon count of the mesh","How much the surface behaves like a metal—affecting reflectivity and color of reflections","The texture tiling","The normal map intensity"],ans:1,exp:"<strong>Metallic</strong> (0-1) controls whether a surface behaves like a dielectric (0) or a metal (1), affecting how it reflects light and color."},
+{topic:"Materials",q:"What Rendering Mode should you use for a transparent glass material in the Standard Shader?",opts:["Opaque","Cutout","Fade","Transparent"],ans:3,exp:"<strong>Transparent</strong> rendering mode enables proper alpha blending for see-through materials like glass, allowing partial transparency with proper sorting."},
+{topic:"Materials",q:"What Rendering Mode uses a hard clip (binary transparency) based on an alpha threshold?",opts:["Transparent","Fade","Cutout","Opaque"],ans:2,exp:"<strong>Cutout</strong> mode clips pixels below an Alpha Cutoff threshold—fully transparent or fully opaque, no blending. Useful for foliage, chain-link fences."},
+{topic:"Materials",q:"What is a Particle System used for in Unity?",opts:["Handling collision detection","Simulating large numbers of small elements like fire, smoke, rain, and explosions","Managing audio playback","Rendering 3D models"],ans:1,exp:"The <strong>Particle System</strong> component simulates and renders large quantities of small, short-lived graphical elements to create effects like fire, smoke, sparks, and weather."},
+{topic:"Materials",q:"What does the 'Emission' module in the Particle System control?",opts:["The color of particles","How many particles are emitted over time or per distance","The size of each particle","The gravity applied to particles"],ans:1,exp:"The <strong>Emission</strong> module controls the <strong>rate</strong> of particle emission (over Time or over Distance) and can also set bursts of particles at specific times."},
+{topic:"Materials",q:"What is the 'Smoothness' value in the Standard Shader?",opts:["Controls polygon count","Controls how sharp or blurry reflections appear on the surface","Controls emission brightness","Controls transparency"],ans:1,exp:"<strong>Smoothness</strong> (0=rough/matte, 1=perfectly smooth/mirror-like) controls the sharpness of specular highlights and reflections."},
+{topic:"Materials",q:"What does the 'Depth of Field' image effect simulate?",opts:["Motion blur from fast movement","The blurring of objects outside a camera's focal distance, like a real camera lens","Bloom around bright lights","Color grading"],ans:1,exp:"<strong>Depth of Field</strong> blurs objects in front of or behind the focus plane, simulating how a real camera lens behaves and adding cinematic quality."},
+{topic:"Materials",q:"What Image Effect adds a glow around bright areas?",opts:["Vignette","Anti-aliasing","Bloom","Ambient Occlusion"],ans:2,exp:"<strong>Bloom</strong> creates a glowing halo around bright/emissive surfaces, simulating the scattering of light in a real camera or the human eye."},
+{topic:"Materials",q:"What does Ambient Occlusion (AO) add to a scene?",opts:["Glow around lights","Soft shadows in crevices and contact points between surfaces","Motion blur","Color correction"],ans:1,exp:"<strong>Ambient Occlusion</strong> adds subtle soft shadowing in corners, creases, and areas where surfaces are close together, greatly enhancing perceived depth and realism."},
+
+// ============== 11. NAVIGATION ==============
+{topic:"Navigation",q:"What is a NavMesh in Unity?",opts:["A mesh for water surfaces","A baked representation of walkable surfaces used for AI navigation","A collision mesh for physics","A mesh for LOD calculations"],ans:1,exp:"A <strong>NavMesh (Navigation Mesh)</strong> is a pre-baked polygon data structure that defines which areas of a scene an AI agent can walk on."},
+{topic:"Navigation",q:"What component do you add to an AI character to use Unity's NavMesh navigation?",opts:["Character Controller","NavMesh Agent","Rigidbody","Nav Obstacle"],ans:1,exp:"The <strong>NavMesh Agent</strong> component drives a character along the NavMesh, handling pathfinding, steering, obstacle avoidance, and movement."},
+{topic:"Navigation",q:"What does 'Baking' the NavMesh do?",opts:["Bakes lighting for the NavMesh","Analyzes the scene geometry and calculates walkable areas, storing the result","Compresses the NavMesh textures","Generates LODs for navigation meshes"],ans:1,exp:"<strong>Baking</strong> the NavMesh processes the scene geometry and generates the NavMesh data—identifying walkable surfaces based on slope and agent dimensions."},
+{topic:"Navigation",q:"What does 'Max Slope' control in NavMesh Bake settings?",opts:["The maximum height of NavMesh agents","The steepest incline angle an agent can walk up","The maximum jump height","The maximum speed of agents"],ans:1,exp:"<strong>Max Slope</strong> defines the maximum angle (in degrees) of a surface that the NavMesh agent can walk on. Steeper surfaces are excluded."},
+{topic:"Navigation",q:"What is a NavMesh Obstacle?",opts:["A static unwalkable region","A component that dynamically carves a hole in the NavMesh or acts as an avoidance barrier for agents","An agent that only walks obstacles","A type of terrain asset"],ans:1,exp:"<strong>NavMesh Obstacle</strong> allows dynamic objects (e.g., moving crates) to block the NavMesh or carve holes in it so agents path around them."},
+{topic:"Navigation",q:"What scripting method tells a NavMesh Agent to move to a destination?",opts:["agent.MoveTo()","agent.SetDestination()","agent.Navigate()","agent.GoTo()"],ans:1,exp:"<strong>NavMeshAgent.SetDestination(Vector3 target)</strong> instructs the agent to calculate a path and move toward the target position on the NavMesh."},
+
+// ============== 12. PHYSICS ==============
+{topic:"Physics",q:"What is a Collider in Unity?",opts:["A component that renders 3D meshes","An invisible shape that defines a GameObject's physical boundary for collision detection","A script for player movement","A type of joint"],ans:1,exp:"A <strong>Collider</strong> defines the physical shape used for collision detection. It does NOT need to match the visual mesh exactly—simpler shapes are faster."},
+{topic:"Physics",q:"What is a Rigidbody component used for?",opts:["Rendering 3D objects","Enabling a GameObject to be simulated by Unity's physics engine (gravity, forces, collisions)","Playing audio on collision","Creating 2D sprites"],ans:1,exp:"Adding a <strong>Rigidbody</strong> to a GameObject enables full physics simulation—it responds to gravity, forces, torques, and collisions."},
+{topic:"Physics",q:"What happens if a Rigidbody has 'Is Kinematic' enabled?",opts:["The object falls faster","The Rigidbody is moved by the physics engine as normal","The Rigidbody is not moved by physics—only by Transform or script","The object becomes static permanently"],ans:2,exp:"<strong>Is Kinematic</strong> means the Rigidbody is driven by script/animation rather than physics forces—it still interacts with other colliders but is immune to gravity and forces."},
+{topic:"Physics",q:"What is a Raycast?",opts:["A type of shadow","An invisible ray fired from a point in a direction that detects colliders it hits","A particle effect","A method of baking lighting"],ans:1,exp:"A <strong>Raycast</strong> shoots an invisible ray through the scene and returns information about the first (or all) colliders it intersects—used for shooting, line-of-sight, and clicking."},
+{topic:"Physics",q:"What parameters does Physics.Raycast() require at minimum?",opts:["Origin point only","Origin Vector3 and direction Vector3","Origin, Direction, and maximum distance","Origin, Direction, LayerMask"],ans:1,exp:"<strong>Physics.Raycast(Vector3 origin, Vector3 direction)</strong> is the minimum signature. It returns a bool and optionally populates a RaycastHit struct."},
+{topic:"Physics",q:"What does 'Use Gravity' on a Rigidbody do when disabled?",opts:["Makes the object invisible","Prevents the physics engine from applying gravitational force to the object","Doubles the object's mass","Prevents collisions"],ans:1,exp:"Disabling <strong>Use Gravity</strong> means the Rigidbody is not pulled downward by gravity—useful for spacecraft, floating objects, or top-down games."},
+{topic:"Physics",q:"What is the difference between a Trigger and a Collider?",opts:["They are identical","A Trigger detects overlaps without physical collision response; a Collider causes physical response","A Trigger is only for 2D","A Collider is invisible; a Trigger is visible"],ans:1,exp:"Enabling <strong>Is Trigger</strong> on a Collider means it detects overlaps (OnTriggerEnter/Exit/Stay) but does NOT push objects away physically."},
+{topic:"Physics",q:"What is the Capsule Collider typically used for?",opts:["Terrain collision","Approximating humanoid characters' collision shape","Box-shaped objects","Vehicle wheels"],ans:1,exp:"The <strong>Capsule Collider</strong> (cylinder + hemispheres) closely approximates a standing humanoid shape, making it ideal for character controllers."},
+{topic:"Physics",q:"What does AddForce() do on a Rigidbody?",opts:["Teleports the object","Applies a physics force to the Rigidbody, causing acceleration according to F=ma","Changes the object's texture","Enables gravity"],ans:1,exp:"<strong>Rigidbody.AddForce(Vector3 force)</strong> applies a continuous or instant force to the Rigidbody, which changes its velocity based on its mass."},
+{topic:"Physics",q:"What ForceMode should be used for an instantaneous impulse (like a jump)?",opts:["Force","Acceleration","Impulse","VelocityChange"],ans:2,exp:"<strong>ForceMode.Impulse</strong> applies an instant, mass-dependent force—ideal for jumps, explosions, or one-time hits."},
+
+// ============== 13. PROGRAMMING ==============
+{topic:"Programming",q:"What does the Awake() method do in MonoBehaviour?",opts:["Called every frame","Called once when the script is first loaded, before Start()","Called when the object is destroyed","Called on physics update"],ans:1,exp:"<strong>Awake()</strong> is called once when the script instance is initialized, before <strong>Start()</strong>—used for self-initialization regardless of whether the script is enabled."},
+{topic:"Programming",q:"What is the difference between Awake() and Start()?",opts:["They are identical","Awake() is called before Start(); Start() is only called if the script is enabled","Start() is called before Awake()","Awake() is for physics, Start() is for graphics"],ans:1,exp:"<strong>Awake()</strong> runs on all scripts before any <strong>Start()</strong>. Start() only runs if the script component is enabled—good for inter-script initialization order."},
+{topic:"Programming",q:"In which method should physics-based movement be applied?",opts:["Update()","LateUpdate()","FixedUpdate()","OnGUI()"],ans:2,exp:"<strong>FixedUpdate()</strong> runs at a fixed timestep (independent of frame rate) and is where Rigidbody physics operations should be applied for consistency."},
+{topic:"Programming",q:"What is Time.deltaTime used for?",opts:["Getting the current date and time","Making movement frame-rate independent by scaling values by the time since the last frame","Setting the physics timestep","Pausing the game"],ans:1,exp:"<strong>Time.deltaTime</strong> is the time elapsed since the last Update() call. Multiplying movement by it makes speed consistent regardless of frame rate."},
+{topic:"Programming",q:"What does a public variable in a MonoBehaviour script do in the Unity Editor?",opts:["Hides it from all other scripts","Makes it visible and editable in the Inspector window","Doubles its performance","Makes it constant"],ans:1,exp:"<strong>Public variables</strong> are serialized and displayed in the <strong>Inspector</strong>, allowing designers to tweak values without modifying code."},
+{topic:"Programming",q:"What is a Quaternion in Unity?",opts:["A 4-sided polygon","A mathematical representation of 3D rotation that avoids gimbal lock","A type of shader","A 4-component color value"],ans:1,exp:"A <strong>Quaternion</strong> is a 4-component mathematical construct (x,y,z,w) representing 3D orientation. Unity uses them internally to avoid gimbal lock issues with Euler angles."},
+{topic:"Programming",q:"What does Quaternion.Euler(x, y, z) do?",opts:["Converts a Quaternion to a Vector3","Creates a Quaternion rotation from Euler angles (degrees)","Multiplies two rotations","Normalizes a rotation"],ans:1,exp:"<strong>Quaternion.Euler()</strong> creates a Quaternion from X, Y, Z Euler angles in degrees—a convenient way to specify rotations."},
+{topic:"Programming",q:"What is the difference between a float and an int in C#?",opts:["They are identical","float stores decimal (fractional) numbers; int stores whole numbers only","int is faster for all operations","float cannot be negative"],ans:1,exp:"An <strong>int</strong> stores whole numbers (e.g., 5, -3) with no fractional part. A <strong>float</strong> stores decimal numbers (e.g., 3.14f) with a decimal point."},
+{topic:"Programming",q:"What is a Vector3 in Unity?",opts:["A list of 3 GameObjects","A struct with X, Y, Z float components representing 3D position, direction, or scale","A 3-channel audio format","A 3-bit integer"],ans:1,exp:"<strong>Vector3</strong> is a struct with three floats (x, y, z) used for positions, directions, velocities, and scale in 3D space."},
+{topic:"Programming",q:"What does GetComponent<T>() do?",opts:["Creates a new component","Finds and returns a component of type T attached to the same GameObject","Destroys a component","Lists all components on a GameObject"],ans:1,exp:"<strong>GetComponent<T>()</strong> retrieves a reference to the specified component type on the same GameObject—essential for component communication."},
+{topic:"Programming",q:"What is Object-Oriented Programming (OOP)?",opts:["A programming paradigm using only functions","A paradigm organizing code into classes and objects that encapsulate data and behavior","A type of shader programming","A scripting language"],ans:1,exp:"<strong>OOP</strong> structures code around <strong>classes</strong> (blueprints) and <strong>objects</strong> (instances), encapsulating data (fields) and behavior (methods) together."},
+{topic:"Programming",q:"What does Camera.ScreenPointToRay() do?",opts:["Converts a 3D position to screen coordinates","Creates a Ray from a screen pixel position into the scene—used for mouse picking","Renders the camera to a texture","Changes the camera FOV"],ans:1,exp:"<strong>Camera.ScreenPointToRay(Vector3 pos)</strong> generates a Ray originating at the camera and passing through a screen pixel—essential for mouse-based raycasting."},
+{topic:"Programming",q:"How do you create a new C# script in Unity?",opts:["File > New Script","Right-click in the Project window > Create > C# Script","Press Ctrl+N","Edit > Create Script"],ans:1,exp:"Right-clicking in the <strong>Project window</strong> and selecting <strong>Create > C# Script</strong> creates a new MonoBehaviour script template."},
+{topic:"Programming",q:"What keyword declares a method in C# that returns nothing?",opts:["return","null","void","int"],ans:2,exp:"The <strong>void</strong> keyword before a method name indicates it does not return any value (e.g., <code>void Start() {}</code>)."},
+{topic:"Programming",q:"What is the purpose of the Start() method in MonoBehaviour?",opts:["Called every frame","Called before the first frame update after Awake—used for initialization requiring other objects to be ready","Called on physics update","Called when the object is destroyed"],ans:1,exp:"<strong>Start()</strong> is called once before the first frame if the script is enabled—ideal for initialization that depends on other scripts having completed Awake()."},
+
+// ============== 14. PROJECT MANAGEMENT ==============
+{topic:"Project Management",q:"What is the purpose of Tags in Unity?",opts:["Grouping objects for rendering layers","Labeling GameObjects for identification via script (e.g., GameObject.FindWithTag())","Setting render order","Controlling physics interactions"],ans:1,exp:"<strong>Tags</strong> are string labels attached to GameObjects. You can find tagged objects via <code>GameObject.FindWithTag('Player')</code> and compare tags with <code>CompareTag()</code>."},
+{topic:"Project Management",q:"What is the purpose of Layers in Unity?",opts:["Labeling objects with string names","Grouping GameObjects for selective rendering, physics collision, and raycasting","Organizing the Hierarchy","Setting audio channels"],ans:1,exp:"<strong>Layers</strong> group GameObjects numerically (0-31), enabling selective camera rendering (Culling Mask), light culling, and physics collision matrix filtering."},
+{topic:"Project Management",q:"What does the Transform component control on a GameObject?",opts:["The mesh and material","The position, rotation, and scale of the GameObject in the scene","The audio playback","The physics mass"],ans:1,exp:"The <strong>Transform component</strong> (present on every GameObject) stores the object's <strong>Position, Rotation (Quaternion), and Scale</strong> in 3D space."},
+{topic:"Project Management",q:"What is 'local space' vs 'world space' for a Transform?",opts:["They are the same","Local space is relative to the parent; world space is relative to the scene origin","World space is relative to the camera","Local space is only for UI elements"],ans:1,exp:"<strong>Local space</strong> coordinates are relative to the parent object's Transform. <strong>World space</strong> is relative to the global scene origin (0,0,0)."},
+{topic:"Project Management",q:"What does 'GameObject.SetActive(false)' do?",opts:["Destroys the GameObject","Deactivates the GameObject and all its children, disabling their components","Makes it invisible but active","Removes it from the Hierarchy"],ans:1,exp:"<strong>SetActive(false)</strong> deactivates the GameObject, disabling all its components and those of its children—they stop updating but remain in memory."},
+
+// ============== 15. SERVICES ==============
+{topic:"Services",q:"What is Unity Analytics used for?",opts:["Building 3D models","Collecting and analyzing player behavior data to improve game design","Uploading builds to app stores","Managing multiplayer servers"],ans:1,exp:"<strong>Unity Analytics</strong> collects in-game events and player behavior data, providing dashboards to understand how players interact with your game."},
+{topic:"Services",q:"What does Unity Cloud Build do?",opts:["Renders clouds in games","Automatically builds your game on Unity's servers for multiple platforms","Stores asset files in the cloud","Manages in-app purchases"],ans:1,exp:"<strong>Unity Cloud Build</strong> is a CI/CD service that automatically compiles and builds your game for target platforms on Unity's cloud infrastructure."},
+{topic:"Services",q:"What is required to use Unity Collaborate (Unity Version Control)?",opts:["A local Git server","A Unity Teams or Unity Version Control subscription and a Project ID","Only a free Unity account","A paid Perforce license"],ans:1,exp:"<strong>Unity Collaborate</strong> requires a <strong>Unity Teams subscription</strong> and a cloud <strong>Project ID</strong> to sync project files between team members."},
+{topic:"Services",q:"What are Unity Ads used for?",opts:["Advertising Unity software","Monetizing games by showing ads to players and earning revenue","Testing game builds","Analyzing player behavior"],ans:1,exp:"<strong>Unity Ads</strong> is a monetization service that allows developers to display ads (video, banner, interstitial) in their games and earn revenue."},
+{topic:"Services",q:"What is a 'Rewarded Ad' in Unity Ads?",opts:["An ad that cannot be skipped","An ad that players voluntarily watch in exchange for in-game rewards","An ad automatically shown on game launch","A subscription-based ad model"],ans:1,exp:"<strong>Rewarded Ads</strong> are opt-in video ads that players choose to watch in exchange for in-game rewards like currency or extra lives—high engagement and revenue."},
+
+// ============== 16. USER INTERFACE ==============
+{topic:"UI",q:"What is a Canvas in Unity UI?",opts:["A 3D mesh component","The root component of all Unity UI elements—all UI must be children of a Canvas","A camera component","A physics 2D component"],ans:1,exp:"The <strong>Canvas</strong> is the top-level container for all Unity UI (uGUI) elements. Every UI element (Button, Text, Image) must be a descendant of a Canvas."},
+{topic:"UI",q:"What are the three Render Modes of a Canvas?",opts:["2D, 3D, VR","Screen Space - Overlay, Screen Space - Camera, World Space","Orthographic, Perspective, Isometric","Static, Dynamic, Animated"],ans:1,exp:"<strong>Screen Space - Overlay</strong> renders UI on top of everything. <strong>Screen Space - Camera</strong> places UI in front of a camera. <strong>World Space</strong> treats the Canvas as a 3D object in the scene."},
+{topic:"UI",q:"What is a Rect Transform?",opts:["A special Transform for 3D objects","The Transform variant used by UI elements, adding anchors, pivot, and size properties","A physics shape for UI collisions","A script for animating UI"],ans:1,exp:"<strong>Rect Transform</strong> extends Transform for UI, adding <strong>Anchors, Pivot, Width/Height</strong>—enabling responsive layout that adapts to screen size."},
+{topic:"UI",q:"What do Anchors do on a Rect Transform?",opts:["Set the pivot point for rotation","Define how the UI element's position and size relate to its parent's size, enabling responsive layout","Control the z-order of UI elements","Set the UI element's opacity"],ans:1,exp:"<strong>Anchors</strong> define reference points within the parent Rect Transform. Spreading anchors makes UI elements scale and reposition responsively with screen size."},
+{topic:"UI",q:"What is the Pivot on a Rect Transform?",opts:["The center of the Canvas","The point around which the UI element rotates and scales, defined in normalized (0-1) local space","The top-left corner always","The Canvas origin"],ans:1,exp:"The <strong>Pivot</strong> (0-1 in both axes) defines the local reference point for position, rotation, and scaling. (0.5, 0.5) = center; (0,0) = bottom-left."},
+{topic:"UI",q:"What does the Button component's 'OnClick' event do?",opts:["Plays audio when clicked","Invokes assigned methods/callbacks when the button is clicked by the user","Changes the button color","Destroys the button"],ans:1,exp:"The <strong>OnClick()</strong> UnityEvent is a list of method references that get called when the player clicks the Button—the primary way to hook up UI interactions."},
+{topic:"UI",q:"What are the Button Transition modes in Unity UI?",opts:["Fade, Slide, Bounce","Color Tint, Sprite Swap, Animation, None","Scale, Rotate, Translate","Flash, Glow, Shake"],ans:1,exp:"Button transitions define visual feedback: <strong>Color Tint</strong> changes color states, <strong>Sprite Swap</strong> changes sprites, <strong>Animation</strong> triggers an Animator, <strong>None</strong> has no visual feedback."},
+{topic:"UI",q:"What UI component displays a static or dynamic image/sprite?",opts:["Text","Button","Image","Slider"],ans:2,exp:"The <strong>Image</strong> component renders a Sprite on the Canvas—used for backgrounds, icons, HUD elements, and decorative art."},
+{topic:"UI",q:"What is a UI Slider component used for?",opts:["Sliding panels in and out of view","A horizontal/vertical control for selecting a numeric value within a range","Playing sliding animations","A menu transition"],ans:1,exp:"A <strong>Slider</strong> presents a draggable handle along a track, allowing users to select a value between Min Value and Max Value—used for volume, brightness, etc."},
+{topic:"UI",q:"What does Screen Space - Overlay render mode do for the Canvas?",opts:["Renders UI inside the 3D scene","Renders UI on top of everything as the last pass, always covering scene objects","Renders UI only on specific cameras","Renders UI in world space only"],ans:1,exp:"<strong>Screen Space - Overlay</strong> draws UI directly on the screen as a 2D overlay—unaffected by camera position or perspective, and always on top."},
+
+// ===== EXTENDED QUESTIONS (topics continued) =====
+
+// More Animation
+{topic:"Animation",q:"What is a Blend Tree in the Animator?",opts:["A tree of Prefab instances","A node that blends multiple animation clips based on one or more float parameters","A hierarchy of bones in a character","A list of particle effects"],ans:1,exp:"A <strong>Blend Tree</strong> smoothly interpolates between multiple animation clips based on parameter values—e.g., blending idle, walk, run based on a 'Speed' float."},
+{topic:"Animation",q:"Which Animator window node represents the entry point of the state machine?",opts:["Exit","Any State","Entry","Base Layer"],ans:2,exp:"The <strong>Entry</strong> node is the starting point of the state machine. The first transition from Entry leads to the default state when the Animator is activated."},
+{topic:"Animation",q:"What does 'Avatar' mean in Unity animation?",opts:["The player's visual skin","A definition of the humanoid skeleton's bone mapping used by Mecanim for retargeting animations","A type of particle effect","A camera mode"],ans:1,exp:"An <strong>Avatar</strong> defines how a model's skeleton maps to Unity's humanoid rig standard, enabling animation retargeting between different character models."},
+{topic:"Animation",q:"What is animation retargeting?",opts:["Moving the scene camera","Applying an animation created for one skeleton to a different skeleton via Avatar mapping","Exporting animations to external tools","Reversing an animation clip"],ans:1,exp:"<strong>Retargeting</strong> allows the same animation (e.g., a run cycle) to play on different humanoid characters by mapping their bones through Unity's Avatar system."},
+{topic:"Animation",q:"What does the Animator 'Apply Root Motion' setting do?",opts:["Applies physics forces from animation","Uses the root bone's movement in the animation clip to physically move the GameObject in the scene","Locks the character's position","Only works with Rigidbody"],ans:1,exp:"<strong>Apply Root Motion</strong> extracts movement baked into the animation's root bone and applies it to the GameObject's Transform, keeping movement in sync with visuals."},
+
+// More Asset Management
+{topic:"Asset Management",q:"What does 'Import Settings' control for a texture?",opts:["The pixel shader applied","How Unity imports the image: size, compression, mipmap generation, and texture type","The UV layout of the mesh","The animation curves"],ans:1,exp:"Texture <strong>Import Settings</strong> control how Unity processes the image: max size, compression format, Generate Mipmaps, Wrap Mode, Filter Mode, and Texture Type (Normal Map, Sprite, etc.)."},
+{topic:"Asset Management",q:"What is a Material in Unity?",opts:["A type of mesh","A combination of a shader and its property values that defines how a surface appears","A type of audio clip","A script component"],ans:1,exp:"A <strong>Material</strong> is an asset that combines a <strong>Shader</strong> (rendering program) with specific property values (textures, colors, floats), defining surface appearance."},
+{topic:"Asset Management",q:"What is the purpose of Mipmaps for textures?",opts:["Adding bump mapping to textures","Pre-generated scaled-down versions of a texture used for distant objects, reducing aliasing and improving performance","Increasing texture resolution at runtime","Applying normal maps"],ans:1,exp:"<strong>Mipmaps</strong> are pre-computed sets of progressively smaller textures. Unity automatically samples the appropriate mip level based on distance, reducing aliasing and bandwidth."},
+
+// More Physics
+{topic:"Physics",q:"What is the Physics Collision Matrix used for?",opts:["Defining visual collider colors","Controlling which Layers can collide with each other","Setting the gravity direction","Configuring ragdoll joints"],ans:1,exp:"The <strong>Layer Collision Matrix</strong> (Physics > Layer Collision Matrix in Project Settings) controls which Layer pairs can physically interact with each other."},
+{topic:"Physics",q:"What does the 'Drag' property on a Rigidbody do?",opts:["Applies a constant force","Simulates air resistance, slowing the object's linear velocity over time","Makes the object heavier","Prevents rotation"],ans:1,exp:"<strong>Drag</strong> applies linear damping, simulating air resistance or friction. Higher values cause the object to decelerate faster and reach a lower terminal velocity."},
+{topic:"Physics",q:"What is Angular Drag on a Rigidbody?",opts:["A force applied to rotate the object","Rotational damping—resists and slows spinning/rotational velocity","The maximum rotation speed","A type of joint"],ans:1,exp:"<strong>Angular Drag</strong> damps rotational velocity, causing spinning objects to gradually slow their rotation—simulating rolling friction or air resistance on rotation."},
+
+// More Programming
+{topic:"Programming",q:"What is a Coroutine in Unity?",opts:["A separate thread","A method that can pause execution and resume over multiple frames using yield instructions","A type of Unity service","A physics callback"],ans:1,exp:"A <strong>Coroutine</strong> is a method returning IEnumerator that can suspend (yield) and resume, allowing time-spread operations without blocking the main thread."},
+{topic:"Programming",q:"Which yield instruction pauses a Coroutine for a set number of seconds?",opts:["yield return null","yield return new WaitForSeconds(t)","yield return new WaitForFixedUpdate()","yield break"],ans:1,exp:"<strong>yield return new WaitForSeconds(float t)</strong> suspends the Coroutine for t seconds before continuing to the next line."},
+{topic:"Programming",q:"What does Instantiate() do in Unity scripting?",opts:["Destroys a GameObject","Creates a runtime copy of a Prefab or GameObject at a specified position and rotation","Loads a new scene","Attaches a component"],ans:1,exp:"<strong>Instantiate(prefab, position, rotation)</strong> creates a runtime clone of the specified Prefab or GameObject—the standard way to spawn objects like projectiles or enemies."},
+{topic:"Programming",q:"What does Destroy() do?",opts:["Hides the GameObject","Removes a GameObject or component from the scene and frees its memory","Resets the GameObject","Disconnects from network"],ans:1,exp:"<strong>Destroy(gameObject)</strong> removes the specified object from the scene. An optional delay parameter defers destruction: <code>Destroy(obj, 3f)</code> deletes after 3 seconds."},
+{topic:"Programming",q:"What is the difference between Update() and LateUpdate()?",opts:["They are identical","LateUpdate() runs after all Update() calls in the same frame—useful for camera follow code","Update() runs after physics; LateUpdate() runs before","LateUpdate() only runs every other frame"],ans:1,exp:"<strong>LateUpdate()</strong> executes after all Update() calls in the frame—ideal for camera code so it runs after the player has moved."},
+{topic:"Programming",q:"What is serialization in Unity?",opts:["Compressing audio files","Converting object data to a format Unity can save/load—public and [SerializeField] fields appear in Inspector","Encrypting network data","Baking physics data"],ans:1,exp:"<strong>Serialization</strong> is Unity's process of saving component field values to disk (scene/prefab YAML). Fields must be public or marked <code>[SerializeField]</code> to be serialized."},
+{topic:"Programming",q:"What does [SerializeField] do?",opts:["Makes a field network-replicated","Forces a private field to appear in the Inspector and be serialized by Unity","Makes a field constant","Marks a field for deletion"],ans:1,exp:"<strong>[SerializeField]</strong> is an attribute that tells Unity to serialize and display a private field in the Inspector, combining encapsulation with designer-friendliness."},
+{topic:"Programming",q:"What is inheritance in OOP?",opts:["Sharing memory between objects","A class (child) deriving properties and methods from another class (parent)","Running code in parallel","A way to iterate over collections"],ans:1,exp:"<strong>Inheritance</strong> allows a child class to inherit fields and methods from a parent class. MonoBehaviour itself uses inheritance (your scripts inherit from MonoBehaviour)."},
+{topic:"Programming",q:"What does the 'override' keyword do in C#?",opts:["Prevents a method from being changed","Provides a new implementation for a virtual or abstract method defined in a parent class","Calls the parent method","Declares a new method"],ans:1,exp:"<strong>override</strong> provides a derived class's implementation of a <code>virtual</code> or <code>abstract</code> parent method, enabling polymorphism."},
+
+// More UI
+{topic:"UI",q:"What does the 'Interactable' property on a Button control?",opts:["Whether the button animates","Whether the button responds to user input or appears grayed out","The button's font size","The button's z-order"],ans:1,exp:"<strong>Interactable</strong> = false makes the button non-clickable and visually grayed out (using the Disabled color/sprite), useful for temporarily disabling actions."},
+{topic:"UI",q:"What is Text Mesh Pro (TMP) in Unity?",opts:["A 3D mesh generator","An advanced text rendering solution with SDF fonts, rich text, and superior quality over legacy UI Text","A particle text effect","A translation tool"],ans:1,exp:"<strong>TextMesh Pro</strong> uses Signed Distance Field (SDF) font rendering for crisp text at any resolution, rich text markup, and superior styling vs. legacy Unity UI Text."},
+{topic:"UI",q:"In Screen Space - Camera render mode, what additional setup is required?",opts:["Nothing extra","A reference to the Render Camera the Canvas will be drawn in front of","A world space position","An Audio Source"],ans:1,exp:"<strong>Screen Space - Camera</strong> requires a <strong>Render Camera</strong> reference. The Canvas is drawn at a fixed distance in front of that camera, enabling 3D effects on UI."},
+
+// More Lighting
+{topic:"Lighting",q:"What is an Emissive material?",opts:["A material that absorbs all light","A material with an emission color that appears to glow and can contribute light to GI","A material with no texture","A transparent material"],ans:1,exp:"<strong>Emissive materials</strong> have a non-black Emission color in their shader. In baked GI, they can act as area lights, illuminating surrounding surfaces."},
+{topic:"Lighting",q:"What is Ambient Light in Unity?",opts:["Light from a single directional source","Omnidirectional background light that fills the entire scene uniformly from all directions","A point light at the origin","Light emitted by particles"],ans:1,exp:"<strong>Ambient Light</strong> is a base level of omnidirectional light applied globally—preventing completely dark areas with no direct light, simulating sky/environment contribution."},
+{topic:"Lighting",q:"What is a Reflection Probe?",opts:["A script that detects surface normals","A component that captures a 360° image of its surroundings and applies it as reflections on nearby reflective surfaces","A type of raycast probe","A sensor for detecting light levels"],ans:1,exp:"A <strong>Reflection Probe</strong> renders a cubemap of its surroundings (baked or real-time) that nearby materials use for accurate reflections, replacing the default skybox reflection."},
+
+// More Game Design
+{topic:"Game Design",q:"What is a 'core loop' in game design?",opts:["The main menu background music","The fundamental repeating sequence of actions a player performs—the heartbeat of gameplay","The game's loading screen sequence","The tutorial section"],ans:1,exp:"The <strong>core loop</strong> is the primary cycle of actions players repeat throughout the game (e.g., explore → fight → collect loot → upgrade → repeat)."},
+{topic:"Game Design",q:"What is 'balancing' in game design?",opts:["Adjusting the game's audio levels","Tuning game mechanics, numbers, and systems so the game feels fair, challenging, and fun","Centering UI elements on screen","Optimizing frame rate"],ans:1,exp:"<strong>Balancing</strong> involves adjusting values, rules, and systems so no strategy is overwhelming and the challenge curve feels appropriately progressive."},
+{topic:"Game Design",q:"What is a 'tutorial' in game design?",opts:["An advanced difficulty mode","An introductory section that teaches players the game's mechanics and controls","A cinematic sequence","The final boss area"],ans:1,exp:"A <strong>tutorial</strong> teaches new players how to play through guided instruction, often embedded organically in early gameplay rather than as a separate mandatory section."},
+
+// More Navigation
+{topic:"Navigation",q:"What does NavMesh.SamplePosition() do?",opts:["Gets the highest point on the NavMesh","Finds the nearest point on the NavMesh to a given world position within a specified range","Removes a point from the NavMesh","Calculates the NavMesh area"],ans:1,exp:"<strong>NavMesh.SamplePosition()</strong> finds the closest NavMesh point to a world-space position within a given radius—useful for snapping spawn points to valid areas."},
+{topic:"Navigation",q:"What is an Off-Mesh Link in Unity navigation?",opts:["A broken navigation mesh","A manually defined path segment connecting two separate NavMesh surfaces (e.g., across a gap)","A script component for doors","A NavMesh Obstacle variant"],ans:1,exp:"<strong>Off-Mesh Links</strong> allow agents to navigate between disconnected NavMesh surfaces—crossing gaps, going through doors, or jumping over obstacles."},
+
+// More Services
+{topic:"Services",q:"What is a Unity Project ID?",opts:["The game's App Store identifier","A unique identifier linking your Unity project to Unity's cloud services (Analytics, Cloud Build, etc.)","The scene file's internal ID","The Prefab's GUID"],ans:1,exp:"A <strong>Project ID</strong> is a unique string generated when you connect your project to Unity Services, enabling Analytics, Cloud Build, Ads, and other cloud features."},
+{topic:"Services",q:"What type of Unity Ad is shown between game levels without player action?",opts:["Rewarded Ad","Banner Ad","Interstitial Ad","Native Ad"],ans:2,exp:"<strong>Interstitial Ads</strong> are full-screen ads shown at natural break points (between levels, after game over) without requiring player opt-in."},
+
+// More Employment
+{topic:"Employment",q:"What does a Game Designer primarily do?",opts:["Write all the game's code","Create textures and 3D models","Define the rules, systems, and player experience through game design documents and iteration","Manage the studio's finances"],ans:2,exp:"A <strong>Game Designer</strong> defines gameplay mechanics, systems, level flow, difficulty, and player experience—often documented in GDDs (Game Design Documents)."},
+{topic:"Employment",q:"What is a 'GDD' in game development?",opts:["Game Data Distribution","Game Design Document—a detailed specification of a game's mechanics, story, art style, and technical requirements","Graphics Driver Download","General Development Directive"],ans:1,exp:"A <strong>Game Design Document (GDD)</strong> is the formal blueprint of a game, covering design intentions, mechanics, UI flow, narrative, and technical requirements."},
+
+// Extra Programming
+{topic:"Programming",q:"What is an interface in C#?",opts:["A GUI element","A contract defining method signatures that classes must implement, without providing implementation","A type of variable","A Unity window"],ans:1,exp:"An <strong>interface</strong> defines a set of method/property signatures. Any class implementing the interface must provide implementations, enabling polymorphism without inheritance."},
+{topic:"Programming",q:"What does the 'static' keyword mean on a C# class member?",opts:["The member cannot be changed","The member belongs to the class itself rather than any instance—shared across all objects","The member is hidden","The member is serialized"],ans:1,exp:"A <strong>static</strong> member belongs to the class type rather than any specific instance. Only one copy exists regardless of how many instances are created."},
+{topic:"Programming",q:"What does Debug.Log() do in Unity?",opts:["Saves a log file to disk","Prints a message to the Console window for debugging","Pauses the game","Throws an exception"],ans:1,exp:"<strong>Debug.Log()</strong> prints a message to the Unity Console window—the primary debugging tool for checking values and execution flow without breakpoints."},
+{topic:"Programming",q:"What is a null reference exception?",opts:["An audio file that cannot be found","An error occurring when code tries to use a variable that has no assigned object (is null)","A missing texture","A physics collision error"],ans:1,exp:"A <strong>NullReferenceException</strong> occurs when you call a method or access a property on a reference that is null (not assigned)—one of the most common Unity runtime errors."},
+{topic:"Programming",q:"What does 'if (other.CompareTag(\"Player\"))' check?",opts:["Whether the current object is tagged Player","Whether the colliding/triggering object has the tag 'Player'","Whether a scene named Player exists","Whether the Player object is active"],ans:1,exp:"<strong>CompareTag()</strong> checks if a GameObject's tag matches the given string—used in collision/trigger callbacks to identify specific object types efficiently."},
+
+// Extra Materials
+{topic:"Materials",q:"What does the Normal Map property do on a Standard Shader material?",opts:["Changes the mesh geometry","Simulates surface detail and micro-geometry by altering per-pixel lighting without adding polygons","Applies a decal texture","Controls emission"],ans:1,exp:"A <strong>Normal Map</strong> encodes surface direction variations in RGB channels. The shader uses them to compute per-pixel lighting, faking bumps and detail without added geometry."},
+{topic:"Materials",q:"What is the difference between a shader and a material?",opts:["They are the same","A shader is the rendering program/algorithm; a material is a shader instance with specific values assigned","A material is for 2D only; a shader is for 3D","A shader is an asset; a material is a component"],ans:1,exp:"A <strong>Shader</strong> is the GPU program defining how surfaces render. A <strong>Material</strong> is a specific configuration of a shader (its property values like textures and colors)."},
+{topic:"Materials",q:"What does the particle system 'Shape' module control?",opts:["The color of particles","The 3D shape from which particles are emitted (sphere, cone, box, etc.)","The lifetime of particles","The particle texture"],ans:1,exp:"The <strong>Shape</strong> module defines the emitter geometry—particles can be emitted from a sphere, hemisphere, cone, box, mesh surface, or other shapes."},
+{topic:"Materials",q:"What does 'Start Lifetime' control in a Particle System?",opts:["When the system starts emitting","How long each individual particle lives before it disappears","The system's looping duration","The emission rate"],ans:1,exp:"<strong>Start Lifetime</strong> determines how many seconds each particle lives after being emitted. After this time, the particle disappears."},
+
+// Extra Editor
+{topic:"Editor Interface",q:"What does the 'Play Mode' button do in the Unity Editor?",opts:["Exports the build","Enters a simulation of the game within the Editor for testing","Opens the Asset Store","Compiles scripts only"],ans:1,exp:"Pressing <strong>Play</strong> enters Play Mode, running the game inside the Editor. Changes made during Play Mode are NOT saved—you must exit Play Mode first."},
+{topic:"Editor Interface",q:"Why are changes made during Play Mode lost?",opts:["A bug in Unity","By design—Play Mode is a sandbox for testing; changes reset to pre-play state on exit","Files are locked during play","The Undo system clears on play"],ans:1,exp:"<strong>Play Mode</strong> is intentionally sandboxed. Any Inspector changes are not serialized during play, resetting on exit to prevent accidental scene corruption."},
+{topic:"Editor Interface",q:"What does the 'Layers' dropdown in the top toolbar do?",opts:["Creates new layers","Toggles visibility of specific Layers in the Scene view and controls which layers cameras render","Assigns layers to GameObjects","Deletes unused layers"],ans:1,exp:"The <strong>Layers dropdown</strong> in the toolbar allows you to toggle Scene view visibility for specific layers and manage layer definitions."},
+{topic:"Editor Interface",q:"What is the purpose of the Scene view's 'Draw Mode' dropdown?",opts:["Changes the game's resolution","Switches between shaded, wireframe, overdraw, and other rendering debug views","Opens a code editor","Bakes lighting"],ans:1,exp:"The <strong>Draw Mode</strong> dropdown lets you visualize the scene in different ways—Shaded, Wireframe, Shaded Wireframe, Overdraw, Mipmaps—for debugging and optimization."},
+
+// Extra Project Management
+{topic:"Project Management",q:"What does the Physics 'Fixed Timestep' setting control?",opts:["The frame rate cap","The interval at which FixedUpdate() is called and physics is stepped—default 0.02s (50Hz)","The gravity strength","The collision detection method"],ans:1,exp:"<strong>Fixed Timestep</strong> (Project Settings > Time) defines how often physics updates run. Default 0.02 = 50 physics steps per second, independent of render frame rate."},
+{topic:"Project Management",q:"What is the purpose of the 'Tag Manager' in Unity?",opts:["Managing version tags in Git","Defining available Tags and Layers for the project","Tagging assets in the Project window","Managing multiplayer session tags"],ans:1,exp:"The <strong>Tag and Layer Manager</strong> (Edit > Project Settings > Tags and Layers) is where you create, manage, and delete custom Tags and Layers for the project."},
+
+// Extra Game Art
+{topic:"Game Art",q:"What is UV mapping in 3D modeling?",opts:["A lighting technique","Unfolding a 3D mesh's surface into a flat 2D representation to apply textures correctly","A type of animation","A vertex color technique"],ans:1,exp:"<strong>UV mapping</strong> 'unfolds' a 3D mesh onto a 2D plane (U and V axes). The UV coordinates determine which part of a texture maps to which polygon."},
+{topic:"Game Art",q:"What is the purpose of a 'Texture Atlas'?",opts:["A collection of all scene lights","A single large texture containing multiple smaller textures to reduce draw calls and texture switches","A 3D atlas for navigation","An audio sample library"],ans:1,exp:"A <strong>Texture Atlas</strong> (Sprite Sheet) packs multiple images into one texture, reducing the number of texture binds and draw calls—a key optimization technique."},
+{topic:"Game Art",q:"What is Ambient Occlusion (AO) baking in 3D art?",opts:["Adding glow effects","Pre-computing and baking soft shadows in crevices onto a texture for runtime use","Baking the NavMesh","Compressing textures"],ans:1,exp:"<strong>Baked AO</strong> pre-computes how much ambient light each surface point receives (based on surrounding geometry) and stores it in a texture for cheap runtime use."},
+
+// Extra Industry
+{topic:"Industry",q:"What is 'crunch' in game development?",opts:["A snack eaten by developers","Extended periods of excessive overtime—often 60-80+ hour weeks—near a game's release deadline","A prototyping method","A type of compression algorithm"],ans:1,exp:"<strong>Crunch</strong> refers to forced or expected excessive overtime work hours, often near release milestones—a widely criticized industry practice affecting developer wellbeing."},
+{topic:"Industry",q:"What is an 'indie' game developer?",opts:["A developer at a large AAA studio","An independent developer or small studio self-publishing without a major publisher's financial backing","A developer specializing in mobile games","A developer who only makes FPS games"],ans:1,exp:"An <strong>indie (independent) developer</strong> operates without major publisher funding, having full creative control and self-funding development—enabled by digital distribution platforms."},
+{topic:"Industry",q:"What does 'AAA' mean in game development?",opts:["A battery rating","High-budget, large-team game productions from major studios with massive marketing budgets","Games rated for all ages","A networking protocol"],ans:1,exp:"<strong>AAA (Triple-A)</strong> refers to games produced by large studios with very high budgets for development and marketing—e.g., Activision, EA, Ubisoft titles."},
+
+// Scenario / Code Questions
+{topic:"Programming",q:"Given: `float speed = 5f; transform.Translate(Vector3.forward * speed * Time.deltaTime);` What does this code do?",opts:["Moves the object 5 meters instantly","Moves the object forward at 5 units/second, frame-rate independently","Rotates the object at speed 5","Teleports to position (5,0,0)"],ans:1,exp:"<code>Vector3.forward * speed * Time.deltaTime</code> produces a delta position this frame. Multiplying by deltaTime makes it <strong>5 units per second</strong> regardless of frame rate."},
+{topic:"Programming",q:"Which code snippet correctly gets the Rigidbody component on the same GameObject?",opts:["Rigidbody rb = new Rigidbody();","Rigidbody rb = GetComponent<Rigidbody>();","Rigidbody rb = FindObjectOfType<Rigidbody>();","Rigidbody rb = gameObject.Rigidbody;"],ans:1,exp:"<strong>GetComponent<Rigidbody>()</strong> retrieves the Rigidbody attached to the same GameObject as this script—the standard pattern for component references."},
+{topic:"Programming",q:"What is wrong with this code: `void Update() { rb.AddForce(Vector3.up * jumpForce); }`",opts:["Nothing is wrong","AddForce is not valid in Update","Applying a continuous force in Update creates unrealistic, accumulating force every frame instead of a one-time impulse","jumpForce must be a string"],ans:2,exp:"Applying force every frame in <strong>Update()</strong> accumulates indefinitely. A jump should use <strong>ForceMode.Impulse</strong> triggered once (e.g., on button press), typically in FixedUpdate."},
+{topic:"Programming",q:"What class must a Unity script inherit from to use Start() and Update()?",opts:["Object","ScriptableObject","MonoBehaviour","Component"],ans:2,exp:"Unity scripts must inherit from <strong>MonoBehaviour</strong> to use lifecycle methods like Awake, Start, Update, FixedUpdate, and to be attached to GameObjects."},
+{topic:"Programming",q:"What does `transform.localPosition` return?",opts:["The world-space position","The position relative to the parent's Transform","The rotation of the object","The screen-space position"],ans:1,exp:"<strong>transform.localPosition</strong> returns the position relative to the parent GameObject's Transform. <code>transform.position</code> returns the world-space position."},
+
+// More UI
+{topic:"UI",q:"How do you detect a UI Button click via script rather than the Inspector's OnClick()?",opts:["button.onClick += MyMethod","button.onClick.AddListener(MyMethod)","button.OnPress = MyMethod","Input.GetMouseButtonDown(0)"],ans:1,exp:"<strong>button.onClick.AddListener(MyMethod)</strong> registers a callback in code. This is equivalent to assigning a function in the Inspector's OnClick field."},
+{topic:"UI",q:"What component is used to display scrollable content that exceeds the container's bounds?",opts:["Layout Group","Scroll Rect","Content Size Fitter","Canvas Group"],ans:1,exp:"The <strong>Scroll Rect</strong> component (with a Scrollbar child) enables scrollable areas, allowing content larger than the visible viewport to be scrolled by the user."},
+{topic:"UI",q:"What does a Canvas Group component do?",opts:["Groups multiple Canvas objects","Controls alpha (transparency), interactability, and raycasting for all UI children at once","Changes the Canvas render mode","Manages UI animations"],ans:1,exp:"<strong>Canvas Group</strong> applies Alpha, Interactable, and Blocks Raycasts settings to all descendant UI elements as a group—great for fading entire screens in/out."},
+
+// More Physics
+{topic:"Physics",q:"What is Continuous Collision Detection (CCD) on a Rigidbody used for?",opts:["Improving performance","Preventing fast-moving objects from tunneling through thin colliders","Making objects float","Detecting triggers only"],ans:1,exp:"<strong>Continuous Collision Detection</strong> sweeps the collision shape between frames, preventing fast-moving objects (bullets, balls) from passing through thin geometry between frames."},
+{topic:"Physics",q:"What is a Joint in Unity physics?",opts:["A vertex in a mesh","A component constraining two Rigidbodies together with physical limits (e.g., Hinge Joint, Fixed Joint)","A type of collider","A navigation waypoint"],ans:1,exp:"<strong>Joints</strong> constrain two Rigidbodies—defining how they can move relative to each other. Types include Fixed, Hinge, Spring, and Configurable joints."},
+
+// More Lighting
+{topic:"Lighting",q:"What does the 'Bake' button in the Lighting window do?",opts:["Imports lighting from an external file","Runs the lighting computation—calculating indirect light, shadows, and ambient occlusion, storing results in lightmaps","Applies post-processing effects","Bakes physics simulations"],ans:1,exp:"Clicking <strong>Generate Lighting (Bake)</strong> runs Unity's lightmapping process, computing GI and storing the results as lightmap texture assets in the project."},
+{topic:"Lighting",q:"What does 'Color Temperature' on a light affect?",opts:["The physical temperature of the light bulb","The warmth/coolness of the light's color—measured in Kelvin (warm orange = low K, cool blue = high K)","The rendering performance","The shadow color"],ans:1,exp:"<strong>Color Temperature</strong> (Kelvin) simulates real-world light color: ~2700K = warm incandescent yellow, ~5500K = neutral daylight, ~8000K = cool blue sky."},
+
+// More Services 
+{topic:"Services",q:"What is Unity's Monetization SDK primarily used for?",opts:["Building multiplayer games","Integrating ads and in-app purchases into Unity games","Creating 3D models","Compressing game builds"],ans:1,exp:"<strong>Unity Monetization SDK</strong> provides APIs for showing Unity Ads (video, banner, rewarded) and integrating with Unity's mediation platform for revenue optimization."},
+
+// Extra Asset Management
+{topic:"Asset Management",q:"What is a ScriptableObject in Unity?",opts:["A component that always has a collider","A data container asset that lives in the Project—not attached to a scene object, great for game data","A type of shader","A prefab with a script only"],ans:1,exp:"A <strong>ScriptableObject</strong> is a serializable data container that exists as a project asset. Useful for storing game configurations, item databases, and designer-tweakable data."},
+{topic:"Asset Management",q:"What does the Sprite Mode 'Multiple' setting allow in the Sprite Editor?",opts:["Imports multiple files at once","Slices a single texture sheet into multiple individual sprites using the Sprite Editor","Creates multiple materials","Enables multi-layer Sprites"],ans:1,exp:"<strong>Sprite Mode: Multiple</strong> indicates a texture sheet contains multiple sprites. The Sprite Editor is then used to define individual sprite rects within the sheet."},
+
+// Extra Navigation
+{topic:"Navigation",q:"What happens if the NavMesh Agent's destination is unreachable?",opts:["The agent teleports","The agent stops and its pathStatus becomes PathStatus.PathInvalid or PathStatus.PathPartial","The game crashes","The agent moves to the nearest edge of the scene"],ans:1,exp:"If a path cannot be fully computed, the agent's <strong>pathStatus</strong> returns PathPartial (goes as close as possible) or PathInvalid (no path exists at all)."},
+
+// More Game Design
+{topic:"Game Design",q:"What is a 'Game Jam'?",opts:["A bug found during testing","A short-duration event (typically 24-72 hours) where developers create a complete game from scratch","A type of game genre","A music track in a game"],ans:1,exp:"A <strong>Game Jam</strong> is a timed event (hours to days) where participants rapidly create a game around a theme—popular for learning, networking, and prototyping (e.g., Ludum Dare, Global Game Jam)."},
+{topic:"Game Design",q:"What is 'Player Agency' in game design?",opts:["The player's talent agency for esports","The degree to which player choices meaningfully impact the game world and outcomes","The player's movement speed","The game's AI behavior"],ans:1,exp:"<strong>Player Agency</strong> is the sense that player decisions matter—that choices have real consequences, making players feel in control and invested in outcomes."},
+{topic:"Game Design",q:"What is 'Game Feel' (also called 'Juice')?",opts:["The physical controller vibration only","The collection of tactile, audiovisual, and mechanical feedback that makes interactions feel responsive and satisfying","The game's storyline quality","The frame rate performance"],ans:1,exp:"<strong>Game Feel / Juice</strong> encompasses all the responsive feedback—screen shake, sound effects, particles, animation easing—that makes input feel impactful and satisfying."},
+
+// More Industry  
+{topic:"Industry",q:"What does a Sound Designer do in game production?",opts:["Write the game's music score","Design, record, and implement sound effects and audio systems in the game","Manage the QA team","Write the narrative"],ans:1,exp:"A <strong>Sound Designer</strong> creates, records, and implements sound effects (SFX), ambient audio, and audio systems—distinct from a Composer who writes the musical score."},
+{topic:"Industry",q:"What is an 'Engine Programmer' in game development?",opts:["A developer working on game features","A specialist who builds and maintains the game engine's core systems (rendering, physics, memory management)","A level designer using the engine","A QA tester using automation tools"],ans:1,exp:"An <strong>Engine Programmer</strong> works on low-level engine systems like renderers, memory allocators, and physics integration—often writing the infrastructure game programmers build on top of."},
+
+// Wrap up with more cross-topic questions
+{topic:"Animation",q:"Which file format is commonly used for 3D animations exported from Maya or Blender for Unity?",opts:[".mp4",".fbx",".png",".wav"],ans:1,exp:"<strong>FBX (Filmbox)</strong> is the standard interchange format for 3D models with animations, skeleton rigs, and blend shapes—widely supported by Maya, Blender, and Unity."},
+{topic:"Physics",q:"What does setting a Collider's 'Is Trigger' = true and having NO Rigidbody on the same object result in?",opts:["Normal trigger behavior","No trigger events fire unless at least one of the interacting objects has a Rigidbody","Automatic physics simulation","A Unity crash"],ans:1,exp:"For <strong>OnTrigger</strong> events to fire, at least one of the interacting objects must have a non-Kinematic <strong>Rigidbody</strong>. Without it, no trigger callbacks are invoked."},
+{topic:"Programming",q:"What is the purpose of the OnCollisionEnter() method?",opts:["Called when the object enters Play Mode","Called when this object's Collider first makes physical contact with another Collider","Called each frame during overlap","Called when a trigger is entered"],ans:1,exp:"<strong>OnCollisionEnter(Collision col)</strong> is called once when two Colliders first physically collide (not triggers). The Collision parameter provides contact point data."},
+{topic:"UI",q:"What does 'Raycast Target' on a UI Image do when unchecked?",opts:["Makes the image invisible","Makes the image ignore pointer events (clicks, hover), improving UI performance","Prevents the image from rendering","Disables the Image component"],ans:1,exp:"Unchecking <strong>Raycast Target</strong> excludes the Image from UI event system raycasts—decorative images should have this off to prevent blocking clicks on elements beneath them."},
+{topic:"Editor Interface",q:"What keyboard shortcut duplicates a selected GameObject in the Hierarchy?",opts:["Ctrl+D","Ctrl+C then Ctrl+V","Ctrl+Z","Ctrl+X"],ans:0,exp:"<strong>Ctrl+D</strong> (Cmd+D on Mac) duplicates the selected GameObject(s) in the Hierarchy—a faster alternative to Copy+Paste."},
+{topic:"Lighting",q:"What is the Skybox in Unity used for?",opts:["A cube mesh around the scene","A material rendered as the background/environment of the scene, visible where no geometry exists","A reflection map only","A fog effect"],ans:1,exp:"The <strong>Skybox</strong> is a background environment material (6-sided, panoramic, or procedural) that appears behind all scene geometry, representing the sky and horizon."},
+{topic:"Materials",q:"What does the 'Tiling' property on a material do?",opts:["Rotates the texture","Repeats the texture across the surface (x,y times per unit)","Flips the texture","Stretches the texture to cover exactly once"],ans:1,exp:"<strong>Tiling (x,y)</strong> multiplies UV coordinates, causing the texture to repeat across the surface. A value of (2,2) tiles the texture twice in each direction."},
+{topic:"Asset Management",q:"What is the purpose of the 'Resources' folder in Unity?",opts:["Stores backup files","Assets placed here can be loaded at runtime via Resources.Load() regardless of whether they're referenced in scenes","Stores only audio files","Stores scripts only"],ans:1,exp:"The <strong>Resources folder</strong> is a special Unity folder—assets inside are always included in the build and can be loaded dynamically with <code>Resources.Load(\"path\")</code>."},
+{topic:"Project Management",q:"What does 'Prefab Mode' (entering a Prefab for editing) allow?",opts:["Editing the Prefab in a preview context separate from the main scene","Playing the game","Baking navigation for the Prefab","Exporting the Prefab"],ans:0,exp:"<strong>Prefab Mode</strong> (double-click a Prefab asset) opens an isolated editing context where you can safely modify the Prefab without scene distractions, with changes directly saved to the asset."},
+{topic:"Programming",q:"What is the correct way to check if a key is held down this frame?",opts:["Input.GetKeyDown(KeyCode.Space)","Input.GetKey(KeyCode.Space)","Input.GetKeyUp(KeyCode.Space)","Input.GetAxis('Space')"],ans:1,exp:"<strong>Input.GetKey()</strong> returns true every frame the key is held. GetKeyDown() = first frame pressed. GetKeyUp() = first frame released."},
+{topic:"Navigation",q:"What does Agent Radius in NavMesh Bake settings control?",opts:["The detection range of enemies","The minimum clearance required around obstacles for agents to pass—used during baking to determine passable areas","The agent's movement speed","The maximum jump height"],ans:1,exp:"<strong>Agent Radius</strong> defines how wide the navigation agent is. The NavMesh is carved inward from obstacles by this radius, ensuring agents don't clip through geometry."},
+{topic:"UI",q:"What is the EventSystem component required for in Unity UI?",opts:["Playing audio events","Processing UI input—routing mouse clicks, touch, and keyboard navigation to the correct UI elements","Rendering the Canvas","Managing animations on UI"],ans:1,exp:"The <strong>EventSystem</strong> is the central hub of Unity's uGUI event system—it processes all input (mouse, touch, keyboard) and dispatches it to the appropriate UI elements."},
+{topic:"Game Design",q:"What is 'emergent gameplay'?",opts:["The tutorial section","Unscripted, unpredictable gameplay arising from the interaction of simple systems—not directly designed but emerging from rules","The final boss encounter","A scripted cinematic"],ans:1,exp:"<strong>Emergent gameplay</strong> occurs when complex, interesting situations arise from the interaction of simple game rules—not directly scripted (e.g., player creativity in Minecraft, physics puzzles)."},
+{topic:"Physics",q:"What does a Mesh Collider do?",opts:["Generates a NavMesh","Uses the exact mesh geometry as the collision shape—most accurate but most expensive","Always uses a box shape","Only works with Triggers"],ans:1,exp:"A <strong>Mesh Collider</strong> uses the actual mesh polygons for collision—highly accurate but computationally expensive. Best used for static environment geometry with Convex disabled."},
+{topic:"Animation",q:"What does setting Animator.speed = 0 do?",opts:["Destroys the animator","Pauses the animation—no clips advance","Plays the animation in reverse","Doubles the playback speed"],ans:1,exp:"Setting <strong>Animator.speed = 0</strong> effectively freezes the Animator state machine—no animation clips advance until speed is set back to a non-zero value."},
+{topic:"Programming",q:"What is the purpose of a switch statement?",opts:["Toggling a boolean value","Branching code execution based on matching a variable to multiple possible constant values more cleanly than many if-else chains","Switching between scenes","Changing an object's active state"],ans:1,exp:"A <strong>switch statement</strong> evaluates a variable and jumps to the matching <code>case</code> block—cleaner and often faster than chains of if-else for discrete values."},
+{topic:"Industry",q:"What phase immediately follows 'Beta' in the production cycle?",opts:["Alpha","Pre-production","Release Candidate / Gold","Concept"],ans:2,exp:"After <strong>Beta</strong> (feature-locked, bug fixing) comes <strong>Release Candidate</strong>—a version believed to be ready for release. If approved, it becomes Gold Master."},
+{topic:"Materials",q:"What module in the Particle System controls the color of particles over their lifetime?",opts:["Shape module","Emission module","Color over Lifetime module","Renderer module"],ans:2,exp:"The <strong>Color over Lifetime</strong> module applies a gradient to particle color and alpha, allowing particles to fade in, change hue, and fade out over their lifespan."},
+{topic:"Asset Management",q:"What does the 'Read/Write Enabled' import option do for a Mesh?",opts:["Allows the mesh to be edited in the Inspector","Allows the mesh data to be read and modified at runtime via script (MeshFilter, Mesh API)","Enables UV editing","Allows the mesh to cast shadows"],ans:1,exp:"<strong>Read/Write Enabled</strong> keeps a CPU-side copy of mesh data, allowing runtime access via the Mesh API to read vertices, triangles, or procedurally modify the mesh."},
+{topic:"Editor Interface",q:"What is the 'Undo' shortcut in Unity?",opts:["Ctrl+Z","Ctrl+Y","Ctrl+X","Ctrl+U"],ans:0,exp:"<strong>Ctrl+Z</strong> (Cmd+Z on Mac) undoes the last action in the Editor. Unity maintains an undo history for most operations including Transform changes and Inspector edits."},
+{topic:"Programming",q:"What is the Singleton pattern often used for in Unity games?",opts:["Creating many instances of a class","Ensuring only one instance of a class exists globally (e.g., GameManager, AudioManager) accessible from anywhere","Defining abstract base classes","Managing UI layouts"],ans:1,exp:"The <strong>Singleton pattern</strong> guarantees a single global instance. In Unity, this is often implemented in MonoBehaviour managers: <code>if (instance == null) instance = this;</code>"},
+{topic:"Lighting",q:"What does the 'Indirect Multiplier' in a Light component do?",opts:["Controls the number of light bounces","Scales the intensity of indirect (bounced) light contribution from that light source in GI calculations","Changes the light's color","Controls shadow strength"],ans:1,exp:"<strong>Indirect Multiplier</strong> scales how much indirect light the source contributes to GI. A value of 0 means no indirect contribution; higher values brighten bounced light independently of direct intensity."},
+{topic:"UI",q:"What does 'Anchors Min and Max' being the same value (e.g., 0.5, 0.5) mean for a Rect Transform?",opts:["The element fills the entire parent","The element's anchor is a single point (not stretching)—size is fixed, position offsets from that anchor point","The element is invisible","The element cannot be moved"],ans:1,exp:"When <strong>Anchor Min = Anchor Max</strong>, the UI element has a <strong>point anchor</strong>. Its size is defined by Width/Height, and its position is the pixel offset from that anchor point."},
+{topic:"Game Design",q:"What is 'difficulty scaling' in game design?",opts:["Changing the game's screen resolution","Adjusting challenge parameters (enemy health, speed, spawn rates) based on player skill or progress","Optimizing frame rate","Scaling UI for different screens"],ans:1,exp:"<strong>Difficulty scaling</strong> dynamically or statically adjusts challenge parameters to maintain appropriate challenge as players progress or to accommodate different skill levels."},
+{topic:"Programming",q:"What does `foreach (GameObject obj in objects)` do?",opts:["Deletes each object","Iterates over every element in the 'objects' collection, accessing each as 'obj'","Finds all objects in scene","Creates copies of each object"],ans:1,exp:"A <strong>foreach loop</strong> iterates through every element in a collection (array, List, etc.). Each iteration, the current element is available via the loop variable."},
+{topic:"Asset Management",q:"What is 'Asset Bundles' used for in Unity?",opts:["Compressing the project folder","Packaging assets for dynamic loading at runtime—often from remote servers for DLC or updates","Storing scene files","Managing Prefab references"],ans:1,exp:"<strong>Asset Bundles</strong> package Unity assets for dynamic loading at runtime, enabling downloadable content (DLC), reducing initial install size, and streaming assets on demand."},
+{topic:"Physics",q:"What is the OnTriggerEnter() callback?",opts:["Called when a non-trigger collision first occurs","Called when another Collider first enters this Trigger Collider's volume","Called every physics step during overlap","Called when the trigger is disabled"],ans:1,exp:"<strong>OnTriggerEnter(Collider other)</strong> is called once when another Collider's volume first overlaps this Trigger Collider—used for pickups, area detection, and zone effects."},
+{topic:"Navigation",q:"What is the Agent Height property in NavMesh Bake settings?",opts:["The visual height of the character model","The minimum vertical clearance required for the agent to pass under obstacles during baking","The agent's jump height","The step height"],ans:1,exp:"<strong>Agent Height</strong> defines the clearance needed for the agent to pass. Low ceilings below this height will be excluded from the NavMesh as impassable."},
+{topic:"Industry",q:"What is the role of a Producer in game development?",opts:["Writing all game code","Managing the team, schedule, budget, and communication—ensuring the project ships on time","Creating 3D art assets","Testing the game for bugs"],ans:1,exp:"A <strong>Producer</strong> manages project scope, schedules, budgets, team coordination, and stakeholder communication—ensuring the project stays on track and within resources."},
+{topic:"Game Art",q:"What is 'Polycount' in 3D modeling?",opts:["The number of textures on a model","The total number of polygons (triangles/quads) in a 3D mesh","The number of UV shells","The number of bones in a rig"],ans:1,exp:"<strong>Polycount</strong> refers to the total polygon count of a 3D model. Optimizing polycount is critical for game performance—mobile games use far fewer polygons than PC/console titles."},
+{topic:"Audio",q:"What does an Audio Echo Filter do?",opts:["Removes background noise","Creates an echoing repetition of the audio signal with defined delay and decay","Applies reverb to a specific zone","Compresses the audio dynamically"],ans:1,exp:"The <strong>Audio Echo Filter</strong> creates discrete repetitions of the audio signal at set delay intervals, simulating sound reflections off distant surfaces."},
+{topic:"Programming",q:"What does the '#pragma strict' directive enforce in Unity's old Boo/JS scripts?",opts:["Nothing in C#","Strict type checking, preventing implicit typing","Makes all variables public","Disables garbage collection"],ans:1,exp:"While irrelevant in C#, <strong>#pragma strict</strong> in Unity's legacy UnityScript enforced explicit type declarations, preventing slow dynamic typing. C# is always strictly typed."},
+{topic:"UI",q:"What is an Anchor Preset in Unity's Rect Transform?",opts:["A saved material setting","A quick-select grid of common anchor configurations (corners, center, stretch) accessible via the anchor icon in the Inspector","A type of UI animation","A Prefab variant for UI"],ans:1,exp:"The <strong>Anchor Preset picker</strong> (clicking the anchor square in the Rect Transform Inspector) shows common anchor arrangements—corner, center, stretch—for quick layout setup."},
+{topic:"Materials",q:"What does enabling 'GPU Instancing' on a Material do?",opts:["Runs the shader on the CPU","Allows multiple identical meshes using this material to be rendered in a single draw call, reducing CPU overhead","Enables real-time GI for this material","Applies tessellation"],ans:1,exp:"<strong>GPU Instancing</strong> batches many identical mesh/material combinations into a single draw call, with individual properties (color, position) passed as per-instance data to the GPU."},
+{topic:"Animation",q:"What is 'Inverse Kinematics' (IK) in Unity animation?",opts:["Animating in reverse playback","A technique where end effectors (hands, feet) drive the bone chain backward to reach targets, rather than animating each bone forward","A type of particle system","A physics-based ragdoll"],ans:1,exp:"<strong>Inverse Kinematics (IK)</strong> works backward from a target position (e.g., hand goal) to compute intermediate bone rotations automatically—great for foot planting and hand reaching."},
+{topic:"Project Management",q:"What does 'Version Control' do in game development?",opts:["Controls the game's current version number only","Tracks file changes over time, enabling teams to collaborate, revert mistakes, and manage branching workflows","Manages plugin versions","Controls the Editor version"],ans:1,exp:"<strong>Version Control</strong> (Git, Perforce, Unity Version Control) records the history of all file changes, enabling collaboration, rollback, and parallel development on branches."},
+{topic:"Editor Interface",q:"Which Unity view lets you preview how the game looks from the camera during Play Mode?",opts:["Scene view","Game view","Inspector","Animator"],ans:1,exp:"The <strong>Game view</strong> renders the game from the active camera's perspective, showing exactly what the player would see—essential for testing and Play Mode."},
+{topic:"Physics",q:"What is the purpose of Layer Collision Matrix in Physics Settings?",opts:["Assigning GameObjects to Layers","Controlling which Layer pairs can physically collide with each other","Setting collision sound effects","Defining ragdoll joints"],ans:1,exp:"The <strong>Layer Collision Matrix</strong> (Edit > Project Settings > Physics) lets you enable or disable collision detection between specific Layer pairs for performance and gameplay purposes."},
+{topic:"Programming",q:"What is an enum in C# and how is it useful in Unity?",opts:["A list of audio clips","A value type defining a named set of integer constants—useful for states like GameState.Playing, GameState.Paused, GameState.GameOver","A type of collection","A shader property"],ans:1,exp:"An <strong>enum</strong> defines named integer constants. In Unity, enums are perfect for representing game states, directions, or item types—making code more readable than raw integers."},
+{topic:"Lighting",q:"What is the difference between real-time and baked lights?",opts:["Baked lights are brighter","Real-time lights update every frame (support dynamic objects); baked lights are pre-computed (cheaper, static only)","Real-time lights only work indoors","Baked lights cannot cast shadows"],ans:1,exp:"<strong>Real-time lights</strong> recalculate every frame—expensive but affect dynamic objects. <strong>Baked lights</strong> are pre-computed into lightmaps—cheap at runtime but static, not affecting moving objects."},
+{topic:"Game Design",q:"What is a 'win condition' in game design?",opts:["A cheat code","The defined criteria that must be met for the player to succeed and the game to end in victory","A graphical setting","A type of achievement"],ans:1,exp:"A <strong>win condition</strong> defines what the player must achieve to succeed—reach the exit, eliminate all enemies, collect all items. Clear win conditions give players a goal and sense of purpose."},
+{topic:"Asset Management",q:"What does 'Generate Mip Maps' do for a texture import setting?",opts:["Increases the texture resolution","Creates smaller pre-filtered versions of the texture used at distance for performance and quality","Adds normal map generation","Applies texture compression"],ans:1,exp:"Enabling <strong>Generate Mip Maps</strong> pre-generates smaller versions of the texture. Unity selects the appropriate mip level based on distance, reducing aliasing and improving performance."},
+{topic:"Audio",q:"What does the Audio Chorus Filter do?",opts:["Creates a single clear tone","Creates the impression of multiple voices by modulating pitch, simulating a chorus or ensemble effect","Amplifies high frequencies","Applies a low-pass filter"],ans:1,exp:"The <strong>Audio Chorus Filter</strong> creates a chorus/ensemble effect by modulating the pitch slightly and mixing the modified signal with the original—simulating multiple musicians or voices."},
+{topic:"Industry",q:"What is 'Localization' in game development?",opts:["Setting the game's geographic server","Adapting the game's text, audio, and cultural content for different languages and regions","Optimizing for local network play","Compressing assets for different countries"],ans:1,exp:"<strong>Localization (L10n)</strong> adapts a game for different markets—translating text and audio, adjusting cultural references, date formats, and region-specific content."},
+{topic:"Navigation",q:"What does increasing Agent Speed on a NavMesh Agent do?",opts:["Makes the NavMesh bake faster","Increases how fast the agent moves toward its destination along the path","Increases detection range","Makes pathfinding more accurate"],ans:1,exp:"<strong>Agent Speed</strong> controls the maximum movement speed (units/second) of the NavMesh Agent as it follows its calculated path."},
+{topic:"UI",q:"What is 'Layout Group' in Unity UI used for?",opts:["Managing Canvas render order","Automatically arranging child UI elements in rows, columns, or grids","Animating UI elements","Detecting UI input"],ans:1,exp:"<strong>Layout Groups</strong> (Horizontal, Vertical, Grid) automatically arrange child UI elements with configurable spacing, padding, and child size control—for dynamic lists and menus."},
+{topic:"Programming",q:"What is the Update() method called from?",opts:["A separate physics thread","Unity's main game loop—once per rendered frame","Every 0.02 seconds regardless of frame rate","Only when input is detected"],ans:1,exp:"<strong>Update()</strong> is called by Unity's main game loop once per rendered frame. Frame rate varies, so use Time.deltaTime to make values frame-rate independent."},
+{topic:"Materials",q:"What does the 'Offset' property on a material do?",opts:["Moves the mesh","Shifts the texture's UV coordinates, scrolling or repositioning the texture on the surface","Changes the material's render order","Adjusts normal map depth"],ans:1,exp:"<strong>Offset (x,y)</strong> shifts the UV coordinates, effectively scrolling or repositioning the texture on the surface—useful for scrolling textures like water or conveyor belts."},
+{topic:"Game Art",q:"What is 'Rigging' in 3D character art?",opts:["Setting up physics joints for vehicles","Creating a skeletal bone hierarchy inside a 3D mesh to enable posing and animation","Applying textures to a character","Optimizing a character's polygon count"],ans:1,exp:"<strong>Rigging</strong> creates the internal bone skeleton (armature) and skin weighting that allows a 3D character mesh to deform naturally when bones are posed or animated."},
+{topic:"Physics",q:"What does Freeze Rotation on a Rigidbody do?",opts:["Freezes the game","Prevents the Rigidbody from rotating on the specified axes due to physics forces","Makes the object static","Disables all physics"],ans:1,exp:"<strong>Freeze Rotation</strong> (X, Y, Z checkboxes) constrains the Rigidbody's rotational degrees of freedom—useful for preventing a capsule character from tipping over."},
+{topic:"Editor Interface",q:"What does the 'Auto Save' feature in Unity scenes do?",opts:["Saves every frame","Automatically saves the scene at set intervals or on important events to prevent data loss","Never saves without prompting","Saves only scripts"],ans:0,exp:"Unity's <strong>Auto Save</strong> (or using Ctrl+S frequently) periodically saves scene data. Unity does NOT auto-save by default in older versions—manual Ctrl+S is essential to avoid losing work."},
+{topic:"Animation",q:"What does the 'Speed' property on an Animator State control?",opts:["The transition duration","The playback speed multiplier of the animation clip in that state","The blending weight","The exit time"],ans:1,exp:"The <strong>Speed</strong> multiplier on an Animator State scales the clip's playback rate. A value of 2 plays the clip at double speed; 0.5 at half speed."},
+{topic:"Services",q:"What platform does Unity Cloud Build support for building?",opts:["Only iOS","Only Android and iOS","Multiple platforms including iOS, Android, PC, WebGL, and console (depending on license)","Only PC"],ans:2,exp:"<strong>Unity Cloud Build</strong> supports building for multiple target platforms—iOS, Android, WebGL, PC, Mac, Linux, and console platforms depending on your Unity license and build targets."},
+{topic:"Programming",q:"What does the keyword 'private' do to a variable in C#?",opts:["Makes it visible in the Inspector","Restricts access to the variable to within the same class only","Makes it shared across all instances","Makes it constant"],ans:1,exp:"<strong>private</strong> restricts a member's visibility to the declaring class only. It's the default access modifier in C# and keeps implementation details hidden from other classes."},
+{topic:"Game Design",q:"What is 'Procedural Generation' in games?",opts:["Hand-placing every asset by a designer","Using algorithms and randomness to generate content (levels, terrain, loot) automatically at runtime or build time","Recording player playthroughs","AI-controlling NPCs"],ans:1,exp:"<strong>Procedural Generation</strong> uses algorithms, seeds, and randomness to create content programmatically—enabling near-infinite variety in levels, worlds, and items (e.g., Minecraft terrain)."},
+{topic:"Materials",q:"What is a Skybox material in Unity?",opts:["A material applied to a cube mesh","A special material type rendered as the scene background, representing sky, horizon, and environment","A transparent material for windows","An unlit material for UI"],ans:1,exp:"A <strong>Skybox material</strong> uses special shader types (6-sided, panoramic, procedural) to render an environment background visible behind all scene geometry."},
+{topic:"Lighting",q:"What does 'Light Probes' do for dynamic objects?",opts:["Adds extra lights to the scene","Stores baked GI data at 3D sample points that dynamic objects interpolate from, giving them indirect lighting approximation","Detects light levels for camera exposure","Controls reflection probe placement"],ans:1,exp:"<strong>Light Probes</strong> capture baked indirect lighting at sample points. Dynamic (non-static) objects interpolate between nearby probes to receive approximated GI—a performance-friendly solution."},
+{topic:"UI",q:"What is a Toggle component in Unity UI?",opts:["A type of animation trigger","A UI control that switches between on/off states—like a checkbox","A button that plays audio","A slider with only two positions"],ans:1,exp:"A <strong>Toggle</strong> is a UI checkbox component with checked/unchecked states. It exposes an OnValueChanged event and a isOn property, useful for settings screens."},
+{topic:"Physics",q:"What does OnCollisionStay() get called?",opts:["Once when collision first occurs","Every physics frame while two Colliders remain in contact","Once when objects separate","Every render frame during contact"],ans:1,exp:"<strong>OnCollisionStay()</strong> is called every FixedUpdate frame while two non-trigger Colliders remain in physical contact—useful for sustained collision effects like friction damage."},
+{topic:"Programming",q:"What is meant by 'frame rate independence' in game programming?",opts:["The game runs at a locked frame rate","Game logic behaves consistently at any frame rate by scaling values with Time.deltaTime","The game only works at 60fps","All objects move at the same speed"],ans:1,exp:"<strong>Frame rate independence</strong> means gameplay behavior is the same whether running at 30fps or 120fps, achieved by multiplying time-dependent values by <code>Time.deltaTime</code>."},
+{topic:"Asset Management",q:"What is an Addressable Asset in Unity?",opts:["An asset with an IP address","An asset management system allowing assets to be loaded by string address, locally or remotely, replacing Asset Bundles","A tagged scene asset","A Prefab with a unique name"],ans:1,exp:"<strong>Addressable Assets</strong> is Unity's modern asset delivery system—assets are referenced by string addresses and can be loaded from local or remote locations, replacing the older Asset Bundle workflow."},
+{topic:"Navigation",q:"What does 'Stopping Distance' on a NavMesh Agent control?",opts:["The maximum chase distance","How far from the target position the agent stops before declaring arrival","The agent's detection radius","The bake margin around obstacles"],ans:1,exp:"<strong>Stopping Distance</strong> defines how many units from the destination the agent stops. An enemy with Stopping Distance=2 will halt 2 units from the player rather than running directly into them."},
+{topic:"Game Design",q:"What is a 'HUD' (Heads-Up Display) in games?",opts:["A type of game controller","The persistent UI layer showing vital info (health, ammo, score, minimap) overlaid on the game view during play","The game's main menu","A cutscene system"],ans:1,exp:"The <strong>HUD (Heads-Up Display)</strong> is the in-game UI overlay showing critical player information like health, ammunition, score, objectives, and minimaps without interrupting gameplay."},
+{topic:"Audio",q:"What does 'Min Distance' on an Audio Source control?",opts:["The minimum delay before audio plays","The distance within which the audio plays at full volume before rolloff begins","The minimum pitch value","The minimum buffer size"],ans:1,exp:"<strong>Min Distance</strong> defines the radius within which the audio source plays at full volume. Beyond this distance, the Volume Rolloff curve begins reducing the volume."},
+{topic:"Editor Interface",q:"What is the purpose of the Profiler window in Unity?",opts:["Editing shader code","Analyzing CPU, GPU, memory, and rendering performance frame by frame to find bottlenecks","Viewing animation curves","Managing project assets"],ans:1,exp:"The <strong>Profiler</strong> (Window > Analysis > Profiler) records detailed performance data per frame—CPU time, GPU time, memory allocations, rendering stats—essential for optimization."},
+{topic:"Game Art",q:"What is 'Weight Painting' in 3D character rigging?",opts:["Applying vertex colors for optimization","Defining how much influence each bone has on each vertex of the mesh during deformation","Painting normal maps","Setting UV density"],ans:1,exp:"<strong>Weight Painting</strong> assigns influence values (0-1) per vertex per bone. Vertices near joints often share influence between multiple bones for smooth, realistic deformation."},
+{topic:"Programming",q:"What is an Array in C# programming?",opts:["A single variable","A fixed-size ordered collection of elements of the same type, accessed by index","A Dictionary with string keys","A class definition"],ans:1,exp:"An <strong>Array</strong> is a fixed-length, zero-indexed collection. E.g., <code>int[] scores = new int[5]</code> creates an array of 5 integers accessed as scores[0] through scores[4]."},
+{topic:"Programming",q:"What is a List<T> in C# and how does it differ from an Array?",opts:["They are identical","List<T> is a dynamically-sized collection that can grow/shrink; Arrays are fixed-size","List<T> is faster than Arrays","Arrays can hold mixed types; Lists cannot"],ans:1,exp:"<strong>List<T></strong> is a generic, dynamic collection in C# (System.Collections.Generic). Unlike arrays, it can add/remove elements at runtime via Add(), Remove(), etc."},
+{topic:"Project Management",q:"What does the 'Build Settings' window in Unity allow you to do?",opts:["Edit physics settings","Choose target platform, configure scenes in build, and initiate the build process","Manage audio settings","Configure lighting"],ans:1,exp:"<strong>Build Settings</strong> (File > Build Settings) lets you add scenes to the build, select the target platform (PC, iOS, Android, WebGL, etc.), and initiate the build process."},
+{topic:"Materials",q:"What is a Shader Graph in Unity?",opts:["A graph of shader compilation errors","A visual, node-based shader creation tool allowing artists to create shaders without writing code","A post-processing graph","A rendering performance graph"],ans:1,exp:"<strong>Shader Graph</strong> is Unity's visual shader editor (available in URP/HDRP) where nodes represent mathematical operations, allowing artists to create custom shaders without HLSL code."},
+{topic:"Industry",q:"What is 'Agile' methodology in game development?",opts:["A type of physics simulation","An iterative project management framework using short sprints, daily standups, and regular review/adaptation cycles","A compression algorithm","A rendering pipeline"],ans:1,exp:"<strong>Agile</strong> is an iterative development methodology using short cycles (sprints), regular demos, and continuous feedback—widely adopted in game development for flexibility and responsiveness to change."},
+{topic:"Animation",q:"What does 'Loop Time' on an Animation Clip do?",opts:["Sets the playback speed","Makes the animation clip loop seamlessly when it reaches the end","Enables time-scaling","Controls transition speed"],ans:1,exp:"Enabling <strong>Loop Time</strong> on an Animation Clip causes it to repeat continuously from the beginning when it reaches the end—essential for walk cycles, idle animations, etc."},
+{topic:"Physics",q:"What is a Spring Joint in Unity?",opts:["A type of game controller spring","A joint constraining two Rigidbodies with a spring force, pulling them toward a target distance","A particle spring effect","A NavMesh connection"],ans:1,exp:"A <strong>Spring Joint</strong> connects two Rigidbodies with a spring force, oscillating toward a rest distance. The Spring, Damper, and Min/Max Distance properties control behavior."},
+{topic:"UI",q:"What does 'Best Fit' on a Text component do?",opts:["Makes text fill the screen","Automatically adjusts font size to fit within the text's Rect Transform bounds","Sets the font to the system default","Applies anti-aliasing"],ans:1,exp:"<strong>Best Fit</strong> dynamically scales font size between Min Size and Max Size to fill the available space, preventing text overflow and maintaining readability at different container sizes."},
+{topic:"Editor Interface",q:"What is the Frame Debugger in Unity used for?",opts:["Finding script errors","Pausing and stepping through the rendering pipeline frame by frame to see each draw call","Managing animation keyframes","Debugging NavMesh paths"],ans:1,exp:"The <strong>Frame Debugger</strong> (Window > Analysis > Frame Debugger) lets you pause during Play Mode and step through every draw call, revealing exactly how each frame is rendered."},
+{topic:"Game Design",q:"What is the difference between 'diegetic' and 'non-diegetic' UI?",opts:["2D vs 3D UI","Diegetic UI exists within the game world (e.g., health on a character's armor); non-diegetic UI is screen-space overlay (standard HUD)","Mobile vs desktop UI","Animated vs static UI"],ans:1,exp:"<strong>Diegetic UI</strong> exists within the fiction (a speedometer on a car dashboard). <strong>Non-diegetic UI</strong> is the traditional screen overlay (health bar, crosshair) that only the player can see."},
+{topic:"Programming",q:"What does Input.GetAxis('Horizontal') return?",opts:["A bool whether the horizontal key is pressed","A float between -1 and 1 representing horizontal axis input (left/right, A/D keys, left stick)","The exact key pressed","The mouse position"],ans:1,exp:"<strong>Input.GetAxis('Horizontal')</strong> returns a smoothed float (-1 to 1) from keyboard (A/D, Arrow keys) or controller left stick horizontal input—with built-in smoothing/inertia."},
+{topic:"Asset Management",q:"What is Unity Package Manager (UPM) used for?",opts:["Managing project ZIP files","Installing, updating, and managing Unity packages, tools, and registry dependencies for a project","Exporting assets","Uploading builds"],ans:1,exp:"<strong>Unity Package Manager (UPM)</strong> (Window > Package Manager) manages Unity's official packages, Asset Store packages, and custom/registry packages—replacing the old .unitypackage import workflow."},
+{topic:"Lighting",q:"What is 'Lens Flare' as a visual effect?",opts:["A type of 3D model","A light artifact simulating the optical scattering of bright light sources across a camera lens","A type of light component","A post-process bloom variant"],ans:1,exp:"<strong>Lens Flare</strong> simulates the optical phenomenon of bright light (sun, lights) scattering across camera lens elements—adding cinematic realism to bright light sources."},
+{topic:"Navigation",q:"What does 'Auto Traverse Off Mesh Link' on a NavMesh Agent do?",opts:["Disables off-mesh links completely","Makes the agent automatically animate through off-mesh links without script intervention","Requires a script to manually move the agent across off-mesh links","Bakes off-mesh links automatically"],ans:1,exp:"When <strong>Auto Traverse Off Mesh Link</strong> is true, the agent automatically teleports or interpolates through off-mesh links. When false, you must handle traversal manually in script for custom animations."},
+{topic:"Game Design",q:"What is 'Accessibility' in game design?",opts:["The game's download size","Designing options and features that make the game playable for people with disabilities (colorblindness, motor impairments, hearing impairments)","The game's tutorial length","Server accessibility for multiplayer"],ans:1,exp:"<strong>Accessibility</strong> involves designing features like colorblind modes, configurable controls, subtitles, scalable UI, and difficulty options so more people can enjoy the game regardless of ability."},
+{topic:"Programming",q:"What is the difference between == and Equals() for string comparison in C#?",opts:["They always behave identically","== compares by value for strings (due to operator overloading) and works fine; Equals() is more explicit but equivalent in most Unity string cases","== compares by reference for strings","Equals() is faster"],ans:0,exp:"In C#, <strong>==</strong> for strings compares by value (due to operator overloading), making it equivalent to Equals() in most cases. CompareTag() is preferred in Unity for performance when comparing Tags."},
+{topic:"Materials",q:"What is 'Tessellation' in shader programming?",opts:["Reducing polygon count","Subdividing mesh polygons on the GPU at render time, adding detail to surfaces based on distance or texture maps","Applying normal maps","A type of texture projection"],ans:1,exp:"<strong>Tessellation</strong> dynamically subdivides triangles on the GPU, adding geometric detail near the camera and using displacement maps to add real geometry to surfaces."},
+{topic:"Industry",q:"What is 'Post-mortem' in game development?",opts:["Testing the game after death mechanics","A retrospective analysis written after a project ships, examining what went well and what didn't","The game's credits sequence","A debugging session"],ans:1,exp:"A <strong>Post-mortem</strong> is a reflective analysis published or presented after game completion, documenting lessons learned—what succeeded, what failed, and what would be done differently."},
+{topic:"Audio",q:"What is FMOD and how does it relate to Unity?",opts:["Unity's built-in audio engine","A professional third-party adaptive audio middleware that integrates with Unity for advanced sound design","A free audio compression format","A Unity audio visualization tool"],ans:1,exp:"<strong>FMOD</strong> is a professional audio middleware widely used in games, offering adaptive music, complex sound design, and mixing capabilities beyond Unity's built-in audio system."},
+{topic:"Programming",q:"What does yield return null do in a Coroutine?",opts:["Terminates the Coroutine immediately","Pauses execution for one frame and then resumes on the next frame","Waits for a physics update","Waits for an async operation"],ans:1,exp:"<strong>yield return null</strong> suspends the Coroutine until the next frame's Update pass, then resumes—the simplest way to spread work across frames."},
+{topic:"Game Art",q:"What is the purpose of a 'Style Guide' in game art production?",opts:["A Unity package","A document defining the visual standards, color palettes, proportions, and aesthetic rules all artists must follow to ensure consistency","A script naming convention","A performance benchmark"],ans:1,exp:"An <strong>Art Style Guide</strong> establishes the visual rules for a game—color palettes, line weight, texture style, proportions—ensuring all artists create consistent assets regardless of who makes them."},
+{topic:"Physics",q:"What is Rigidbody.velocity?",opts:["The direction the object faces","The current linear velocity Vector3 of the Rigidbody in world space (units per second)","The object's position","The angular speed"],ans:1,exp:"<strong>Rigidbody.velocity</strong> is a Vector3 representing the current speed and direction of the Rigidbody in world space. You can read it for speed checks or set it to instantly change movement."},
+{topic:"UI",q:"What is the Safe Area in mobile UI design?",opts:["A secure encrypted UI zone","The visible screen area excluding hardware notches, home indicators, and rounded corners—where UI should be placed to be fully visible","The center 50% of the screen","The area behind opaque UI elements"],ans:1,exp:"The <strong>Safe Area</strong> is the portion of the screen guaranteed to be visible and unobstructed by device hardware (notches, home bars). Unity provides <code>Screen.safeArea</code> Rect to handle this."},
+{topic:"Editor Interface",q:"What does the 'Lock' icon on the Inspector window do?",opts:["Locks the file from editing","Keeps the Inspector showing the currently selected object even when you select other objects in the Hierarchy","Locks the scene file","Enables read-only mode"],ans:1,exp:"The <strong>Inspector Lock</strong> button freezes the Inspector on the currently selected object, allowing you to drag components or assets from other selected objects without losing context."},
+{topic:"Game Design",q:"What is 'Metagame' in game design?",opts:["The main campaign","The layer of strategy and decision-making that exists outside individual play sessions—deck building, character progression, roster selection","The game's tutorial","The pause menu"],ans:1,exp:"The <strong>Metagame</strong> refers to strategic decisions made between or above individual play sessions—choosing a deck in a card game, upgrading a character between levels, or team composition in a MOBA."},
+{topic:"Programming",q:"What is Event-Driven Programming?",opts:["Programming that runs only on weekends","A paradigm where code execution is triggered by events (user input, game events) rather than sequential execution","A type of multithreading","A rendering optimization"],ans:1,exp:"<strong>Event-Driven Programming</strong> structures code around events and handlers. Unity's UnityEvents, C# events/delegates, and physics callbacks (OnCollisionEnter) are all event-driven patterns."},
+{topic:"Navigation",q:"What NavMesh agent property would you modify to prevent agents from bumping into each other?",opts:["Speed","Stopping Distance","Obstacle Avoidance Radius and Quality","Base Offset"],ans:2,exp:"<strong>Obstacle Avoidance Radius</strong> defines personal space around agents, and <strong>Quality</strong> controls avoidance computation cost. Together they prevent agents from overlapping each other."},
+{topic:"Materials",q:"What is 'Unlit' shader mode in Unity?",opts:["A shader with only ambient light","A shader that renders without any lighting calculations—always shows the full diffuse/albedo color regardless of lights","A transparent shader","An emissive-only shader"],ans:1,exp:"An <strong>Unlit shader</strong> skips all lighting calculations, displaying the base texture/color at full brightness regardless of scene lighting—useful for UI, effects, and stylized art."},
+{topic:"Animation",q:"What is a 'Keyframe' in animation?",opts:["A type of sprite","A defined state (position, rotation, value) of a property at a specific time—animation interpolates between keyframes","A trigger in the Animator","A blend tree node"],ans:1,exp:"A <strong>Keyframe</strong> records the value of an animated property at a specific time point. Unity's animation system interpolates between keyframes to create smooth motion."},
+{topic:"Asset Management",q:"What does 'Import New Asset' do in Unity?",opts:["Creates a new script","Brings an external file (image, model, audio) into the Unity project's Assets folder and processes it","Deletes old assets","Exports an asset"],ans:1,exp:"<strong>Import New Asset</strong> (Assets menu or drag-and-drop into Project window) copies a file into the Assets folder and runs Unity's import pipeline on it, generating .meta files and processed data."},
+{topic:"Industry",q:"What is 'Middleware' in game development?",opts:["Software connecting two middleware programs","Third-party specialized software libraries integrated into games—physics engines, audio systems, networking solutions (e.g., Havok, Wwise, Photon)","A type of game genre","The game's main menu code"],ans:1,exp:"<strong>Middleware</strong> is specialized, licensed third-party technology (audio, physics, AI, networking) that game studios integrate into their engine rather than building from scratch."},
+{topic:"Lighting",q:"What is HDR (High Dynamic Range) lighting in Unity?",opts:["A lighting effect for dark caves only","Lighting that allows values above 1.0 intensity, enabling bloom and tone mapping for more realistic bright/dark contrast","A type of baked GI","A color correction filter"],ans:1,exp:"<strong>HDR lighting</strong> allows light intensity values exceeding 1.0, enabling the post-processing pipeline (bloom, tone mapping) to properly handle very bright areas and maintain realistic contrast."},
+{topic:"Editor Interface",q:"What does the Animator window's 'Parameters' tab show?",opts:["The animation clip keyframes","The list of all parameters (Float, Int, Bool, Trigger) defined in the Animator Controller","The transition settings","The bone hierarchy"],ans:1,exp:"The <strong>Parameters tab</strong> in the Animator window lists all defined parameters with their current runtime values during Play Mode—essential for debugging state machine transitions."},
+{topic:"UI",q:"What component automatically resizes a UI element to fit its content?",opts:["Rect Transform","Canvas Scaler","Content Size Fitter","Layout Element"],ans:2,exp:"The <strong>Content Size Fitter</strong> component adjusts the Rect Transform's size to match the preferred size of its content (e.g., text length, child elements), enabling dynamic-sized UI."},
+{topic:"Physics",q:"What is a Hinge Joint used for?",opts:["Connecting audio sources","Constraining two Rigidbodies to rotate around a shared axis—like a door, wheel, or knee joint","Connecting two NavMesh surfaces","Applying wind forces"],ans:1,exp:"A <strong>Hinge Joint</strong> allows two Rigidbodies to rotate around a single shared axis, simulating hinges, wheels, and rotational joints with configurable limits, motor, and spring settings."},
+{topic:"Game Design",q:"What is a 'Prototype' in game development?",opts:["The final shipped game","An early, rough implementation of a game mechanic or concept used to quickly test if it's fun before committing resources","A high-resolution art asset","A network stress test"],ans:1,exp:"A <strong>Prototype</strong> is a quick, rough implementation to test whether a game concept or mechanic is engaging before investing in full production. 'Fail fast' prototyping saves time and money."},
+{topic:"Programming",q:"What does `transform.Rotate(Vector3.up * 90 * Time.deltaTime)` do?",opts:["Teleports to (0,90,0)","Rotates the object 90 degrees around the Y axis per second, frame-rate independently","Sets rotation to exactly 90 degrees","Moves the object upward"],ans:1,exp:"This rotates the object at <strong>90 degrees per second</strong> around the world Y-axis. Multiplying by Time.deltaTime makes the rotation frame-rate independent."},
+{topic:"Asset Management",q:"What is the difference between a hard reference and a soft reference to an asset?",opts:["They are identical","Hard references load assets immediately at startup; soft/Addressable references allow lazy loading on demand","Soft references are in a different folder","Hard references are for audio only"],ans:1,exp:"<strong>Hard references</strong> (direct field references) load assets when the object is loaded. <strong>Soft references</strong> (Addressables, AssetReference) allow loading assets on demand, reducing memory and startup time."},
+{topic:"Audio",q:"What does 'Preload Audio Data' on an Audio Clip do?",opts:["Converts to MP3","Loads the audio data into memory when the scene loads, ensuring zero delay on first playback","Streams audio from disk","Generates audio at runtime"],ans:1,exp:"<strong>Preload Audio Data</strong> loads the clip into memory at scene load time, guaranteeing instant playback with no loading delay—best for frequently triggered sounds."},
+{topic:"Game Art",q:"What is PBR (Physically Based Rendering) in Unity?",opts:["A type of particle effect","A rendering workflow using real-world physical properties (metalness, roughness) to create consistent, realistic materials under any lighting","A polygon reduction technique","A post-process effect"],ans:1,exp:"<strong>PBR</strong> uses physically accurate material properties (Albedo, Metallic, Roughness/Smoothness, Normal) to produce consistent, realistic results under varied lighting—Unity's Standard Shader is PBR."},
+{topic:"Project Management",q:"What does the Git '.gitignore' file do for Unity projects?",opts:["Tracks all files","Specifies files/folders Git should NOT track—Library, Temp, and Build folders are large, generated, and should be excluded","Encrypts the project","Compresses the repository"],ans:1,exp:"A <strong>.gitignore</strong> file lists paths excluded from version control. For Unity, Library/, Temp/, Builds/, and .DS_Store are excluded—they're generated locally and would bloat the repo."},
+{topic:"UI",q:"What is the purpose of the CanvasScaler component?",opts:["Playing canvas animations","Controlling how the Canvas and its children scale for different screen resolutions and DPI settings","Managing event routing","Setting Canvas render order"],ans:1,exp:"<strong>Canvas Scaler</strong> handles UI scaling for different screen sizes and DPIs, with modes: Constant Pixel Size, Scale with Screen Size (recommended for responsive UI), and Constant Physical Size."},
+{topic:"Physics",q:"What is Ragdoll Physics?",opts:["A type of AI pathfinding","A physics-driven character simulation replacing animation—bones become independent Rigidbodies connected by joints for realistic 'ragdoll' collapse","A particle system effect","A type of soft body simulation"],ans:1,exp:"A <strong>Ragdoll</strong> connects character bones with Rigidbodies and joints so the character physically collapses under gravity and forces—used for death animations and physics interactions."},
+{topic:"Lighting",q:"What does 'Cookie' on a Light component do?",opts:["Applies a texture as a color to the light","Applies a texture mask to the light, creating shaped light patterns—like light through blinds or a spotlight gobo","Enables light bouncing","Changes shadow color"],ans:1,exp:"A <strong>Light Cookie</strong> is a texture mask that shapes the light's pattern—simulating complex light shapes like window light patterns, flashlight beams with imperfections, or theatrical gobos."},
+{topic:"Game Design",q:"What is 'Onboarding' in game design?",opts:["Saving player progress online","The process of introducing new players to the game's mechanics, controls, and concepts in a smooth, engaging way","The end-game content","Server configuration"],ans:1,exp:"<strong>Onboarding</strong> is the experience design for new players—teaching mechanics progressively, often through integrated tutorials and guided first-play experiences rather than a separate tutorial level."},
+{topic:"Programming",q:"What is a Delegate in C#?",opts:["A type of variable for storing GameObjects","A type-safe function pointer—a variable that holds a reference to a method and allows calling it indirectly","A type of interface","A Unity component"],ans:1,exp:"A <strong>Delegate</strong> is a type that represents references to methods with specific signatures. C# events (and Unity's UnityEvents) are built on delegates, enabling callback patterns."},
+{topic:"Navigation",q:"What does NavMesh.CalculatePath() do?",opts:["Bakes the NavMesh","Calculates a path between two points on the NavMesh without moving any agent, returning the result in a NavMeshPath struct","Removes an agent from the NavMesh","Updates agent speed"],ans:1,exp:"<strong>NavMesh.CalculatePath()</strong> computes a path between source and destination without agent movement—useful for AI to check path validity or pre-calculate routes before deciding to pursue."},
+{topic:"Materials",q:"What does 'Render Queue' control on a material?",opts:["The physics simulation order","The order in which objects are drawn by the renderer—lower values draw first, higher values draw on top","The number of shader passes","The light calculation order"],ans:1,exp:"<strong>Render Queue</strong> determines draw order: Geometry (2000), AlphaTest (2450), Transparent (3000), Overlay (4000). Transparent objects must render after opaque ones for correct blending."},
+{topic:"Industry",q:"What is 'Porting' in game development?",opts:["Adding multiplayer functionality","Adapting and rebuilding a game to run on a different platform than originally developed for","Designing the game's networking protocol","Compressing assets for distribution"],ans:1,exp:"<strong>Porting</strong> involves adapting a game from its original platform (e.g., PC) to a new one (e.g., console, mobile)—adjusting controls, performance, UI, and platform-specific APIs."},
+{topic:"Editor Interface",q:"What does the 'Snap' function do when moving GameObjects in the Scene view?",opts:["Takes a screenshot","Constrains movement to defined increments on the grid, ensuring precise placement","Animates the movement","Groups selected objects"],ans:1,exp:"Holding <strong>Ctrl</strong> (Cmd on Mac) while moving in the Scene view snaps the object to grid increment steps, ensuring precise, aligned placement."},
+{topic:"Animation",q:"What is 'Animation Compression' in Unity?",opts:["Reducing texture size for animated sprites","Reducing animation clip file size and memory by approximating curves with lossy keyframe reduction","Compressing the Animator Controller","Streaming animations from disk"],ans:1,exp:"<strong>Animation Compression</strong> (Optimal, Keyframe Reduction, etc.) reduces animation clip data size by approximating curve data with fewer keyframes at the cost of slight quality reduction."},
+{topic:"Physics",q:"What is Physics.OverlapSphere() used for?",opts:["Creating a spherical visual effect","Returning all Colliders within a sphere radius at a given point—used for area-of-effect checks without a continuous collider","Moving objects in a sphere path","Setting gravitational range"],ans:1,exp:"<strong>Physics.OverlapSphere(center, radius)</strong> returns all Colliders overlapping a sphere—perfect for explosion radius checks, proximity detection, and AOE ability targeting."},
+{topic:"Programming",q:"What does the abstract keyword do on a class in C#?",opts:["Makes the class final and unextendable","Prevents the class from being instantiated directly—it can only be used as a base class that derived classes extend","Makes all methods public","Enables multiple inheritance"],ans:1,exp:"An <strong>abstract class</strong> cannot be instantiated. It defines a common interface/behavior that derived classes must implement via override. MonoBehaviour itself is effectively used this way."},
+{topic:"Game Design",q:"What is 'Narrative Design' in games?",opts:["Writing the game's source code","Designing the story, dialogue systems, world-building, and how narrative is delivered through gameplay","Designing the game's physics","Creating UI layouts"],ans:1,exp:"<strong>Narrative Design</strong> encompasses writing, dialogue tree design, world-building, lore integration, and designing how story is experienced through gameplay interactions rather than just cutscenes."},
+{topic:"Asset Management",q:"What is the purpose of the 'Streaming Assets' folder in Unity?",opts:["Streaming audio only","Assets placed here are included in builds as-is without processing, accessible via a file path—useful for externally loaded files","For multiplayer streaming","For large texture streaming"],ans:1,exp:"The <strong>StreamingAssets</strong> folder places files directly into the build output unchanged. They're accessible at runtime via <code>Application.streamingAssetsPath</code>—useful for raw data files, videos, or external configs."},
+{topic:"Lighting",q:"What is Screen Space Ambient Occlusion (SSAO)?",opts:["A type of screen recording","A post-process technique approximating ambient occlusion in screen space—adding contact shadows without baking","A real-time global illumination method","A shadow map technique"],ans:1,exp:"<strong>SSAO</strong> computes ambient occlusion per-frame in screen space using depth and normal buffers—adding soft shadows in concave areas dynamically, though less accurate than baked AO."},
+{topic:"UI",q:"What is 'Unity UI Toolkit' (UI Builder)?",opts:["The old IMGUI system","A newer UI framework using UXML and USS (HTML/CSS-like) for creating UI declaratively, used for Editor tools and runtime UI","The Animator for UI","A particle system for UI"],ans:1,exp:"<strong>UI Toolkit</strong> is Unity's newer UI system using UXML (markup) and USS (styling) similar to web development, alongside a visual UI Builder editor—replacing IMGUI for editor extensions."},
+{topic:"Programming",q:"What does SceneManager.LoadSceneAsync() do versus LoadScene()?",opts:["They are identical","LoadSceneAsync loads the scene in the background without blocking the main thread, allowing a loading screen to display progress","LoadSceneAsync is slower","LoadScene is asynchronous"],ans:1,exp:"<strong>LoadSceneAsync()</strong> loads the scene asynchronously, returning an AsyncOperation whose progress (0-1) you can monitor to display a loading bar while the main thread continues running."},
+{topic:"Game Art",q:"What is a 'Tiling texture' in 3D environments?",opts:["A texture applied to UI tiles","A texture designed to repeat seamlessly across surfaces—matching edges allow the pattern to tile without visible seams","A texture atlas for sprites","A texture with transparent borders"],ans:1,exp:"A <strong>tiling/seamless texture</strong> is designed so its edges match perfectly, allowing it to repeat across large surfaces (ground, walls) without visible seam artifacts."},
+{topic:"Industry",q:"What is 'Early Access' in game distribution?",opts:["A free demo version","Releasing an unfinished game to paying customers who can play, provide feedback, and follow development to completion","A beta test for press only","A subscription service"],ans:1,exp:"<strong>Early Access</strong> (popularized by Steam) lets studios release unfinished games for purchase, generating revenue and player feedback during development before the full 1.0 release."},
+{topic:"Audio",q:"What is an Audio Bus in the context of an Audio Mixer?",opts:["A physical audio cable","A group/channel in the Audio Mixer that routes audio signals—allowing shared effects, volume control, and sends across multiple sources","A type of Audio Clip","An audio compression algorithm"],ans:1,exp:"In Unity's <strong>Audio Mixer</strong>, a <strong>Group (Bus)</strong> is a routing channel. Multiple Audio Sources can send to the same group, where shared effects and volume adjustments apply to all of them."},
+{topic:"Programming",q:"What does 'DontDestroyOnLoad' do?",opts:["Prevents the script from being deleted","Marks a GameObject to persist through scene loads—it is not destroyed when a new scene is loaded","Makes a GameObject immovable","Prevents the GameObject from being disabled"],ans:1,exp:"<strong>DontDestroyOnLoad(gameObject)</strong> marks a GameObject to survive scene transitions, useful for persistent managers (GameManager, AudioManager) that should exist across all scenes."},
+{topic:"Project Management",q:"What is the purpose of the 'Optimization' phase before release?",opts:["Adding more features","Identifying and resolving performance bottlenecks to ensure the game runs at target frame rate on minimum spec hardware","Designing the marketing campaign","Writing the game's story"],ans:1,exp:"<strong>Optimization</strong> involves profiling the game to find CPU/GPU bottlenecks (draw calls, physics, scripts) and addressing them—ensuring the game meets performance targets across supported hardware."},
+{topic:"Materials",q:"What does 'Double Sided' rendering on a material do?",opts:["Renders two copies of the object","Renders both the front and back faces of polygons—preventing see-through on thin objects like leaves","Doubles the material's performance cost","Applies different textures to front and back"],ans:1,exp:"<strong>Double Sided</strong> (or disabling Cull in shader settings) renders both the front face and back face of polygons. By default, Unity culls back faces for performance."},
+{topic:"Game Design",q:"What is 'Checkpoint' design in level design?",opts:["A checkpoint for performance profiling","Strategically placed save/respawn points in a level that reduce frustration by preventing players from replaying large sections on death","A mandatory tutorial section","A collectible item"],ans:1,exp:"<strong>Checkpoints</strong> are respawn markers placed after challenging sections. They balance challenge and frustration, allowing players to retry difficult areas without losing excessive progress."},
+{topic:"Editor Interface",q:"What does 'Maximize on Play' in the Game view do?",opts:["Increases the game's resolution","Expands the Game view to fill the entire Editor window during Play Mode for better preview","Forces fullscreen build","Increases physics quality during play"],ans:1,exp:"<strong>Maximize on Play</strong> expands the Game view to fill the entire Editor window when entering Play Mode, giving a cleaner, larger view of the game for testing."},
+// Final batch
+{topic:"Programming",q:"What is the correct syntax to access a component on a child GameObject?",opts:["GetChild().GetComponent<T>()","transform.GetChild(index).GetComponent<T>()","child.Find().GetComponent<T>()","FindChild<T>()"],ans:1,exp:"<strong>transform.GetChild(index)</strong> returns the child Transform at the specified index. Chaining <code>.GetComponent<T>()</code> then retrieves the desired component from that child."},
+{topic:"Navigation",q:"What is the 'Area' system in NavMesh used for?",opts:["Naming regions of the scene","Defining different traversal costs for NavMesh regions (e.g., water is more costly than road), allowing agents to prefer certain paths","Coloring the NavMesh in the editor","Defining spawn zones"],ans:1,exp:"<strong>NavMesh Areas</strong> assign traversal costs to different surface types. Agents calculate paths considering cost—a high-cost area is avoided unless it significantly shortens the route."},
+{topic:"UI",q:"What does the Selectable component (base of Button, Toggle, Slider) provide?",opts:["Audio playback","Navigation and interaction state management—Normal, Highlighted, Pressed, Disabled—and keyboard/controller UI navigation","Canvas rendering","Layout calculation"],ans:1,exp:"<strong>Selectable</strong> is the base class for interactive UI, providing visual state management (Normal/Highlighted/Pressed/Disabled) and explicit navigation for controller/keyboard UI traversal."},
+{topic:"Physics",q:"What does `Physics.Linecast(start, end)` do?",opts:["Draws a debug line","Fires a ray from start to end and returns true if any Collider is hit between those two points","Creates a physics joint","Moves an object along a line"],ans:1,exp:"<strong>Physics.Linecast()</strong> is similar to Raycast but defined by two explicit points (start and end) rather than origin + direction + distance—convenient for checking clear lines of sight between two objects."},
+{topic:"Game Art",q:"What is 'Vertex Color' in 3D modeling and its use in games?",opts:["The color of wireframe edges","Color data stored per-vertex in the mesh, usable in shaders for effects, texture blending, or optimization without extra textures","The UV coordinate color","The material diffuse color"],ans:1,exp:"<strong>Vertex Colors</strong> are RGBA values stored per vertex. In Unity shaders, they can drive texture blending (terrain painting), ambient occlusion approximation, or special visual effects without needing extra texture channels."},
+{topic:"Industry",q:"What is 'Playtesting' and why is it important?",opts:["A type of code review","Having real players test the game to gather usability and fun feedback—revealing issues developers miss due to familiarity with their own game","A performance benchmark","A type of unit test"],ans:1,exp:"<strong>Playtesting</strong> observes real players experiencing the game cold, revealing UI confusion, difficulty spikes, pacing issues, and mechanics that aren't intuitive—information internal teams cannot easily perceive."},
+{topic:"Animation",q:"What is the 'Transition Offset' parameter in an Animator transition?",opts:["How long after entering the transition the condition is re-evaluated","The normalized time in the destination clip where the transition begins playback","The blend weight offset","The parameter offset"],ans:1,exp:"<strong>Transition Offset</strong> sets where in the destination animation clip playback begins (0=start, 0.5=halfway through). Useful for starting mid-clip to sync with the source animation."},
+{topic:"Programming",q:"What is meant by 'coupling' in software design?",opts:["A physics joint type","The degree of direct dependency between software modules—low coupling is preferred for maintainability","A type of coroutine","A rendering technique"],ans:1,exp:"<strong>Coupling</strong> describes how dependent modules are on each other. <strong>Low coupling</strong> (modules communicate through interfaces/events) is preferable as changes to one module don't cascade to others."},
+{topic:"Asset Management",q:"What is the purpose of 'Tags' on Unity Assets (not GameObjects)?",opts:["Identifying assets for destruction","Categorizing assets in the Package Manager or Asset Store—not the same as GameObject Tags","Grouping sprites for animation","Marking assets for build inclusion"],ans:1,exp:"In the <strong>Package Manager and Asset Store</strong>, asset tags categorize packages for search and filtering. Note: these are different from Unity's GameObject Tag system used for runtime identification."},
+{topic:"Lighting",q:"What is 'Volumetric Lighting'?",opts:["Lighting inside 3D volumes only","Simulating visible light shafts, god rays, and atmospheric scattering—light scattering through participating media like fog, smoke, or dust","A type of baked GI","Point light with a volume collider"],ans:1,exp:"<strong>Volumetric Lighting</strong> simulates how light scatters through atmospheres, creating visible light shafts (crepuscular rays), foggy halos around lights, and atmospheric depth—available in Unity's HDRP."},
+{topic:"UI",q:"What event is called on a UI Button when the pointer enters its rect?",opts:["OnClick","OnPointerDown","OnPointerEnter","OnValueChanged"],ans:2,exp:"<strong>OnPointerEnter</strong> (IPointerEnterHandler interface) fires when the cursor enters the UI element's rect—used for hover effects and tooltips."},
+{topic:"Game Design",q:"What is 'Ludonarrative Dissonance'?",opts:["A type of sound design technique","A conflict between the game's narrative message and its gameplay mechanics (e.g., a story about pacifism requiring mass killing to progress)","A narrative pacing term","A genre classification"],ans:1,exp:"<strong>Ludonarrative Dissonance</strong> occurs when gameplay mechanics contradict the story's themes or character traits—a conflict between the 'ludo' (game) and 'narrative' layers."},
+{topic:"Physics",q:"What is 'Interpolation' on a Rigidbody used for?",opts:["Smoothing animation curves","Smoothing visual rendering of physics objects between fixed physics timesteps, reducing jitter on fast-moving objects","Interpolating colors","Computing velocity averages"],ans:1,exp:"<strong>Rigidbody Interpolation</strong> smooths the visual position/rotation between fixed physics timesteps—preventing jitter on fast-moving physics objects when the render rate exceeds the physics rate."},
+{topic:"Programming",q:"What is a 'property' in C#?",opts:["A field with no access modifier","A member that provides controlled access to a field via get/set accessors, enabling validation and encapsulation","A type of attribute","A static method"],ans:1,exp:"A <strong>property</strong> (e.g., <code>public int Health { get; set; }</code>) provides encapsulated access to data, allowing validation in setters, computed getters, or read-only/write-only access control."},
+{topic:"Navigation",q:"Which component should be used for obstacles that need to dynamically block a NavMesh at runtime?",opts:["NavMesh Agent","NavMesh Obstacle with Carve enabled","NavMesh Link","NavMesh Area"],ans:1,exp:"<strong>NavMesh Obstacle</strong> with <strong>Carve enabled</strong> dynamically cuts a hole in the NavMesh around the object, rerouting agent paths in real time as the obstacle moves."},
+];
+
+// ===================== STATE =====================
+let mode = 'exam';
+let currentQ = 0;
+let answered = false;
+let score = { correct: 0, wrong: 0, skip: 0 };
+let topicScore = {};
+let sessionQuestions = [];
+let answers = [];
+let fcIndex = 0;
+
+// ===================== TOPIC NAV BUILD =====================
+function buildTopicNav() {
+  const nav = document.getElementById('topic-nav');
+  const topicSelect = document.getElementById('topic-select');
+  const topics = [...new Set(ALL_QUESTIONS.map(q => q.topic))];
+  const sections = {};
+  topics.forEach(t => {
+    const count = ALL_QUESTIONS.filter(q => q.topic === t).length;
+    const div = document.createElement('div');
+    div.className = 'nav-item';
+    div.textContent = `${t} (${count})`;
+    div.onclick = () => {
+      document.getElementById('topic-select').value = t;
+      selectMode(document.querySelector('[data-mode="topic"]'), 'topic');
+      document.getElementById('topic-nav').classList.remove('open');
+      startExam();
+    };
+    nav.appendChild(div);
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = `${t} (${count})`;
+    topicSelect.appendChild(opt);
+  });
+}
+
+document.getElementById('nav-toggle').addEventListener('click', () => {
+  document.getElementById('topic-nav').classList.toggle('open');
+});
+
+function selectMode(el, m) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  mode = m;
+  const ts = document.getElementById('topic-select');
+  ts.style.display = (m === 'topic') ? 'block' : 'none';
+}
+
+// ===================== EXAM START =====================
+function startExam() {
+  score = { correct: 0, wrong: 0, skip: 0 };
+  answers = [];
+  currentQ = 0;
+  answered = false;
+  topicScore = {};
+
+  if (mode === 'exam') {
+    sessionQuestions = [...ALL_QUESTIONS];
+  } else if (mode === 'random') {
+    const shuffled = [...ALL_QUESTIONS].sort(() => Math.random() - 0.5);
+    sessionQuestions = shuffled.slice(0, 50);
+  } else if (mode === 'topic') {
+    const sel = document.getElementById('topic-select').value;
+    sessionQuestions = ALL_QUESTIONS.filter(q => q.topic === sel);
+    if (sessionQuestions.length === 0) sessionQuestions = [...ALL_QUESTIONS];
+  } else if (mode === 'flash') {
+    sessionQuestions = [...ALL_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 60);
+    startFlash();
+    return;
+  }
+
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('exam-screen').style.display = 'block';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('header-stats').style.display = 'flex';
+  renderQuestion();
+}
+
+// ===================== FLASH CARDS =====================
+function startFlash() {
+  fcIndex = 0;
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('exam-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('flash-screen').style.display = 'block';
+  renderFlash();
+}
+
+function renderFlash() {
+  const q = sessionQuestions[fcIndex];
+  document.getElementById('fc-front').textContent = q.q;
+  document.getElementById('fc-back').innerHTML = `<strong>${q.opts[q.ans]}</strong><br><br><small style="color:var(--muted)">${q.exp}</small>`;
+  document.getElementById('fc-counter').textContent = `${fcIndex + 1} / ${sessionQuestions.length} — ${q.topic}`;
+  document.getElementById('flashcard').classList.remove('flipped');
+}
+
+function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function fcNext() { if (fcIndex < sessionQuestions.length - 1) { fcIndex++; renderFlash(); } }
+function fcPrev() { if (fcIndex > 0) { fcIndex--; renderFlash(); } }
+
+// ===================== RENDER QUESTION =====================
+function renderQuestion() {
+  const q = sessionQuestions[currentQ];
+  const total = sessionQuestions.length;
+  answered = false;
+
+  document.getElementById('progress-bar').style.width = `${(currentQ / total) * 100}%`;
+  document.getElementById('q-num').textContent = `Q${currentQ + 1} / ${total}`;
+  document.getElementById('q-topic').textContent = q.topic;
+  document.getElementById('q-text').textContent = q.q;
+
+  const codeEl = document.getElementById('q-code');
+  if (q.code) { codeEl.style.display = 'block'; codeEl.textContent = q.code; }
+  else { codeEl.style.display = 'none'; }
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<div class="opt-letter">${letters[i]}</div><div>${opt}</div>`;
+    div.addEventListener('click', () => selectAnswer(i));
+    opts.appendChild(div);
+  });
+
+  document.getElementById('explanation').className = 'explanation';
+  document.getElementById('explanation').innerHTML = '';
+  document.getElementById('btn-next').style.display = 'none';
+  document.getElementById('btn-skip').style.display = 'inline-block';
+  updateHeader();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = sessionQuestions[currentQ];
+  const opts = document.querySelectorAll('.option');
+  opts.forEach(o => o.classList.add('disabled'));
+
+  if (!topicScore[q.topic]) topicScore[q.topic] = { c: 0, t: 0 };
+  topicScore[q.topic].t++;
+
+  if (idx === q.ans) {
+    opts[idx].classList.add('correct');
+    score.correct++;
+    topicScore[q.topic].c++;
+    answers.push({ q: q.q, userAns: q.opts[idx], correct: q.opts[q.ans], ok: true, topic: q.topic });
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.ans].classList.add('correct');
+    score.wrong++;
+    answers.push({ q: q.q, userAns: q.opts[idx], correct: q.opts[q.ans], ok: false, topic: q.topic });
+  }
+
+  const exp = document.getElementById('explanation');
+  exp.innerHTML = `<strong>💡 Explanation:</strong> ${q.exp}`;
+  exp.classList.add('show');
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-skip').style.display = 'none';
+  updateHeader();
+}
+
+function skipQuestion() {
+  score.skip++;
+  answers.push({ q: sessionQuestions[currentQ].q, userAns: '—', correct: sessionQuestions[currentQ].opts[sessionQuestions[currentQ].ans], ok: false, topic: sessionQuestions[currentQ].topic, skipped: true });
+  if (!topicScore[sessionQuestions[currentQ].topic]) topicScore[sessionQuestions[currentQ].topic] = { c: 0, t: 0 };
+  topicScore[sessionQuestions[currentQ].topic].t++;
+  nextQuestion();
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= sessionQuestions.length) { showResults(); return; }
+  renderQuestion();
+}
+
+function updateHeader() {
+  const total = score.correct + score.wrong + score.skip;
+  const pct = total > 0 ? Math.round((score.correct / total) * 100) : 0;
+  document.getElementById('h-total').textContent = total;
+  document.getElementById('h-correct').textContent = score.correct;
+  document.getElementById('h-wrong').textContent = score.wrong;
+  document.getElementById('h-pct').textContent = pct + '%';
+}
+
+// ===================== RESULTS =====================
+function showResults() {
+  document.getElementById('exam-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+  const total = score.correct + score.wrong + score.skip;
+  const pct = total > 0 ? Math.round((score.correct / total) * 100) : 0;
+  document.getElementById('r-pct').textContent = pct + '%';
+  document.getElementById('r-correct').textContent = score.correct;
+  document.getElementById('r-wrong').textContent = score.wrong;
+  document.getElementById('r-skip').textContent = score.skip;
+
+  const badge = document.getElementById('pass-badge');
+  if (pct >= 70) { badge.textContent = '✓ PASS'; badge.className = 'pass-badge pass'; }
+  else { badge.textContent = '✗ NEEDS IMPROVEMENT'; badge.className = 'pass-badge fail'; }
+
+  const bars = document.getElementById('topic-bars');
+  bars.innerHTML = '';
+  Object.keys(topicScore).forEach(topic => {
+    const d = topicScore[topic];
+    const p = d.t > 0 ? Math.round((d.c / d.t) * 100) : 0;
+    bars.innerHTML += `<div class="topic-row">
+      <div class="topic-name">${topic}</div>
+      <div class="topic-bar-bg"><div class="topic-bar" style="width:${p}%;background:${p>=70?'var(--correct)':p>=50?'var(--gold)':'var(--wrong)'}"></div></div>
+      <div class="topic-pct">${p}%</div>
+    </div>`;
+  });
+
+  const reviewList = document.getElementById('review-list');
+  reviewList.innerHTML = '<h3 style="margin-bottom:16px;font-size:14px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Question Review</h3>';
+  answers.slice(0, 100).forEach((a, i) => {
+    const cls = a.ok ? 'ok' : 'bad';
+    const icon = a.ok ? '✓' : (a.skipped ? '→' : '✗');
+    reviewList.innerHTML += `<div class="review-item ${cls}">
+      <div class="review-q">${i+1}. ${a.q}</div>
+      <div class="review-detail">Your answer: <span class="${a.ok ? 'review-correct' : 'review-wrong'}">${a.userAns}</span> &nbsp;|&nbsp; Correct: <span class="review-correct">${a.correct}</span></div>
+    </div>`;
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function quitExam() {
+  if (answers.length > 0) { showResults(); return; }
+  goHome();
+}
+
+function goHome() {
+  document.getElementById('hero').style.display = 'flex';
+  document.getElementById('exam-screen').style.display = 'none';
+  document.getElementById('flash-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('header-stats').style.display = 'none';
+  document.getElementById('topic-nav').classList.remove('open');
+}
+
+function restartExam() {
+  document.getElementById('results-screen').style.display = 'none';
+  startExam();
+}
+
+// Scroll-to-top
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scroll-top');
+  btn.classList.toggle('show', window.scrollY > 400);
+});
+
+// Init
+document.getElementById('q-count-display').textContent = ALL_QUESTIONS.length;
+buildTopicNav();
+</script>
+</body>
+</html>

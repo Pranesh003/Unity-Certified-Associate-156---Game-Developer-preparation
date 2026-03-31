@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCA-156 Advanced Set 2 — Deep Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080a;--surf:#0f1117;--card:#151a23;--brd:#1e2530;
+  --acc:#ff6b35;--acc2:#a855f7;--ok:#10b981;--err:#f43f5e;
+  --txt:#dde4ef;--mut:#6b7a90;--gold:#fbbf24;--info:#38bdf8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(168,85,247,0.08),transparent);pointer-events:none;z-index:0}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:200;background:rgba(7,8,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--brd);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:12px}
+.logo-pill{background:linear-gradient(135deg,var(--acc2),var(--acc));padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:3px;color:#fff;font-family:'Fira Code',monospace;white-space:nowrap}
+.hstats{display:flex;gap:16px;font-family:'Fira Code',monospace;font-size:11px}
+.hs{display:flex;flex-direction:column;align-items:center}
+.hs-v{font-size:15px;font-weight:700}
+.hs-l{color:var(--mut);font-size:9px;letter-spacing:1px}
+.hamburger{background:none;border:1px solid var(--brd);color:var(--txt);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:11px}
+
+/* HERO */
+#hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 58px);padding:40px 20px;text-align:center}
+.set-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.3);padding:8px 20px;border-radius:30px;margin-bottom:28px;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--acc);text-transform:uppercase;font-family:'Fira Code',monospace}
+h1{font-size:clamp(28px,5.5vw,66px);font-weight:700;line-height:1.08;margin-bottom:14px}
+h1 span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{color:var(--mut);font-size:15px;max-width:560px;line-height:1.7;margin-bottom:36px}
+.chips{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:36px}
+.chip{background:var(--card);border:1px solid var(--brd);padding:14px 22px;border-radius:12px;font-family:'Fira Code',monospace;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.chip b{font-size:26px;font-weight:700;color:var(--acc)}
+.chip span{color:var(--mut);letter-spacing:1px}
+
+/* DIFFICULTY TAGS */
+.diff-row{display:flex;gap:10px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+.diff-tag{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;font-family:'Fira Code',monospace;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.diff-tag.easy{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:var(--ok)}
+.diff-tag.medium{background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.3);color:var(--gold)}
+.diff-tag.hard{background:rgba(244,63,94,0.1);border-color:rgba(244,63,94,0.3);color:var(--err)}
+.diff-tag.active{border-color:currentColor;background:rgba(255,255,255,0.08)}
+
+.mode-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;max-width:720px;width:100%;margin-bottom:28px}
+.mcard{background:var(--card);border:2px solid var(--brd);border-radius:14px;padding:20px 16px;cursor:pointer;transition:all .2s;text-align:left}
+.mcard:hover,.mcard.sel{border-color:var(--acc);background:rgba(255,107,53,0.05)}
+.mcard-icon{font-size:26px;margin-bottom:8px}
+.mcard-title{font-weight:700;font-size:14px;margin-bottom:3px}
+.mcard-desc{color:var(--mut);font-size:11px;line-height:1.4}
+
+.topic-sel{width:100%;max-width:720px;margin-bottom:20px;background:var(--card);border:1px solid var(--brd);color:var(--txt);padding:11px 14px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:14px;appearance:none}
+.start-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;padding:15px 44px;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .2s;text-transform:uppercase}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,107,53,0.35)}
+
+/* EXAM SCREEN */
+#exam-screen{display:none;position:relative;z-index:1;max-width:880px;margin:0 auto;padding:20px 16px}
+.prog-wrap{background:var(--brd);height:3px;border-radius:3px;margin-bottom:20px}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .4s}
+.qmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:'Fira Code',monospace;font-size:11px;flex-wrap:wrap;gap:6px}
+.qnum{color:var(--acc);font-weight:700;font-size:13px}
+.qmeta-right{display:flex;gap:8px;align-items:center}
+.qtopic{background:var(--card);border:1px solid var(--brd);padding:3px 10px;border-radius:5px;color:var(--mut)}
+.qdiff{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:1px}
+.qdiff.easy{background:rgba(16,185,129,0.15);color:var(--ok)}
+.qdiff.medium{background:rgba(251,191,36,0.15);color:var(--gold)}
+.qdiff.hard{background:rgba(244,63,94,0.15);color:var(--err)}
+
+.qcard{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:28px;margin-bottom:16px}
+.qtext{font-size:16px;line-height:1.7;font-weight:600;margin-bottom:6px}
+.qsub{font-size:13px;color:var(--mut);margin-bottom:20px;line-height:1.5}
+.qcode{background:#060810;border:1px solid var(--brd);border-radius:8px;padding:16px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.65;margin-bottom:20px;color:#a9d1ff;white-space:pre;overflow-x:auto;border-left:3px solid var(--acc2)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--surf);border:2px solid var(--brd);border-radius:11px;padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:all .15s;font-size:13.5px;line-height:1.5}
+.opt:hover:not(.dis){border-color:var(--acc);background:rgba(255,107,53,0.06)}
+.opt.ok{border-color:var(--ok);background:rgba(16,185,129,0.08)}
+.opt.bad{border-color:var(--err);background:rgba(244,63,94,0.08)}
+.opt.dis{cursor:not-allowed}
+.ol{width:26px;height:26px;border-radius:50%;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:11px;font-weight:700;flex-shrink:0;transition:all .15s}
+.opt.ok .ol{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.bad .ol{background:var(--err);border-color:var(--err);color:#fff}
+
+.exp-box{background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:11px;padding:18px;margin-top:16px;font-size:13px;line-height:1.7;display:none}
+.exp-box.show{display:block}
+.exp-box .exp-title{color:var(--info);font-weight:700;margin-bottom:8px;font-family:'Fira Code',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+.exp-code{background:#060810;border:1px solid var(--brd);border-radius:6px;padding:10px;font-family:'Fira Code',monospace;font-size:11.5px;margin-top:10px;color:#a9d1ff;white-space:pre;overflow-x:auto}
+
+.btn-row{display:flex;gap:10px;margin-top:16px;justify-content:flex-end;flex-wrap:wrap}
+.btn{padding:11px 24px;border-radius:9px;border:none;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-next{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(255,107,53,0.3)}
+.btn-skip{background:var(--surf);color:var(--mut);border:1px solid var(--brd)}
+.btn-quit{background:var(--surf);color:var(--err);border:1px solid var(--brd)}
+.btn-flag{background:var(--surf);color:var(--gold);border:1px solid rgba(251,191,36,0.3)}
+.flagged-indicator{color:var(--gold);font-size:11px;font-family:'Fira Code',monospace;align-self:center}
+
+/* RESULTS */
+#results-screen{display:none;position:relative;z-index:1;max-width:820px;margin:0 auto;padding:40px 20px;text-align:center}
+.score-ring{width:150px;height:150px;border-radius:50%;margin:0 auto 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.score-ring::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--acc) var(--pct,0%),var(--brd) 0);border:none}
+.score-ring::after{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--bg)}
+.score-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
+.score-pct{font-size:38px;font-weight:700;color:var(--acc)}
+.score-lbl{font-size:10px;color:var(--mut);letter-spacing:2px}
+.pass-badge{display:inline-block;padding:9px 28px;border-radius:28px;font-weight:700;font-size:17px;letter-spacing:2px;margin-bottom:20px;font-family:'Fira Code',monospace}
+.pass{background:rgba(16,185,129,0.12);border:2px solid var(--ok);color:var(--ok)}
+.fail{background:rgba(244,63,94,0.12);border:2px solid var(--err);color:var(--err)}
+.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}
+.rc{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:18px 8px}
+.rc-v{font-size:28px;font-weight:700;margin-bottom:3px}
+.rc-l{color:var(--mut);font-size:10px;letter-spacing:1px}
+.domain-section{text-align:left;margin:28px 0}
+.domain-title{font-size:11px;color:var(--mut);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;font-family:'Fira Code',monospace}
+.drow{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px}
+.dname{width:175px;flex-shrink:0;color:var(--mut);font-size:11px}
+.dbar-bg{flex:1;background:var(--brd);border-radius:3px;height:7px}
+.dbar{height:100%;border-radius:3px}
+.dpct{width:36px;text-align:right;font-family:'Fira Code',monospace;font-size:11px}
+.review-section{text-align:left;margin-top:28px}
+.rev-item{background:var(--card);border:1px solid var(--brd);border-radius:9px;padding:14px;margin-bottom:10px;font-size:12px}
+.rev-item.ok{border-left:3px solid var(--ok)}
+.rev-item.bad{border-left:3px solid var(--err)}
+.rev-item.skp{border-left:3px solid var(--gold)}
+.rev-q{font-weight:600;margin-bottom:6px;font-size:13px;line-height:1.4}
+.rev-d{color:var(--mut);font-size:11px;line-height:1.5}
+.rev-ok{color:var(--ok);font-weight:700}
+.rev-bad{color:var(--err);font-weight:700}
+.flagged-list{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:16px;margin-bottom:20px;text-align:left}
+.flagged-list h4{color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Fira Code',monospace;margin-bottom:10px}
+
+/* NAV DRAWER */
+#side-nav{position:fixed;left:0;top:58px;bottom:0;width:230px;background:var(--surf);border-right:1px solid var(--brd);overflow-y:auto;z-index:150;transform:translateX(-100%);transition:transform .3s;padding:12px}
+#side-nav.open{transform:translateX(0)}
+.nav-t{font-size:9px;color:var(--mut);letter-spacing:2px;text-transform:uppercase;margin:12px 4px 6px;font-family:'Fira Code',monospace}
+.nav-i{padding:8px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .15s;color:var(--mut);display:flex;justify-content:space-between;align-items:center}
+.nav-i:hover{background:var(--card);color:var(--txt)}
+.nav-i .nav-cnt{background:var(--card);border:1px solid var(--brd);padding:1px 7px;border-radius:10px;font-family:'Fira Code',monospace;font-size:10px}
+
+/* SCROLL TOP */
+.scroll-top{position:fixed;bottom:20px;right:20px;z-index:300;background:var(--acc);color:var(--bg);width:42px;height:42px;border-radius:50%;border:none;font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,107,53,0.4)}
+.scroll-top.show{display:flex}
+
+/* FLASH */
+#flash-screen{display:none;position:relative;z-index:1;padding:32px 20px;max-width:680px;margin:0 auto;text-align:center}
+.fc-wrap{perspective:1000px;width:100%;height:260px;cursor:pointer;margin-bottom:20px}
+.fc-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s}
+.fc-wrap.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-side{position:absolute;inset:0;background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden}
+.fc-back{transform:rotateY(180deg);background:rgba(255,107,53,0.05);border-color:var(--acc)}
+.fc-hint{font-size:10px;color:var(--mut);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-family:'Fira Code',monospace}
+.fc-text{font-size:15px;line-height:1.65;font-weight:600}
+.fc-diff{font-size:10px;margin-top:8px;font-family:'Fira Code',monospace;letter-spacing:1px}
+
+@media(max-width:600px){
+  .res-grid{grid-template-columns:repeat(2,1fr)}
+  .dname{width:110px;font-size:10px}
+  .mode-row{grid-template-columns:1fr 1fr}
+  .chips{gap:8px}
+  .chip b{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="hamburger" id="nav-toggle">☰ TOPICS</button>
+    <div class="logo-pill">UCA-156 · SET 2</div>
+  </div>
+  <div class="hstats" id="hstats" style="display:none">
+    <div class="hs"><div class="hs-v" style="color:var(--acc)" id="h-q">0</div><div class="hs-l">DONE</div></div>
+    <div class="hs"><div class="hs-v" style="color:var(--ok)" id="h-c">0</div><div class="hs-l">CORRECT</div></div>
+    <div class="hs"><div class="hs-v" style="color:var(--err)" id="h-w">0</div><div class="hs-l">WRONG</div></div>
+    <div class="hs"><div class="hs-v" style="color:var(--gold)" id="h-f">0</div><div class="hs-l">FLAGGED</div></div>
+    <div class="hs"><div class="hs-v" id="h-p" style="color:var(--acc2)">—</div><div class="hs-l">SCORE</div></div>
+  </div>
+</header>
+
+<nav id="side-nav"></nav>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="set-badge">🔬 Advanced Set · 530+ Deep Concept Questions</div>
+  <h1>UCA-156 <span>Advanced</span><br>Question Bank</h1>
+  <p class="hero-desc">Scenario-based, code-level, and conceptually deep questions. Covers every sub-topic with tricky distractors mirroring real Pearson VUE question style.</p>
+  <div class="chips">
+    <div class="chip"><b id="total-count">530</b><span>QUESTIONS</span></div>
+    <div class="chip"><b>16</b><span>DOMAINS</span></div>
+    <div class="chip"><b>3</b><span>DIFFICULTY LEVELS</span></div>
+    <div class="chip"><b>70%</b><span>PASS THRESHOLD</span></div>
+  </div>
+  <div class="diff-row">
+    <div class="diff-tag easy active" onclick="toggleDiff(this,'easy')">🟢 EASY</div>
+    <div class="diff-tag medium active" onclick="toggleDiff(this,'medium')">🟡 MEDIUM</div>
+    <div class="diff-tag hard active" onclick="toggleDiff(this,'hard')">🔴 HARD</div>
+  </div>
+  <div class="mode-row">
+    <div class="mcard sel" data-mode="exam" onclick="selMode(this,'exam')"><div class="mcard-icon">📋</div><div class="mcard-title">Full Exam</div><div class="mcard-desc">All questions in domain order. Simulate real exam conditions.</div></div>
+    <div class="mcard" data-mode="random" onclick="selMode(this,'random')"><div class="mcard-icon">🎲</div><div class="mcard-title">Random 60</div><div class="mcard-desc">60 random questions mixing all difficulties and topics.</div></div>
+    <div class="mcard" data-mode="hard" onclick="selMode(this,'hard')"><div class="mcard-icon">🔥</div><div class="mcard-title">Hard Only</div><div class="mcard-desc">Only the hardest questions — code scenarios and deep concepts.</div></div>
+    <div class="mcard" data-mode="topic" onclick="selMode(this,'topic')"><div class="mcard-icon">🎯</div><div class="mcard-title">Topic Drill</div><div class="mcard-desc">Focus on one specific domain.</div></div>
+    <div class="mcard" data-mode="flash" onclick="selMode(this,'flash')"><div class="mcard-icon">⚡</div><div class="mcard-title">Flashcards</div><div class="mcard-desc">Quick concept cards with difficulty labels.</div></div>
+    <div class="mcard" data-mode="weak" onclick="selMode(this,'weak')"><div class="mcard-icon">🩺</div><div class="mcard-title">Weak Areas</div><div class="mcard-desc">After one session — re-test only your wrong answers.</div></div>
+  </div>
+  <select class="topic-sel" id="topic-sel" style="display:none"></select>
+  <button class="start-btn" onclick="startExam()">START EXAM →</button>
+</div>
+
+<!-- EXAM -->
+<div id="exam-screen">
+  <div class="prog-wrap"><div class="prog-bar" id="prog"></div></div>
+  <div class="qmeta">
+    <span class="qnum" id="qnum">Q1</span>
+    <div class="qmeta-right">
+      <span class="qtopic" id="qtopic">Topic</span>
+      <span class="qdiff" id="qdiff">Medium</span>
+      <span class="flagged-indicator" id="flag-indicator" style="display:none">🚩 FLAGGED</span>
+    </div>
+  </div>
+  <div class="qcard">
+    <div class="qtext" id="qtext"></div>
+    <div class="qsub" id="qsub" style="display:none"></div>
+    <pre class="qcode" id="qcode" style="display:none"></pre>
+    <div class="opts" id="opts"></div>
+    <div class="exp-box" id="expbox">
+      <div class="exp-title">💡 Explanation</div>
+      <div id="exptext"></div>
+      <pre class="exp-code" id="expcode" style="display:none"></pre>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-quit" onclick="quitExam()">✕ Quit</button>
+    <button class="btn btn-flag" id="btn-flag" onclick="flagQuestion()">🚩 Flag</button>
+    <button class="btn btn-skip" id="btn-skip" onclick="skipQ()">Skip →</button>
+    <button class="btn btn-next" id="btn-next" onclick="nextQ()" style="display:none">Next →</button>
+  </div>
+</div>
+
+<!-- FLASHCARDS -->
+<div id="flash-screen">
+  <h2 style="font-size:15px;color:var(--mut);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;font-family:'Fira Code',monospace">⚡ FLASHCARD MODE — CLICK TO FLIP</h2>
+  <div class="fc-wrap" id="fcwrap" onclick="flipFC()">
+    <div class="fc-inner">
+      <div class="fc-side"><div class="fc-hint">QUESTION</div><div class="fc-text" id="fc-q"></div><div class="fc-diff" id="fc-diff"></div></div>
+      <div class="fc-side fc-back"><div class="fc-hint">✓ ANSWER</div><div class="fc-text" id="fc-a"></div></div>
+    </div>
+  </div>
+  <div style="font-family:'Fira Code',monospace;font-size:11px;color:var(--mut);margin-bottom:18px" id="fc-meta"></div>
+  <div style="display:flex;gap:10px;justify-content:center">
+    <button class="btn btn-skip" onclick="fcMove(-1)">← Prev</button>
+    <button class="btn btn-next" onclick="fcMove(1)">Next →</button>
+    <button class="btn btn-quit" onclick="goHome()">✕ Exit</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-screen">
+  <div class="score-ring" id="score-ring"><div class="score-inner"><div class="score-pct" id="r-pct">0%</div><div class="score-lbl">SCORE</div></div></div>
+  <div class="pass-badge" id="pass-badge">—</div>
+  <p style="color:var(--mut);font-size:13px;margin-bottom:6px">Pass threshold: <strong style="color:var(--txt)">70%</strong> &nbsp;|&nbsp; Real exam: 50 questions, 75 min</p>
+  <div class="res-grid">
+    <div class="rc"><div class="rc-v" style="color:var(--ok)" id="r-c">0</div><div class="rc-l">CORRECT</div></div>
+    <div class="rc"><div class="rc-v" style="color:var(--err)" id="r-w">0</div><div class="rc-l">WRONG</div></div>
+    <div class="rc"><div class="rc-v" style="color:var(--mut)" id="r-s">0</div><div class="rc-l">SKIPPED</div></div>
+    <div class="rc"><div class="rc-v" style="color:var(--gold)" id="r-f">0</div><div class="rc-l">FLAGGED</div></div>
+  </div>
+  <div class="domain-section">
+    <div class="domain-title">Performance by Domain</div>
+    <div id="domain-bars"></div>
+  </div>
+  <div class="flagged-list" id="flagged-section" style="display:none">
+    <h4>🚩 Flagged for Review</h4>
+    <div id="flagged-items"></div>
+  </div>
+  <div class="review-section">
+    <div class="domain-title">Question Review (First 120)</div>
+    <div id="review-items"></div>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap">
+    <button class="btn btn-next" onclick="restartExam()">↺ Restart</button>
+    <button class="btn btn-flag" onclick="retakeWrong()">🩺 Retake Wrong</button>
+    <button class="btn btn-skip" onclick="goHome()">⌂ Home</button>
+  </div>
+</div>
+
+<button class="scroll-top" id="stb" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ============================================================
+//  ADVANCED QUESTION BANK — SET 2
+//  d: 'easy' | 'medium' | 'hard'
+//  code: optional code block in question
+//  expcode: optional code block in explanation
+// ============================================================
+const Q = [
+
+// ===== ANIMATION (ADVANCED) =====
+{t:"Animation",d:"medium",q:"In the Animator window, you have a transition from 'Run' to 'Jump' with Has Exit Time enabled and Exit Time set to 0.75. What does this mean?",
+ opts:["The transition fires after 0.75 seconds","The transition fires when the Run clip has played 75% through","The transition fires when Speed > 0.75","The Jump clip starts 75% through"],
+ ans:1,exp:"<strong>Exit Time (0.75)</strong> means the transition is eligible to fire once the Run clip has completed 75% of its normalized duration. Only then will conditions be evaluated."},
+
+{t:"Animation",d:"hard",q:"You have a 1D Blend Tree with parameter 'Speed'. Clips are: Idle at 0, Walk at 0.5, Run at 1. What happens when Speed = 0.25?",
+ opts:["Only Idle plays","Only Walk plays","Idle and Walk blend 50/50","Walk and Run blend 50/50"],
+ ans:2,exp:"At Speed=0.25, the value is halfway between the Idle threshold (0) and Walk threshold (0.5), so Unity blends both clips equally — <strong>Idle 50% + Walk 50%</strong>."},
+
+{t:"Animation",d:"hard",q:"What is the effect of calling Animator.CrossFade('Run', 0.2f) via script?",
+ opts:["Instantly jumps to Run state","Creates a 0.2 second cross-fade blend into the Run state from the current state","Sets Speed parameter to 0.2","Disables the current transition"],
+ ans:1,exp:"<strong>Animator.CrossFade(stateName, normalizedDuration)</strong> triggers a timed blend transition into the named state. 0.2f = transition takes 20% of the destination clip's length."},
+
+{t:"Animation",d:"medium",q:"You set Animator.SetTrigger('Attack') but the attack animation never plays. What is the most likely cause?",
+ opts:["Triggers cannot be set via script","The Animator Controller has no transition consuming that Trigger","The character has no Rigidbody","The clip has Loop Time disabled"],
+ ans:1,exp:"Triggers only fire transitions that explicitly list them as a Condition. If no transition has 'Attack' as a condition, the trigger fires but is immediately consumed with no effect."},
+
+{t:"Animation",d:"hard",q:"What does the Animator parameter 'Interrupt Source: Current State' do on a transition?",
+ opts:["Only allows interruption from the destination state's transitions","Allows transitions from the current (source) state to interrupt the in-progress transition","Prevents all interruptions","Allows interruption from any state"],
+ ans:1,exp:"<strong>Interrupt Source: Current State</strong> allows transitions defined on the source state to interrupt an in-flight transition — useful for responsive combat animations."},
+
+{t:"Animation",d:"medium",q:"What is the difference between Avatar Mask and Layers in the Animator?",
+ opts:["They are identical","Avatar Mask defines WHICH body parts a layer animates; Layers allow multiple independent state machines to blend/override","Avatar Mask controls animation speed","Layers only work for 2D games"],
+ ans:1,exp:"<strong>Avatar Masks</strong> restrict a layer to specific body parts (e.g., upper body only). Combined with <strong>Additive or Override Layers</strong>, you can run separate state machines on different body parts simultaneously."},
+
+{t:"Animation",d:"hard",q:"You want a character's feet to always touch uneven terrain regardless of the animation. Which Unity system handles this?",
+ opts:["NavMesh baking","Inverse Kinematics (IK) with OnAnimatorIK() callback","Animation Retargeting","Apply Root Motion"],
+ ans:1,exp:"Override <strong>OnAnimatorIK(int layerIndex)</strong> in MonoBehaviour to set IK goals/weights at runtime. Use <code>animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1f)</code> and <code>animator.SetIKPosition()</code> with raycasts to snap feet to terrain."},
+
+{t:"Animation",d:"medium",q:"What is the Write Defaults setting on Animator States and what problem can mixing it cause?",
+ opts:["Controls whether clips write to all non-animated properties when inactive — mixing ON/OFF states causes unpredictable property flickering","Controls animation file compression","Enables write access to prefab properties","Sets the default state in the Animator"],
+ ans:0,exp:"<strong>Write Defaults ON</strong>: non-animated properties revert to Inspector default values when leaving that state. Mixing ON and OFF across states in the same Animator causes unpredictable, hard-to-debug visual glitches — pick one and be consistent."},
+
+{t:"Animation",d:"hard",q:"What does 'Bake Into Pose' for Root Transform Position Y do on an animation clip?",
+ opts:["Bakes the Y movement into the NavMesh","Removes vertical root bone movement from the root motion delta and bakes it into the in-place animation, preventing Unity from applying Y displacement to the GameObject","Locks the character to y=0","Mirrors the Y axis animation"],
+ ans:1,exp:"<strong>Bake Into Pose (Y)</strong> keeps vertical root motion as pure visual animation without moving the GameObject's Transform — essential for jump animations when you want physics to control vertical movement instead of root motion."},
+
+{t:"Animation",d:"medium",q:"An Animator Controller with 3 layers: Base, Additive Arm, Override Head. The Override Head layer has weight 1 and blending = Override. What does this mean for the head?",
+ opts:["Head plays the average of all three layers","Head is completely controlled by the Override Head layer — base layer head poses are ignored","Head uses additive blending","Head is invisible"],
+ ans:1,exp:"A layer with <strong>Override blending</strong> completely replaces the pose from lower layers for its masked body parts. Weight = 1 means full replacement — the base layer has no influence on the head."},
+
+// ===== ASSET MANAGEMENT (ADVANCED) =====
+{t:"Asset Management",d:"hard",q:"You have a 2048×2048 texture on mobile. What is the approximate uncompressed memory size?",
+ opts:["1 MB","4 MB","16 MB","32 MB"],
+ ans:2,exp:"Uncompressed RGBA32: 2048 × 2048 × 4 bytes = <strong>16 MB</strong>. Using ASTC 6×6 compression reduces this to ~1.5 MB. Always compress textures for mobile!"},
+
+{t:"Asset Management",d:"hard",q:"What does the 'Crunch Compression' option do for textures?",
+ opts:["Applies lossy compression on top of DXT/ETC, dramatically reducing file/disk size at the cost of additional CPU decompression time and slight quality loss","Increases texture resolution","Only works for audio","Losslessly compresses textures"],
+ ans:0,exp:"<strong>Crunch compression</strong> applies a lossy post-process over DXT/ETC, producing very small on-disk sizes for build distribution. At runtime, Unity decompresses to DXT/ETC — there's a CPU cost but GPU memory use is the same."},
+
+{t:"Asset Management",d:"medium",q:"What is the difference between Prefab 'Override' and Prefab 'Revert'?",
+ opts:["They are identical","Override pushes instance changes to the Prefab asset; Revert discards instance changes and resets to Prefab values","Revert deletes the Prefab","Override creates a Prefab Variant"],
+ ans:1,exp:"<strong>Apply Override</strong> propagates instance modifications back to the source Prefab. <strong>Revert</strong> discards all instance overrides, restoring the instance to match the Prefab asset exactly."},
+
+{t:"Asset Management",d:"hard",q:"In the Sprite Editor, what does 'Polygon' sprite type give you vs 'Rectangle'?",
+ opts:["Only visual difference","Polygon generates a tight mesh following the sprite's opaque pixels, reducing overdraw for transparent sprites — Rectangle always generates a quad","Polygon only works in 3D","Rectangle has better physics"],
+ ans:1,exp:"<strong>Polygon / Custom Physics Shape</strong> in the Sprite Editor generates a tight mesh outline, reducing transparent pixel overdraw and enabling accurate 2D physics shapes. <strong>Full Rect</strong> always uses a full rectangular quad."},
+
+{t:"Asset Management",d:"hard",q:"What happens to assets in the 'Editor' folder inside Assets?",
+ opts:["They are compiled first","They are only compiled for Editor use and are NOT included in runtime builds — ideal for Editor-only scripts and tools","They are compressed","They cannot reference other assets"],
+ ans:1,exp:"The <strong>Editor</strong> folder (and its subfolders) is a special Unity folder. Scripts within it can use UnityEditor namespace APIs, but Unity strips them from builds entirely, preventing runtime inclusion."},
+
+{t:"Asset Management",d:"medium",q:"What does 'Texture Type: Sprite (2D and UI)' change about how Unity processes the texture?",
+ opts:["Nothing — it is cosmetic","Sets pixel-per-unit, enables sprite slicing, generates tight mesh/physics outlines, and configures the texture for use with SpriteRenderer and Image components","Makes it uncompressible","Forces point filtering"],
+ ans:1,exp:"Setting Texture Type to <strong>Sprite (2D and UI)</strong> activates the Sprite Editor, enables Pixels Per Unit settings, generates sprite mesh outlines, configures for SpriteRenderer/Image, and enables sprite atlasing."},
+
+{t:"Asset Management",d:"hard",q:"What is the purpose of Asset Labels in Unity's Project window?",
+ opts:["Runtime game tags for GameObjects","Metadata labels used by Asset Bundles to group assets, and for filtering/searching in the Project window — not visible at runtime","Physics layer assignment","Shader keyword system"],
+ ans:1,exp:"<strong>Asset Labels</strong> are metadata tags on assets primarily used to define <strong>Asset Bundle membership</strong> and for Project window search filtering. They have no runtime GameObjects equivalent."},
+
+{t:"Asset Management",d:"medium",q:"When importing a model with animations, what does 'Import Animation' checkbox control?",
+ opts:["Imports textures with the model","Determines whether animation clips embedded in the model file are extracted and available in Unity","Controls LOD generation","Enables physics for the model"],
+ ans:1,exp:"<strong>Import Animation</strong> extracts animation take data from the model file (e.g., FBX Take 001) into Unity Animation Clips. Disabling it ignores all embedded animation data."},
+
+{t:"Asset Management",d:"hard",q:"What is the difference between 'Original' and 'Compressed' audio format in the Audio Clip import settings?",
+ opts:["They produce identical output","Original preserves the source format; Compressed re-encodes using the target platform's preferred codec (Vorbis/AAC) — Compressed is recommended for most cases","Original is always uncompressed PCM","Compressed cannot loop"],
+ ans:1,exp:"<strong>Force to Mono, Load Type, and Compression Format</strong> are the key import settings. 'Compressed in Memory' + Vorbis is the best balance for most sound effects. 'Original' preserves source format which may be less optimal than re-encoding."},
+
+{t:"Asset Management",d:"medium",q:"What is a 'Sprite Atlas' and why is it used?",
+ opts:["A folder of sprites","A texture asset that packs multiple sprites into one texture, reducing draw calls by enabling GPU texture batching for sprites sharing the same atlas","A 3D sprite system","A shader for sprite lighting"],
+ ans:1,exp:"A <strong>Sprite Atlas</strong> packs individual sprite textures into one large texture. Sprites from the same atlas share one texture bind, reducing draw calls significantly — critical for mobile 2D game performance."},
+
+// ===== AUDIO (ADVANCED) =====
+{t:"Audio",d:"hard",q:"You call AudioSource.PlayOneShot(clip, volume). What is the key difference from AudioSource.Play()?",
+ opts:["PlayOneShot cannot loop","PlayOneShot plays without interrupting the current clip and can overlap itself — Play() stops any currently playing clip and starts the new one","PlayOneShot is louder","They are identical"],
+ ans:1,exp:"<strong>PlayOneShot()</strong> plays a clip without interrupting the AudioSource's current playback and can stack multiple overlapping calls. <strong>Play()</strong> stops whatever is currently playing on that AudioSource before starting the new clip."},
+
+{t:"Audio",d:"medium",q:"What does the 'Bypass Listener Effects' checkbox on an AudioSource do?",
+ opts:["Mutes the audio source","Makes the audio source ignore Audio Filters on the AudioListener — the audio bypasses listener-level DSP effects","Prevents the Doppler effect","Removes spatial blend"],
+ ans:1,exp:"<strong>Bypass Listener Effects</strong> skips any Audio Filters (Reverb, Chorus, etc.) attached to the AudioListener, so the source sounds dry regardless of global audio effects applied to the listener."},
+
+{t:"Audio",d:"hard",q:"An AudioMixer has groups: Master → Music, Master → SFX. You call AudioMixer.SetFloat('MusicVol', -80f). What happens?",
+ opts:["Master volume drops to -80dB","Music group volume drops to -80dB (effectively muted), SFX group is unaffected","All audio is muted","An error is thrown"],
+ ans:1,exp:"AudioMixer exposed parameters affect only their assigned group. Setting 'MusicVol' to <strong>-80dB</strong> effectively silences the Music group while the SFX group (under Master but not Music) plays normally."},
+
+{t:"Audio",d:"hard",q:"What is 'Send' and 'Receive' in the Audio Mixer?",
+ opts:["Network audio streaming","Send routes a copy of the signal to another point in the mixer graph; Receive taps that signal — enabling sidechain compression/ducking setups","Send records audio; Receive plays it","They are types of audio clips"],
+ ans:1,exp:"<strong>Audio Mixer Send</strong> taps the current group's audio and routes a copy. A corresponding <strong>Duck Volume</strong> effect with a Receive can then use that signal as a sidechain — standard setup for dialogue-over-music ducking."},
+
+{t:"Audio",d:"medium",q:"What does enabling 'Spatialize' on an AudioSource do?",
+ opts:["Enables 3D audio from a generic audio source","Routes the audio through a spatialization plugin (like Oculus Audio or Resonance) for head-related transfer function (HRTF) 3D audio — more realistic than Unity's built-in panning","Makes the audio mono","Enables Doppler only"],
+ ans:1,exp:"<strong>Spatialize</strong> activates a registered spatialization plugin for HRTF-based 3D audio processing, producing much more realistic positional audio (especially in VR/AR) than Unity's default equal-power panning."},
+
+{t:"Audio",d:"hard",q:"What is the purpose of the 'Rolloff Mode: Custom' on an AudioSource?",
+ opts:["Applies a random rolloff each session","Allows you to define a custom AnimationCurve for volume attenuation over distance — neither logarithmic nor linear","Disables rolloff entirely","Only works with reverb"],
+ ans:1,exp:"<strong>Custom Rolloff</strong> exposes an AnimationCurve editor where you hand-craft the volume-vs-distance falloff. Perfect for game-specific audio behavior (e.g., audio that stays loud until 5m then drops sharply)."},
+
+{t:"Audio",d:"medium",q:"You have 32 AudioSources playing simultaneously. Unity's default voice limit is 32. What happens if a 33rd AudioSource calls Play()?",
+ opts:["A crash occurs","Unity uses Priority to determine which voice to steal — the lowest priority (highest priority number) source may be stopped to make room","All audio is muted","The 33rd source is added automatically"],
+ ans:1,exp:"Unity manages a <strong>voice limit</strong> (configurable in Project Settings > Audio). When the limit is hit, the lowest-priority (numerically highest) voice is stolen. Set Priority 0 (highest) for critical sounds like player footsteps."},
+
+// ===== EDITOR INTERFACE (ADVANCED) =====
+{t:"Editor Interface",d:"hard",q:"What is the difference between Scene view 'Pivot' and 'Center' toggle in the toolbar?",
+ opts:["They are identical","Pivot uses the object's actual Transform pivot point; Center uses the geometric center of the selection — critical when rotating multiple objects"],
+ ans:1,opts:["They are identical","Pivot uses the object's actual Transform pivot; Center uses the bounding-box center of the whole selection","Center is for 2D only","Pivot only works with single objects"],
+ exp:"<strong>Pivot</strong> mode rotates/scales around the individual object's pivot. <strong>Center</strong> uses the collective bounding box center of all selected objects — important for multi-object transformations."},
+
+{t:"Editor Interface",d:"hard",q:"What does 'Local' vs 'Global' toggle in the Scene view toolbar affect?",
+ opts:["The physics simulation space","Whether Transform gizmo handles (Move, Rotate) align to the object's local axes or world axes","The camera projection mode","The lighting mode"],
+ ans:1,exp:"<strong>Global</strong>: move/rotate handles align to world X/Y/Z axes. <strong>Local</strong>: handles align to the object's own local axes (rotated with the object). Critical for placing rotated objects precisely."},
+
+{t:"Editor Interface",d:"medium",q:"What does the 'Overdraw' draw mode in the Scene view show?",
+ opts:["Shows only light overdraw","Visualizes how many times each screen pixel is being drawn — brighter means more overdraw, helping identify transparency and fillrate bottlenecks","Shows collision meshes","Shows shader complexity"],
+ ans:1,exp:"<strong>Overdraw mode</strong> renders an additive white pass per draw call. Brighter pixels are drawn more times — expensive on mobile GPUs. Transparent objects and overlapping quads are common overdraw culprits."},
+
+{t:"Editor Interface",d:"hard",q:"In the Project Settings > Quality, what does 'Pixel Light Count' control?",
+ opts:["Number of pixels per light","Maximum number of pixel (per-pixel) lights that affect any single object — lower values force some lights to be rendered as cheaper vertex lights","Number of lights in the scene","Shadow resolution"],
+ ans:1,exp:"<strong>Pixel Light Count</strong> limits per-pixel light calculations per object in the Built-in RP. Excess lights fall back to cheaper vertex lighting. Setting to 1 (just the directional) drastically reduces GPU workload on mobile."},
+
+{t:"Editor Interface",d:"medium",q:"What is the purpose of 'Package Manager > My Assets' vs 'Unity Registry'?",
+ opts:["They are identical","Unity Registry shows Unity-maintained official packages; My Assets shows Asset Store purchases tied to your Unity account","My Assets shows local packages","Unity Registry requires internet"],
+ ans:1,exp:"<strong>Unity Registry</strong> contains Unity's officially maintained packages (Input System, Cinemachine, URP, etc.). <strong>My Assets</strong> shows assets purchased from the Asset Store linked to your account for re-download."},
+
+{t:"Editor Interface",d:"hard",q:"You open the Profiler and see 'GC.Alloc' spikes every frame. What does this indicate?",
+ opts:["Good performance — GC is working","Heap allocations are occurring every frame, triggering frequent garbage collection pauses — common causes: string concatenation in Update(), LINQ, boxing, new() in hot paths"],
+ ans:1,opts:["The game is optimally managed","Heap allocations every frame will trigger garbage collection pauses — string concatenation in Update, LINQ, foreach on non-generic collections, and boxing are common causes","GC.Alloc is always expected","The profiler is broken"],
+ exp:"Per-frame <strong>GC allocations</strong> accumulate until the garbage collector runs, causing stutters. Zero-allocation code practices (object pooling, StringBuilder, cached arrays, avoiding foreach on List in FixedUpdate) eliminate these spikes."},
+
+{t:"Editor Interface",d:"medium",q:"What does the 'Stats' overlay in the Game view show?",
+ opts:["Player statistics only","Real-time rendering stats: FPS, draw calls, batches, triangles, vertices, SetPass calls, shadow casters — essential for quick performance checking","Only frame rate","Only memory usage"],
+ ans:1,exp:"The <strong>Stats overlay</strong> (click 'Stats' in Game view) shows: FPS, CPU/GPU frame time, draw calls, batches (after batching), triangles/verts rendered, SetPass calls — the fastest way to check rendering performance."},
+
+{t:"Editor Interface",d:"hard",q:"What is a 'SetPass call' in Unity rendering stats, and why is it more important than Draw Calls?",
+ opts:["They are identical","A SetPass call occurs when the GPU must switch shader programs or render state — each material change causes one. Multiple meshes can share a Draw Call via batching but still require SetPass calls per unique material","SetPass calls only affect shadows","Draw Calls are always more expensive"],
+ ans:1,exp:"<strong>SetPass calls</strong> measure actual shader/state switches on the GPU pipeline — the real performance bottleneck. Dynamic batching can combine draw calls but can't reduce SetPass calls if materials differ. Minimize unique materials to reduce SetPass calls."},
+
+// ===== LIGHTING (ADVANCED) =====
+{t:"Lighting",d:"hard",q:"What is the difference between 'Baked' and 'Mixed' light mode in Unity?",
+ opts:["They are identical","Baked: only static shadows/GI baked, no real-time contribution at all. Mixed: real-time direct lighting + baked indirect/shadows — affects dynamic objects via shadow masks"],
+ ans:1,opts:["Baked lights are brighter","Baked contributes only to GI (no real-time direct light). Mixed provides real-time direct light to all objects plus baked indirect/shadow — more flexible but uses Shadow Mask texture","Mixed is more expensive than real-time","Baked works with dynamic objects"],
+ exp:"<strong>Mixed mode</strong> (Subtractive, Shadowmask, Distance Shadowmask) provides real-time direct lighting while baking indirect and static shadows. <strong>Baked</strong> is pure offline — zero real-time cost but cannot affect dynamic objects."},
+
+{t:"Lighting",d:"hard",q:"What is 'Shadow Cascades' and why is it used with Directional Lights?",
+ opts:["Multiple shadow colors for one light","Multiple shadow maps at different resolutions for different distance ranges — near objects get high-res shadows, far objects get low-res — balancing quality and performance"],
+ ans:1,opts:["A type of shadow fade effect","Shadow Cascades split the camera frustum into distance ranges, each with its own shadow map. Near shadows are high-resolution, far shadows are low-resolution — preventing jaggy near-shadows while keeping performance reasonable","Cascades only work with Point lights","Shadow Cascades increase shadow range"],
+ exp:"<strong>Shadow Cascades</strong> (2 or 4) partition the shadow rendering distance. Without them, a single shadow map covers the entire range — either jagged near (low res) or expensive (high res). Cascades give the best of both."},
+
+{t:"Lighting",d:"medium",q:"What is the 'Bounce Intensity' (Indirect Multiplier) on a Light and how does it interact with Baked GI?",
+ opts:["Controls shadow softness","Scales how much indirect (bounced) light the source contributes to baked lightmaps — doubling it makes baked GI from that light twice as bright without changing direct illumination"],
+ ans:1,opts:["Controls the number of light bounces","Scales the intensity of the baked indirect contribution. A Bounce Intensity of 2 bakes twice as much indirect light from that source without changing real-time direct lighting","Controls ambient light globally","Affects Reflection Probes"],
+ exp:"<strong>Indirect Multiplier</strong> is useful for artistic control — brightening bounced light independently from direct. In real-time GI (Enlighten), it also affects the real-time indirect contribution."},
+
+{t:"Lighting",d:"hard",q:"A scene has Static objects with baked lighting and a moving Rigidbody character. The character looks flat/unlit in dark areas. What is the correct fix?",
+ opts:["Bake a new lightmap","Add Light Probes around the scene — the character samples nearby probes for approximate baked indirect lighting since it cannot receive lightmaps as a dynamic object","Add a Point Light to the character","Mark the character as Static"],
+ ans:1,exp:"<strong>Light Probes</strong> capture irradiance at baked sample points. Dynamic objects (non-static Renderers with 'Light Probes: Blend Probes' in the MeshRenderer) interpolate between nearby probes, receiving approximate GI without being static."},
+
+{t:"Lighting",d:"hard",q:"What does 'Enlighten' vs 'Progressive Lightmapper' differ in for Unity baked GI?",
+ opts:["They produce identical results","Enlighten is Unity's older radiosity-based system (real-time GI capable); Progressive is a path-tracing CPU/GPU lightmapper that provides preview baking, is more accurate, and is the current recommended system"],
+ ans:1,exp:"<strong>Progressive Lightmapper</strong> (CPU and GPU variants) uses Monte Carlo path tracing, giving progressive preview results and physically accurate GI. <strong>Enlighten</strong> (legacy) uses radiosity, is faster for real-time GI, but less accurate and no longer actively developed."},
+
+{t:"Lighting",d:"medium",q:"What is 'Lightmap Resolution' and what are the tradeoffs?",
+ opts:["Screen resolution for lightmaps","Texels per unit of surface area in the lightmap — higher = sharper shadows and light detail on static objects, but exponentially more bake time and lightmap texture memory"],
+ ans:1,opts:["The number of lights in the scene","Texels-per-world-unit for the lightmap. Higher resolution = sharper baked detail but exponentially larger lightmap textures and much longer bake times","Controls shadow distance","Affects Reflection Probe resolution"],
+ exp:"<strong>Lightmap Resolution</strong> (texels/unit) determines baked lighting quality. At 10 tex/unit a 10m wall gets 100 texels. Doubling resolution quadruples lightmap memory. Balance quality vs memory budget — use 2-4 for large objects, higher for detail areas."},
+
+{t:"Lighting",d:"hard",q:"What is 'Realtime GI' (Enlighten Realtime GI) and when should it be used?",
+ opts:["Baked GI that updates in real time","A system pre-computing light transport paths offline, then updating lighting in real time as light direction/color changes — useful for dynamic weather/time-of-day, expensive CPU cost","A post-processing effect","A ray tracing system"],
+ ans:1,exp:"<strong>Realtime GI</strong> pre-bakes the geometric light transport (cluster/probes) offline, allowing runtime changes to light color/direction to propagate into indirect lighting — enabling dynamic time-of-day. It has significant CPU and memory overhead, not suitable for mobile."},
+
+// ===== MATERIALS & EFFECTS (ADVANCED) =====
+{t:"Materials",d:"hard",q:"In Unity's Standard Shader, what is the difference between 'Metallic' workflow and 'Specular' workflow?",
+ opts:["They produce identical results","Metallic workflow uses Metallic (0-1) + Smoothness; Specular workflow uses a Specular Color map. Metallic is simpler/PBR-accurate for common materials; Specular offers per-pixel specular color control"],
+ ans:1,exp:"<strong>Metallic workflow</strong>: a single greyscale map defines metalness (0=dielectric, 1=metal). Simpler, enforces PBR accuracy. <strong>Specular workflow</strong>: RGB Specular color map for per-pixel specular tint — more control but easier to create non-physical materials."},
+
+{t:"Materials",d:"hard",q:"What does a Particle System's 'Sub Emitters' module do?",
+ opts:["Adds child particle systems to the hierarchy","Spawns child particle systems from specific events on parent particles — e.g., Birth, Collision, Death — enabling effects like sparks spawning on impact"],
+ ans:1,opts:["Creates Prefab children","Triggers separate particle systems at particle Birth, Collision, or Death events. E.g., spawning a smoke puff Sub Emitter when a fire particle dies","Only works with physics","Reduces particle count"],
+ exp:"<strong>Sub Emitters</strong> are child Particle Systems triggered by events on individual parent particles. 'Death' sub-emitters are perfect for exploding particles, 'Collision' for impact sparks."},
+
+{t:"Materials",d:"hard",q:"You want a fire particle that starts orange, turns yellow, then fades to transparent. Which two Particle System modules are required?",
+ opts:["Start Color and Renderer","Color over Lifetime (gradient orange→yellow→transparent) and Size over Lifetime","Emission and Shape","Force over Lifetime and Trails"],
+ ans:1,exp:"<strong>Color over Lifetime</strong> with a gradient (orange → yellow → transparent alpha) handles both color change and fade-out. <strong>Size over Lifetime</strong> can also shrink the particle as it dies, common for fire effects."},
+
+{t:"Materials",d:"medium",q:"What is a 'Shader Keyword' and how does it affect rendering?",
+ opts:["A comment in shader code","A compile-time switch that includes/excludes shader code variants — enabling features like shadows, fog, or instancing only when needed, reducing shader compilation permutations when managed carefully"],
+ ans:1,opts:["A variable name in HLSL","A #pragma directive that conditionally compiles shader variants. Keywords enable features (shadows, fog, GPU instancing) via multi_compile or shader_feature — each active keyword combination creates a separate compiled shader variant","A UI text field","A texture name"],
+ exp:"<strong>Shader Keywords</strong> via <code>#pragma multi_compile</code> or <code>shader_feature</code> create separate compiled variants. Excessive keywords cause combinatorial explosion of variants — shader_feature (stripped if unused) vs multi_compile (always included) is an important distinction."},
+
+{t:"Materials",d:"hard",q:"What is the Particle System 'Trails' module used for?",
+ opts:["Debugging particle paths","Rendering ribbon trails that follow each particle's path over time — creating effects like laser beams, motion blur on projectiles, or magic streaks","Controlling particle rotation","Adding collision to particles"],
+ ans:1,exp:"The <strong>Trails</strong> module attaches a Trail Renderer to each particle, rendering a ribbon along its movement path. Lifetime, width, color, and texture mode (Stretch, Tile) control the trail's appearance."},
+
+{t:"Materials",d:"medium",q:"What is the difference between 'World' and 'Local' Simulation Space in a Particle System?",
+ opts:["They produce identical results","World: particles exist in world space, unaffected by the emitter's movement after spawn. Local: particles move with the GameObject's Transform"],
+ ans:1,opts:["World space is slower","World Simulation Space: particles are spawned in world space and remain there independently of the emitter's movement — great for fire/smoke that lingers. Local: particles move with the emitter Transform — good for exhaust trails","Local is always better","World only works with static emitters"],
+ exp:"<strong>World space</strong> particles stay where they were emitted as the emitter moves — smoke trail effect. <strong>Local space</strong> particles move with the GameObject — useful for emitters that move and need the effect to follow precisely."},
+
+{t:"Materials",d:"hard",q:"What does 'Texture Sheet Animation' module in the Particle System do?",
+ opts:["Animates the particle size","Cycles through frames of a sprite sheet texture for each particle — enabling sprite-based animated particles (explosions, animated characters as particles)"],
+ ans:1,exp:"<strong>Texture Sheet Animation</strong> treats the particle texture as a sprite sheet, stepping through UV frames over the particle's lifetime. Set tiles (X, Y columns/rows) and frame mode (Whole Sheet, Single Row) for animated flip-book particles."},
+
+// ===== NAVIGATION (ADVANCED) =====
+{t:"Navigation",d:"hard",q:"A NavMesh Agent gets stuck at a small ledge that should be walkable. What NavMesh bake setting most likely needs adjustment?",
+ opts:["Agent Radius","Step Height — the maximum vertical step the agent can climb. If the ledge is taller than Step Height, the NavMesh treats it as impassable"],
+ ans:1,opts:["Max Slope","Step Height — defines the maximum height an agent can step up. Increasing it allows the agent to walk up small ledges and curbs that are otherwise treated as walls","Agent Speed","Bake Resolution"],
+ exp:"<strong>Step Height</strong> (NavMesh Bake settings) defines the maximum vertical obstacle height an agent can walk over. Small ledges below Step Height are baked as walkable ramps rather than walls."},
+
+{t:"Navigation",d:"hard",q:"What is the NavMeshAgent.remainingDistance property and what should you check it against?",
+ opts:["Current path length in world units","Distance remaining to destination along the computed path — compare against stoppingDistance + epsilon to detect arrival, since the agent stops stoppingDistance units from the target"],
+ ans:1,opts:["Screen distance to target","The remaining path distance to the destination. Check <code>agent.remainingDistance <= agent.stoppingDistance</code> (also verify <code>!agent.pathPending</code>) to reliably detect arrival","The agent's current speed","Nothing — use OnTriggerEnter instead"],
+ exp:"<code>agent.remainingDistance <= agent.stoppingDistance && !agent.pathPending && agent.hasPath</code> is the reliable arrival check. Using Transform distance alone ignores path winding."},
+
+{t:"Navigation",d:"medium",q:"What does 'NavMeshAgent.isStopped = true' do, and how does it differ from setting speed to 0?",
+ opts:["They are identical","isStopped halts movement and disables pathfinding/avoidance entirely; setting speed=0 freezes movement but the agent still tracks its path and can resume — isStopped is the correct way to pause an agent"],
+ ans:1,exp:"<strong>isStopped = true</strong> fully suspends the NavMesh Agent's pathfinding, velocity, and avoidance. Setting speed=0 while leaving isStopped=false keeps the agent in an active but frozen state that may behave unexpectedly. Always use isStopped to pause."},
+
+{t:"Navigation",d:"hard",q:"You need enemies that navigate a level where dynamic doors open and close. What is the best approach?",
+ opts:["Rebake the NavMesh every time a door moves","Use NavMesh Obstacle with Carve on each door — when a door closes, it carves a hole blocking agent paths; when open, the hole disappears and agents reroute automatically"],
+ ans:1,exp:"<strong>NavMesh Obstacle with Carve</strong> dynamically updates the NavMesh at runtime when the obstacle moves. Set 'Carve Only Stationary' to false for moving doors. This avoids full rebakes and allows real-time path recalculation."},
+
+{t:"Navigation",d:"hard",q:"What does calling NavMesh.AddNavMeshData() enable at runtime?",
+ opts:["Triggers a new full bake","Loads pre-baked NavMesh data (NavMeshData asset) into the runtime NavMesh system at a specified position and rotation — enabling additive runtime NavMesh loading for modular levels or procedural content"],
+ ans:1,exp:"<strong>NavMesh.AddNavMeshData(NavMeshData, Vector3, Quaternion)</strong> registers pre-baked NavMesh surfaces at runtime. Combined with NavMeshSurface (from AI Navigation package), this enables modular, streaming NavMesh for large or procedurally generated worlds."},
+
+// ===== PHYSICS (ADVANCED) =====
+{t:"Physics",d:"hard",q:"What is the difference between ForceMode.Force and ForceMode.Impulse?",
+ code:"rb.AddForce(Vector3.up * 500f, ForceMode.Force);\nrb.AddForce(Vector3.up * 500f, ForceMode.Impulse);",
+ opts:["They produce identical results","Force applies continuously scaled by Time.fixedDeltaTime (acts over time); Impulse applies instantly in one frame, independent of timestep — use Impulse for jumps/explosions, Force for thrusters"],
+ ans:1,exp:"<strong>ForceMode.Force</strong>: force is applied as <code>F = mass × acceleration</code> per FixedUpdate — gentle continuous thrust. <strong>ForceMode.Impulse</strong>: instantaneous velocity change = <code>impulse / mass</code> — one-frame kick. For a jump: Impulse once. For a rocket: Force every FixedUpdate."},
+
+{t:"Physics",d:"hard",q:"What causes a 'tunneling' problem in Unity physics, and what are the two solutions?",
+ opts:["Too many colliders in the scene","Fast-moving objects move so far per physics step they pass through thin colliders. Solutions: (1) Use Continuous or Continuous Dynamic Collision Detection on the Rigidbody; (2) Increase Fixed Timestep frequency"],
+ ans:1,exp:"<strong>Tunneling</strong> occurs when an object moves faster than its collider thickness per physics step. Fix with: (1) <strong>Collision Detection: Continuous/ContinuousDynamic</strong> on the Rigidbody — sweeps the shape between frames. (2) Reduce Fixed Timestep (more physics steps per second). (3) Increase collider thickness."},
+
+{t:"Physics",d:"hard",q:"What is the Physics Layer Collision Matrix, and what is a performance use case for it?",
+ opts:["A visual debug overlay","A grid in Project Settings > Physics defining which Layer pairs run collision detection — disabling irrelevant pairs (e.g., Enemy-Enemy) eliminates unnecessary collision checks, improving CPU performance"],
+ ans:1,exp:"The <strong>Layer Collision Matrix</strong> prevents physics engine from even testing collisions between excluded layer pairs. If 50 enemies never need to collide with each other, disabling Enemy-Enemy saves O(n²) broadphase checks per frame."},
+
+{t:"Physics",d:"hard",q:"What is the purpose of Physics.IgnoreCollision(Collider a, Collider b, bool ignore)?",
+ opts:["Permanently destroys both colliders","Temporarily disables collision between two specific Collider instances — useful for allowing a character to jump through platforms from below, then re-enabling collision"],
+ ans:1,exp:"<strong>Physics.IgnoreCollision()</strong> works at the instance level (specific colliders), unlike layer-based ignoring. Useful for one-way platforms: ignore collision on the way up, then re-enable when above the platform."},
+
+{t:"Physics",d:"medium",q:"What does OnCollisionEnter(Collision col) provide that OnTriggerEnter(Collider other) does not?",
+ opts:["They provide identical data","Collision provides ContactPoint data (contact normals, positions, impulse) and the relative velocity of the collision — Trigger provides only the overlapping Collider reference"],
+ ans:1,exp:"<strong>Collision</strong> struct contains: <code>contacts</code> (ContactPoint[] with position, normal, separation), <code>relativeVelocity</code>, <code>impulse</code>, and the collider/rigidbody references. <strong>Trigger</strong> only gives the Collider that entered — no physical contact data."},
+
+{t:"Physics",d:"hard",q:"A character controller needs to slide along walls when moving into them rather than stopping. What approach achieves this?",
+ opts:["Disabling collision","Using CharacterController.Move() with a movement vector that has been projected onto the wall's surface normal: <code>Vector3.ProjectOnPlane(moveDir, wallNormal)</code>","Setting Is Trigger on the wall","Using a Sphere collider"],
+ ans:1,exp:"<strong>Vector3.ProjectOnPlane(vector, normal)</strong> removes the component of the movement going into the wall, leaving only the tangential (sliding) component. This produces natural wall-sliding without stopping or bouncing."},
+
+{t:"Physics",d:"hard",q:"What is 'Physics Material' (PhysicMaterial) and what properties does it control?",
+ opts:["A visual material for collision meshes","A physics asset defining surface friction (Dynamic Friction, Static Friction) and bounciness (Bounciness, Combine Mode) between colliding surfaces"],
+ ans:1,opts:["A shader for physics objects","A PhysicMaterial asset assigned to Colliders defining: Dynamic Friction, Static Friction, Bounciness, and Friction/Bounce Combine Mode (Average, Multiply, Minimum, Maximum) — controls slipping, stickiness, and elasticity","A NavMesh surface property","A Rigidbody script"],
+ exp:"<strong>PhysicMaterial</strong> assigned to a Collider controls surface behavior. Two colliders' physics materials are combined using the Combine Mode. Ice = low friction, rubber = high friction + bounciness."},
+
+// ===== PROGRAMMING (ADVANCED) =====
+{t:"Programming",d:"hard",q:"What is wrong with the following code?",
+ code:"void Update() {\n    GameObject enemy = GameObject.Find(\"Enemy\");\n    if (enemy != null)\n        enemy.transform.LookAt(transform);\n}",
+ opts:["Nothing is wrong","GameObject.Find() searches all scene objects every frame — O(n) linear scan. Cache the reference in Awake/Start instead"],
+ ans:1,exp:"<strong>GameObject.Find()</strong> is a linear scene scan every frame — extremely expensive at scale. Cache in Awake/Start: <code>private GameObject enemy; void Awake(){ enemy = GameObject.Find(\"Enemy\"); }</code>"},
+
+{t:"Programming",d:"hard",q:"What does the following code do?",
+ code:"IEnumerator FadeOut(CanvasGroup cg, float duration) {\n    float t = 0;\n    while (t < 1f) {\n        t += Time.deltaTime / duration;\n        cg.alpha = 1f - t;\n        yield return null;\n    }\n    cg.alpha = 0f;\n}",
+ opts:["Instantly hides a CanvasGroup","Smoothly fades a CanvasGroup's alpha from 1 to 0 over 'duration' seconds using a Coroutine that yields each frame","Fades audio volume","Destroys the canvas after 1 second"],
+ ans:1,exp:"The Coroutine advances a normalized time <code>t</code> by <code>deltaTime/duration</code> each frame, mapping it to alpha (1→0). <code>yield return null</code> pauses until the next frame. This is the standard lerp-over-time Coroutine pattern."},
+
+{t:"Programming",d:"hard",q:"What is the output of this code: `Debug.Log(Mathf.Lerp(0f, 10f, 0.3f));`",
+ opts:["0","3","7","0.3"],
+ ans:1,exp:"<strong>Mathf.Lerp(a, b, t)</strong> returns <code>a + (b-a) * t</code> = 0 + (10-0) × 0.3 = <strong>3</strong>. Lerp linearly interpolates — t=0 returns a, t=1 returns b, t=0.5 returns midpoint."},
+
+{t:"Programming",d:"hard",q:"What is the problem with using Mathf.Lerp for smooth follow camera movement like this?",
+ code:"void Update() {\n    cam.position = Vector3.Lerp(cam.position, target.position, 0.1f);\n}",
+ opts:["Nothing is wrong","The smoothing rate is frame-rate dependent — at 30fps it moves differently than at 120fps. Use Time.deltaTime: Lerp(cam, target, 1f - Mathf.Pow(0.1f, Time.deltaTime)) for frame-rate independence"],
+ ans:1,exp:"Using a constant <code>t</code> value in Lerp each frame creates frame-rate dependent smoothing. The correct frame-rate independent exponential smoothing is: <code>Mathf.Lerp(current, target, 1f - Mathf.Pow(smoothing, Time.deltaTime))</code>"},
+
+{t:"Programming",d:"hard",q:"What does `[RequireComponent(typeof(Rigidbody))]` attribute do?",
+ opts:["Ensures a Rigidbody exists at runtime","Automatically adds a Rigidbody to a GameObject when this script is added in the Editor, and prevents removing the Rigidbody while the script exists"],
+ ans:1,exp:"<strong>[RequireComponent]</strong> enforces dependencies in the Editor: it auto-adds the required component when the script is attached and prevents removal of the required component. It does NOT add at runtime — it's Editor enforcement only."},
+
+{t:"Programming",d:"hard",q:"What is the difference between `Destroy(gameObject)` and `Destroy(this)`?",
+ opts:["They are identical","Destroy(gameObject) removes the entire GameObject and all its components; Destroy(this) removes only this MonoBehaviour script component, leaving the GameObject intact"],
+ ans:1,exp:"<strong>Destroy(gameObject)</strong> = remove the whole thing. <strong>Destroy(this)</strong> = remove only this script component. <strong>Destroy(GetComponent<Rigidbody>())</strong> = remove just the Rigidbody. Choose precisely what to destroy."},
+
+{t:"Programming",d:"hard",q:"What does Object Pooling solve, and what is a simple implementation approach in Unity?",
+ opts:["Reduces polygon count","Eliminates frequent Instantiate/Destroy allocation spikes by pre-spawning objects, returning them to a Queue/Stack instead of destroying, and deactivating/reactivating them"],
+ ans:1,exp:"<strong>Object Pooling</strong>: pre-instantiate N objects, SetActive(false). On 'spawn': dequeue, SetActive(true), reposition. On 'despawn': SetActive(false), enqueue. Avoids GC pressure from frequent Instantiate/Destroy. Unity 2021+ has <code>ObjectPool<T></code> built in."},
+
+{t:"Programming",d:"hard",q:"What is the correct way to smoothly rotate toward a target direction this frame?",
+ code:"// Target: rotate toward 'targetDir' at 'turnSpeed' deg/s\nQuaternion targetRot = Quaternion.LookRotation(targetDir);\ntransform.rotation = ???",
+ opts:["transform.rotation = targetRot","Quaternion.RotateTowards(transform.rotation, targetRot, turnSpeed * Time.deltaTime)","Quaternion.Euler(targetDir)","transform.rotation * targetRot"],
+ ans:1,exp:"<strong>Quaternion.RotateTowards(from, to, maxDegreesDelta)</strong> rotates from one quaternion toward another by at most maxDegreesDelta degrees — frame-rate independent rotation at a fixed angular speed."},
+
+{t:"Programming",d:"medium",q:"What is the difference between `InvokeRepeating` and a Coroutine with `yield return new WaitForSeconds`?",
+ opts:["InvokeRepeating uses string method names (reflection, no compile-time safety, harder to stop); Coroutines are type-safe, flexible, and can be stopped precisely with StopCoroutine"],
+ ans:0,opts:["They are identical","InvokeRepeating uses string-based reflection (no compile-time check, harder to cancel per-instance); Coroutines are type-safe, can carry state between iterations, and are cancelled via StopCoroutine with a reference","InvokeRepeating is always faster","Coroutines cannot repeat"],
+ exp:"Prefer <strong>Coroutines</strong> for repeating logic — type-safe, pauseable, cancellable via reference. <strong>InvokeRepeating</strong> uses string reflection which can silently break on refactor and cannot carry local state between calls."},
+
+{t:"Programming",d:"hard",q:"What does `Physics.RaycastAll` return differently from `Physics.Raycast`?",
+ opts:["They are identical","RaycastAll returns a RaycastHit[] of ALL colliders hit along the ray — not just the first. Raycast returns a bool and the first hit only"],
+ ans:1,exp:"<strong>Physics.RaycastAll()</strong> returns all intersecting colliders sorted by distance (unsorted in older versions). Use when you need to penetrate through triggers or multiple objects — e.g., a bullet that damages everything in its path."},
+
+{t:"Programming",d:"hard",q:"What is wrong with comparing tags this way: `if (other.tag == \"Player\")`?",
+ opts:["Nothing is wrong","The == operator on string allocates a new string comparison each call. Use other.CompareTag(\"Player\") which is allocation-free and faster"],
+ ans:1,exp:"<strong>CompareTag()</strong> is preferred over <code>== </code>for tag comparison because it doesn't allocate a string and is implemented in native code — faster in hot paths like OnCollisionEnter/OnTriggerStay."},
+
+{t:"Programming",d:"hard",q:"What is a ScriptableObject Event (Game Event pattern) and why is it used?",
+ opts:["A Unity built-in event system","A ScriptableObject that holds a list of listeners and an Invoke method — decouples event senders from receivers without direct references, making systems modular and inspector-configurable"],
+ ans:1,exp:"<strong>ScriptableObject Events</strong> (Ryan Hipple GDC 2017 pattern): a SO asset holds UnityAction listeners. Systems raise events by calling SO.Raise() without knowing who listens. Listeners register/unregister via OnEnable/OnDisable. Zero direct coupling between systems."},
+
+{t:"Programming",d:"medium",q:"What does `[ExecuteInEditMode]` attribute do on a MonoBehaviour?",
+ opts:["Makes the script run faster","Allows the script's Update, Awake, Start, OnRenderObject etc. to run in the Editor without entering Play Mode — used for Editor preview tools and custom scene helpers"],
+ ans:1,exp:"<strong>[ExecuteInEditMode]</strong> (or [ExecuteAlways] in newer Unity) runs the script in the Editor outside Play Mode. Note: Update is called on scene changes, not every frame — behavior differs from runtime."},
+
+{t:"Programming",d:"hard",q:"What is the purpose of the `sealed` keyword on a class in C#?",
+ opts:["Prevents instantiation","Prevents the class from being inherited (subclassed) — used for security, optimization (JIT can devirtualize sealed virtual methods), and API design clarity"],
+ ans:1,exp:"<strong>sealed</strong> prevents inheritance. JIT compilers can optimize sealed class virtual calls into direct calls (devirtualization). Also prevents unintended framework extension — many Unity internal classes are sealed."},
+
+// ===== PROJECT MANAGEMENT (ADVANCED) =====
+{t:"Project Management",d:"hard",q:"What is the purpose of Assembly Definitions (.asmdef) in Unity?",
+ opts:["Defining shader variants","Partitioning scripts into separate compiled assemblies — reducing recompile time (only changed assemblies recompile), enforcing dependency boundaries, and enabling faster iteration in large projects"],
+ ans:1,exp:"<strong>Assembly Definition files</strong> (.asmdef) split scripts into separate C# assemblies. Benefits: (1) Only modified assemblies recompile on script change. (2) Enforce dependency direction (game → engine, not reverse). (3) Enable domain-specific testing."},
+
+{t:"Project Management",d:"medium",q:"What is the difference between Transform.parent and Transform.SetParent()?",
+ opts:["They are identical","Setting Transform.parent directly is equivalent to SetParent(parent, true) — worldPositionStays=true. SetParent(parent, false) sets parent without preserving world position, resetting to local position/rotation/scale"],
+ ans:1,exp:"<strong>SetParent(parent, worldPositionStays)</strong>: when <code>false</code>, the child's local position/rotation/scale are kept (world position changes). When <code>true</code> (default / direct parent assignment), the world position is preserved (local values change). Use <code>false</code> for UI parenting."},
+
+{t:"Project Management",d:"hard",q:"What happens to a child GameObject's world position when you re-parent it using SetParent(newParent, false)?",
+ opts:["World position is preserved","Local position/rotation/scale are preserved — world position changes to match the parent's space. The child appears in a different world location"],
+ ans:1,exp:"<code>SetParent(parent, worldPositionStays: false)</code> keeps the <strong>local</strong> transform values unchanged, so the object moves to wherever those local values place it under the new parent — different world position."},
+
+{t:"Project Management",d:"hard",q:"What is a Scriptable Build Pipeline in Unity?",
+ opts:["A pipeline for shader compilation","A Unity package providing a code-configurable build pipeline replacing the internal black-box build system — used by Addressables and for custom build scripts with detailed control over asset bundling and player building"],
+ ans:1,exp:"The <strong>Scriptable Build Pipeline (SBP)</strong> package exposes Unity's build process as overridable C# code. It underpins Addressables and allows custom asset pre/post-processing steps during builds."},
+
+{t:"Project Management",d:"medium",q:"What does the 'Managed Stripping Level' in Build Settings control?",
+ opts:["Texture compression level","How aggressively Unity's IL2CPP/Mono stripping removes unused managed code from the build — higher stripping = smaller build but may strip code used via reflection"],
+ ans:1,exp:"<strong>Managed Stripping</strong> uses static analysis to remove unused C# classes/methods. <strong>Minimal</strong>: safest, largest. <strong>High</strong>: aggressive, smallest. Risk: reflection-based code (serialization, plugins) may be stripped — use link.xml to preserve needed code."},
+
+// ===== SERVICES (ADVANCED) =====
+{t:"Services",d:"hard",q:"What is the Unity Gaming Services (UGS) SDK and what does it replace?",
+ opts:["A rendering framework","A unified SDK replacing separate legacy services (old Analytics, IAP, Ads, Authentication) with a consolidated platform featuring Economy, Leaderboards, Player Authentication, Remote Config, and Cloud Save"],
+ ans:1,exp:"<strong>Unity Gaming Services (UGS)</strong> is Unity's modern backend platform — replacing fragmented legacy services. Key services: <strong>Authentication</strong> (anonymous/social login), <strong>Remote Config</strong> (live game tuning), <strong>Economy</strong> (virtual currency), <strong>Leaderboards</strong>, <strong>Cloud Save</strong>."},
+
+{t:"Services",d:"medium",q:"What is Remote Config in Unity Gaming Services used for?",
+ opts:["Controlling game resolution remotely","Delivering key-value configuration from a server that overrides default values at runtime — enabling A/B testing, live game balancing, and emergency hotfixes without a new build"],
+ ans:1,exp:"<strong>Remote Config</strong> allows you to change game parameters (enemy health, event durations, prices) server-side. Players receive updated values on session start — enabling live balancing and A/B testing without app store updates."},
+
+{t:"Services",d:"hard",q:"What is the difference between Unity Ads 'Interstitial' and 'Rewarded' placement types from a revenue perspective?",
+ opts:["Rewarded always pays more","Interstitial: shown at natural breaks, may be skipped after 5s, lower eCPM. Rewarded: player opt-in, fully watched, highest eCPM (3-5× interstitial) but lower fill rate — both needed for revenue optimization"],
+ ans:1,exp:"<strong>Rewarded ads</strong> have highest eCPM because they're fully watched and opted-in — premium inventory for advertisers. <strong>Interstitials</strong> have higher volume but lower eCPM. Balance both: rewarded for engagement, interstitial at session transitions."},
+
+// ===== USER INTERFACE (ADVANCED) =====
+{t:"UI",d:"hard",q:"What is the difference between Canvas.RenderMode.ScreenSpaceOverlay and ScreenSpaceCamera when using post-processing?",
+ opts:["They are identical","ScreenSpaceCamera renders UI through the camera's rendering pipeline and receives post-processing effects (bloom, color grading). ScreenSpaceOverlay is drawn after post-processing and is unaffected by it"],
+ ans:1,exp:"<strong>Screen Space - Camera</strong>: canvas is in the camera's rendering stack — post-process effects apply to UI. <strong>Screen Space - Overlay</strong>: rendered last, outside the post-process pipeline — UI is always crisp/unaffected. Choose based on whether you want UI affected by bloom etc."},
+
+{t:"UI",d:"hard",q:"What is the EventSystem's Raycaster hierarchy and why does World Space Canvas need a specific raycaster?",
+ opts:["All canvases use the same raycaster","Overlay Canvas uses GraphicRaycaster. Screen Space Camera Canvas uses GraphicRaycaster. World Space Canvas needs a GraphicRaycaster too, but also requires a Physics Raycaster on the camera for 3D world input to work correctly"],
+ ans:1,exp:"<strong>World Space Canvas</strong> requires <strong>GraphicRaycaster</strong> on the Canvas AND that the camera casting input rays (via EventSystem) can detect the canvas in 3D. Without proper raycaster configuration, UI elements in world space won't receive pointer events."},
+
+{t:"UI",d:"hard",q:"What does Canvas.scaleFactor do versus CanvasScaler's Scale Factor?",
+ opts:["They are identical","Canvas.scaleFactor is the final computed scale applied to the Canvas by the CanvasScaler — a read-only result. CanvasScaler.scaleFactor is the manual override only relevant in Constant Pixel Size mode"],
+ ans:1,exp:"<strong>CanvasScaler</strong> computes the appropriate scale based on reference resolution / screen resolution and writes it to <strong>Canvas.scaleFactor</strong>. In 'Scale With Screen Size' mode, Canvas.scaleFactor is computed automatically — you don't set it manually."},
+
+{t:"UI",d:"hard",q:"What is the correct way to set a UI Image's fill amount via script for a health bar?",
+ code:"// healthImage is a UI Image with Image Type = Filled\nhealthImage.fillAmount = currentHealth / maxHealth;",
+ opts:["healthImage.color = Color.red","This is correct — fillAmount (0-1) controls the filled portion of a Filled Image type","healthImage.rectTransform.sizeDelta","healthImage.enabled = false"],
+ ans:1,exp:"<strong>Image.fillAmount</strong> (0-1) controls what fraction of a <strong>Filled</strong> Image type is shown. Set Image Type to 'Filled', Fill Method to 'Horizontal', and animate fillAmount for health bars. This is the standard Unity health bar technique."},
+
+{t:"UI",d:"medium",q:"What is the difference between HorizontalLayoutGroup and GridLayoutGroup?",
+ opts:["They are identical","HorizontalLayoutGroup arranges children in a single row, sizing them by content/ratio. GridLayoutGroup arranges in a fixed grid with user-defined cell size — choice depends on whether you want fixed cell sizes or dynamic sizing"],
+ ans:1,exp:"<strong>HorizontalLayoutGroup</strong>: dynamic row, children can have varied sizes via LayoutElement preferred sizes. <strong>GridLayoutGroup</strong>: fixed cell size, no per-child size variation — all cells are identical. Use Grid for inventories, Horizontal/Vertical for dynamic menus."},
+
+{t:"UI",d:"hard",q:"What is the purpose of IPointerClickHandler, IPointerEnterHandler and implementing them vs using the Button component?",
+ opts:["They are identical to Button","Custom component interfaces allow any UI element to receive pointer events without needing a Button — used to add interactivity to Images, Text, or non-Button UI without the full Button component overhead"],
+ ans:1,exp:"<strong>IPointerClickHandler</strong> etc. are EventSystem callback interfaces. Implementing them on a MonoBehaviour with a Graphic component enables click/hover detection on any UI element — more flexible than Button for custom UI (e.g., clickable cards, draggable elements)."},
+
+{t:"UI",d:"hard",q:"What does `EventSystem.current.IsPointerOverGameObject()` check and when is it used?",
+ opts:["Checks if the mouse is over any 3D object","Returns true if the pointer is currently over any UI element — used to prevent 3D world clicks from firing when the player clicks on UI"],
+ ans:1,exp:"A critical pattern for hybrid games: <code>if (EventSystem.current.IsPointerOverGameObject()) return;</code> at the start of your mouse input handler prevents 3D raycasts from firing when clicking on UI buttons, avoiding unintended world interactions."},
+
+// ===== GAME ART (ADVANCED) =====
+{t:"Game Art",d:"hard",q:"What is 'Mip Map Streaming' in Unity and what problem does it solve?",
+ opts:["Streaming audio during gameplay","A system that loads only the mip level actually needed for the current camera distance — reducing GPU texture memory usage by not loading full-resolution mips for distant objects"],
+ ans:1,exp:"<strong>Mip Map Streaming</strong> defers loading high-resolution mip levels until the camera is close enough to need them. Saves significant VRAM on scenes with many large textures — enable in Project Settings > Quality > Streaming Mipmaps."},
+
+{t:"Game Art",d:"hard",q:"What is 'Occlusion Culling' and how does it differ from Frustum Culling?",
+ opts:["They are identical","Frustum Culling skips objects outside the camera's view frustum (fast, automatic). Occlusion Culling additionally skips objects behind opaque geometry — requires baking and PVS data, more expensive setup but greater GPU savings in dense environments"],
+ ans:1,exp:"<strong>Frustum Culling</strong>: automatic, skips objects outside view cone. <strong>Occlusion Culling</strong>: requires offline baking to compute Potential Visibility Sets — skips objects hidden behind walls/terrain. Critical for indoor levels but has bake overhead."},
+
+{t:"Game Art",d:"medium",q:"What is 'Normal Map' Blue Channel dominance (mostly blue/purple appearance) an indicator of?",
+ opts:["Corrupted texture","Expected — the Blue channel encodes the Z (surface-facing) normal direction. A mostly-blue normal map means most surface normals point outward (flat/gently bumpy), which is correct"],
+ ans:1,exp:"Normal maps encode XYZ surface normal directions as RGB. Blue = Z-axis (forward-facing normals). A predominantly blue/purple normal map is completely correct for a relatively flat surface. High red/green variation = extreme surface angles."},
+
+{t:"Game Art",d:"hard",q:"What is 'Texture Compression Format ASTC' and which platforms support it?",
+ opts:["Only supported on PC","ASTC (Adaptive Scalable Texture Compression) is a block-compression format supported on iOS (A8+) and modern Android (OpenGL ES 3.2+ / Vulkan) GPUs — superior to ETC2/PVRTC with configurable block sizes"],
+ ans:1,exp:"<strong>ASTC</strong> is the modern standard for mobile texture compression. Variable block sizes (4×4 to 12×12) allow quality vs size tradeoff. Supported on iOS A8+ and most modern Android GPUs. Produces better quality than ETC2 at similar sizes."},
+
+{t:"Game Art",d:"medium",q:"What is 'Draw Call Batching' and what are the three types Unity uses?",
+ opts:["A lighting technique","GPU instancing, Static Batching, and Dynamic Batching — three mechanisms Unity uses to combine multiple meshes into fewer draw calls, reducing CPU-to-GPU command overhead"],
+ ans:1,exp:"<strong>1. Static Batching</strong>: combines non-moving objects at build time — large meshes, high memory cost. <strong>2. Dynamic Batching</strong>: combines small moving meshes sharing a material at runtime — limited to 900 vertex attributes. <strong>3. GPU Instancing</strong>: renders identical meshes in one call with per-instance data."},
+
+// ===== INDUSTRY (ADVANCED) =====
+{t:"Industry",d:"hard",q:"What is the difference between a 'Work for Hire' agreement and 'Revenue Share' agreement for a game developer?",
+ opts:["They are identical","Work for Hire: developer is paid a fixed fee and relinquishes all IP rights to the client. Revenue Share: developer receives a percentage of game revenue but often no upfront payment"],
+ ans:1,exp:"<strong>Work for Hire</strong>: paid salary/contract fee, IP belongs to employer/client. <strong>Revenue Share</strong>: developer keeps some ownership stake in IP, receives % of sales — higher risk/reward. Understanding contracts protects developers' intellectual property rights."},
+
+{t:"Industry",d:"hard",q:"What is 'Semantic Versioning' (SemVer) and how is it read: 2.4.1?",
+ opts:["Random version numbers","MAJOR.MINOR.PATCH — 2=breaking API change, 4=new backwards-compatible features, 1=backwards-compatible bug fixes. Critical for package management and dependency resolution"],
+ ans:1,exp:"<strong>SemVer 2.4.1</strong>: Major 2 (breaking changes since 1.x), Minor 4 (4 backwards-compatible feature additions since 2.0), Patch 1 (1 bug fix since 2.4.0). Unity packages follow SemVer in the Package Manager."},
+
+{t:"Industry",d:"medium",q:"What is 'Localization' vs 'Internationalisation' (i18n) in game development?",
+ opts:["They are identical","i18n (Internationalisation) is designing the game's systems to support multiple languages/regions (text rendering, date formats, RTL support). L10n (Localization) is the actual translation and cultural adaptation work"],
+ ans:1,exp:"<strong>i18n</strong> = building the infrastructure (string tables, font switching, RTL layout support, locale-aware formatting). <strong>L10n</strong> = the translation, cultural adaptation, and regional content work performed within that infrastructure."},
+
+{t:"Industry",d:"hard",q:"What is a 'GDD' and what sections does a professional one typically include?",
+ opts:["Game Data Database","Game Design Document — typically includes: Executive Summary, Game Overview, Core Mechanics, Controls, Level Design, Art Direction, Audio Direction, UI/UX, Technical Requirements, Monetization, and Schedule"],
+ ans:1,exp:"A professional <strong>GDD</strong> covers: Overview (elevator pitch, platform), Gameplay (core loop, mechanics, controls), Progression (levels, difficulty), Art Style Guide, Audio Direction, UI/UX Flow, Technical Specs, Monetization Model, Team Roles, and Milestones."},
+
+// ===== GAME DESIGN (ADVANCED) =====
+{t:"Game Design",d:"hard",q:"What is the 'MDA Framework' in game design?",
+ opts:["A physics framework","Mechanics-Dynamics-Aesthetics — a formal model for analyzing games: Mechanics (rules/systems), Dynamics (emergent runtime behavior), Aesthetics (emotional responses evoked in players)"],
+ ans:1,exp:"<strong>MDA (Hunicke, LeBlanc, Zubek 2004)</strong>: Mechanics → rules and algorithms. Dynamics → behavior arising from mechanics during play. Aesthetics → the 8 fun types (Sensation, Fantasy, Narrative, Challenge, Fellowship, Discovery, Expression, Submission). Designers think top-down; players experience bottom-up."},
+
+{t:"Game Design",d:"hard",q:"What is 'Skinner Box' theory's relationship to game design?",
+ opts:["A physics simulation technique","BF Skinner's operant conditioning applied to games — variable ratio reward schedules (random loot drops) are the most powerful reinforcement schedules, driving compulsive play behavior"],
+ ans:1,exp:"<strong>Variable ratio reinforcement</strong> (random reward intervals) is the most resistant to extinction — slot machines and loot boxes use this. Game designers use this knowledge both to create engaging loops and, ethically, to avoid exploitative mechanics."},
+
+{t:"Game Design",d:"medium",q:"What is 'Pacing' in game design and why is it important?",
+ opts:["The physical framerate of the game","The intentional rhythm of tension, release, challenge, and rest across a game session — poor pacing causes player fatigue or boredom; good pacing sustains engagement"],
+ ans:1,exp:"<strong>Pacing</strong> controls the emotional arc: build tension → climax → relief → build again. Games like The Last of Us are studied for pacing — intense combat followed by quiet exploration. Poor pacing (constant high-intensity or constant boring) leads to abandonment."},
+
+{t:"Game Design",d:"hard",q:"What is 'Funneling' vs 'Open World' level design philosophy?",
+ opts:["Audio vs visual design","Funneling guides players through intentionally designed linear experiences ensuring all scripted moments are seen. Open World gives freedom but risks players missing content — requires different scripting and progression approaches"],
+ ans:1,exp:"<strong>Funneling</strong> (Half-Life, God of War) uses environmental design, AI, and pacing to guide players naturally without feeling railroaded. <strong>Open World</strong> (Skyrim, GTA) requires emergent design, dynamic quest systems, and content density to fill player exploration."},
+
+{t:"Game Design",d:"hard",q:"What is 'Affordance' in game UI/UX design?",
+ opts:["The game's framerate affordability","The quality of an object that suggests how it should be used — good affordance makes interactive elements obviously interactable (glowing items, grabbable handles) without explicit instruction"],
+ ans:1,exp:"<strong>Affordance</strong> (Gibson/Norman) means the design communicates function. A glowing door knob affords grabbing. Good game affordance: breakable crates look different from solid walls, climbable ledges have distinct visual treatment — reducing tutorial text needs."},
+
+// ===== EXTRA HARD CODE/SCENARIO QUESTIONS =====
+{t:"Programming",d:"hard",q:"What does this code print?",
+ code:"int x = 5;\nint y = x++;\nDebug.Log(y + \" \" + x);",
+ opts:["6 6","5 5","5 6","6 5"],
+ ans:2,exp:"<code>x++</code> is post-increment: <strong>y = 5</strong> (x's value before increment), then x becomes 6. Output: <strong>\"5 6\"</strong>. Pre-increment <code>++x</code> would give y=6, x=6."},
+
+{t:"Programming",d:"hard",q:"What is wrong with this singleton pattern?",
+ code:"public class GameManager : MonoBehaviour {\n    public static GameManager Instance;\n    void Awake() {\n        Instance = this;\n    }\n}",
+ opts:["Nothing is wrong","If two GameManager instances exist (duplicate in scene or second scene load), the Instance is silently overwritten. Correct: check if Instance exists and destroy the duplicate"],
+ ans:1,exp:"Robust singleton: <code>if (Instance != null && Instance != this) { Destroy(gameObject); return; } Instance = this; DontDestroyOnLoad(gameObject);</code> This prevents duplicate instances corrupting the singleton reference."},
+
+{t:"Programming",d:"hard",q:"What does `transform.InverseTransformPoint(worldPos)` return?",
+ opts:["The world position of a local point","Converts a world space position into this Transform's local space — useful for checking if a world point is to the left/right/front/back of an object"],
+ ans:1,exp:"<strong>InverseTransformPoint()</strong> goes world → local space. Use it to get relative positions: <code>Vector3 local = transform.InverseTransformPoint(enemy.position);</code> Then <code>local.x > 0</code> = enemy is to the right. Opposite: <code>TransformPoint()</code> goes local → world."},
+
+{t:"Programming",d:"hard",q:"What does `Physics.SphereCast` do differently from `Physics.Raycast`?",
+ opts:["They are identical","SphereCast sweeps a sphere (radius) along a ray and returns hits where the sphere would touch colliders — more forgiving than a zero-width ray, useful for weapon hit detection and character ground checks"],
+ ans:1,exp:"<strong>SphereCast(origin, radius, direction, out hit, maxDist)</strong> sweeps a sphere along a ray. A 0.5m radius sphere finds colliders within 0.5m of the ray line — perfect for melee hit detection (wider than a bullet ray) and slope-aware ground checks."},
+
+{t:"Programming",d:"hard",q:"What is the correct pattern to avoid null reference errors when getting components from a collision callback?",
+ code:"void OnCollisionEnter(Collision col) {\n    Health h = col.gameObject.GetComponent<Health>();\n    // What should the next line be?\n}",
+ opts:["if (h == null) Destroy(this)","if (h != null) h.TakeDamage(10f);","h.TakeDamage(10f);","GetComponent always returns non-null"],
+ ans:1,exp:"<strong>GetComponent<T>() returns null</strong> if the component doesn't exist. Always null-check before calling methods on the result: <code>if (h != null) h.TakeDamage(10f);</code> Or use the TryGetComponent pattern (allocation-free in Unity 2019+): <code>if (col.gameObject.TryGetComponent(out Health h)) h.TakeDamage(10f);</code>"},
+
+{t:"Programming",d:"hard",q:"What is the execution order of Unity's event functions in a single frame?",
+ opts:["Update → FixedUpdate → LateUpdate","FixedUpdate (0+ times) → Update → LateUpdate → OnGUI → OnRenderObject","Awake → Update → FixedUpdate","LateUpdate → Update → FixedUpdate"],
+ ans:1,exp:"Within one frame: <strong>FixedUpdate</strong> (runs 0 or more times to catch up physics) → <strong>Update</strong> → <strong>LateUpdate</strong> → rendering → <strong>OnRenderObject</strong> → <strong>OnGUI</strong>. Awake/Start run only once at initialization."},
+
+{t:"Physics",d:"hard",q:"A Rigidbody with Constraints: Freeze Position Y is still moving on the Y axis after AddForce. Why?",
+ opts:["Freeze Position Y is broken","Freeze Position constraints only freeze physics forces — a direct Transform.position assignment or root motion can bypass them. Check if an animation with root motion or script is directly setting Transform.position.y"],
+ ans:1,exp:"<strong>Rigidbody Freeze Constraints</strong> only prevent forces and impulses from moving the body on that axis. Direct <code>transform.position</code> manipulation, root motion, or CharacterController movement bypasses Rigidbody constraints entirely."},
+
+{t:"Animation",d:"hard",q:"What does `Animator.GetCurrentAnimatorStateInfo(0).IsName('Run')` check?",
+ opts:["If the Animator has a state named Run","If the current playing state on layer 0 is the state named 'Run' — returns true only when that state is the active state, not during a transition FROM it"],
+ ans:1,exp:"<strong>GetCurrentAnimatorStateInfo(layerIndex).IsName()</strong> checks the currently playing state on the given layer. During a transition, it checks the destination state. Use GetNextAnimatorStateInfo for the upcoming state during a transition."},
+
+{t:"UI",d:"hard",q:"What is the correct way to make a UI element scale uniformly across all screen resolutions using CanvasScaler?",
+ opts:["Use Constant Pixel Size with scaleFactor=1","Use Scale With Screen Size mode, set Reference Resolution to your design resolution (e.g., 1920×1080), and set Screen Match Mode to Expand or Shrink based on your preference"],
+ ans:1,exp:"<strong>Scale With Screen Size</strong>: set Reference Resolution = design resolution. UI elements are scaled proportionally. <strong>Match Width or Height</strong> slider: 0=match width (letterbox height), 1=match height (letterbox width), 0.5=compromise. Use Expand to never cut content."},
+
+{t:"Materials",d:"hard",q:"What is the 'Z-Fighting' artifact and how is it resolved?",
+ opts:["A type of particle collision","Flickering between two coplanar (same-depth) surfaces because depth buffer precision cannot determine which is in front. Fix: offset one surface slightly, use Polygon Offset in shader, or avoid coplanar geometry"],
+ ans:1,exp:"<strong>Z-Fighting</strong> occurs when two surfaces occupy the same depth value. Solutions: (1) Physically separate them (0.001 units). (2) Use Polygon Offset in shader (<code>Offset -1, -1</code>). (3) Use a decal system for overlaid graphics. (4) Increase camera near/far ratio."},
+
+{t:"Lighting",d:"hard",q:"What causes 'Light Leaking' in baked lightmaps and how is it fixed?",
+ opts:["Too many lights in the scene","Indirect light bleeding through thin walls in lightmaps due to insufficient wall thickness or too-large lightmap texel size. Fix: thicken walls (>2× lightmap texel size), increase lightmap resolution, or add light blockers"],
+ ans:1,exp:"<strong>Light leaking</strong> happens when walls are thinner than one lightmap texel or when GI paths sample through geometry. Fixes: (1) Make walls at least 0.2-0.3m thick. (2) Increase lightmap resolution. (3) Use 'Backface Tolerance' settings. (4) Mark thin geometry's backface UVs manually."},
+
+{t:"Navigation",d:"hard",q:"What is the difference between NavMesh Agent 'Angular Speed' and 'Acceleration' properties?",
+ opts:["They control the same thing","Angular Speed controls rotation speed (deg/s) for turning toward the path; Acceleration controls how fast the agent reaches its top Speed (units/s²) — both affect movement feel"],
+ ans:1,exp:"<strong>Angular Speed</strong> (deg/s): rotation rate — low values make the agent turn slowly (tank-like). <strong>Acceleration</strong> (units/s²): how quickly the agent reaches max Speed — low = sluggish start/stop, high = snappy. Both need tuning for natural-feeling agent movement."},
+
+{t:"Editor Interface",d:"hard",q:"What does 'Bakery' refer to in the Unity ecosystem and what problem does it solve?",
+ opts:["A food game genre","A third-party GPU lightmapper that provides faster baking (GPU vs CPU), better GI quality, and features like Light Mesh (emissive geometry as real lights) beyond Unity's built-in Progressive Lightmapper"],
+ ans:1,exp:"<strong>Bakery</strong> is a popular Asset Store GPU lightmapper. It bakes 10-50× faster than Unity's CPU Progressive Lightmapper on modern GPUs, supports emissive mesh lights, tangent-space SH, and produces higher-quality results — widely used in professional Unity projects."},
+
+{t:"Programming",d:"hard",q:"What is the recommended way to load a scene additively and keep both scenes active?",
+ code:"SceneManager.LoadScene(\"UI\", LoadSceneMode.???);",
+ opts:["Single","Additive","Async","Overlay"],
+ ans:1,exp:"<strong>LoadSceneMode.Additive</strong> loads the new scene alongside the existing one — both are active simultaneously. Essential for persistent managers (load 'Core' scene once) + additive level scenes. Set active scene with <code>SceneManager.SetActiveScene()</code> to control which scene new objects belong to."},
+
+{t:"Asset Management",d:"hard",q:"What is Unity's 'Shader Variant Collection' and why is it important for build time?",
+ opts:["A texture atlas for shaders","A pre-saved set of shader variants that Unity warms up at startup — preventing mid-gameplay shader compilation stutters (the 'shader stutter' problem) common in complex games"],
+ ans:1,exp:"Shaders compile on-demand on first use by default, causing frame hitches. <strong>Shader Variant Collection</strong> pre-records all needed variants. Combined with Shader.WarmupAllShaders() or Graphics.RenderMeshInstanced prewarming, eliminates mid-game compilation stutters."},
+
+{t:"Programming",d:"hard",q:"What is 'IL2CPP' vs 'Mono' as Unity scripting backends?",
+ opts:["They are identical","Mono: JIT-compiled C# running on Mono runtime — faster iteration, editor default. IL2CPP: C# compiled to C++ then native code — better performance, required for iOS/WebGL, no JIT, longer build times"],
+ ans:1,exp:"<strong>Mono</strong>: fast builds, JIT compilation at runtime, cross-platform. <strong>IL2CPP</strong>: transpiles C# to C++ then compiles to native — 10-30% better performance, smaller build, mandatory on iOS/WebGL (no JIT allowed). Use Mono for dev iteration, IL2CPP for shipping."},
+
+{t:"Physics",d:"hard",q:"What is the purpose of Physics.autoSimulation = false?",
+ opts:["Disables all collision","Stops Unity from automatically running physics each FixedUpdate — you then call Physics.Simulate(deltaTime) manually. Used for deterministic replays, fast-forward simulation, and network rollback systems"],
+ ans:1,exp:"<strong>Physics.autoSimulation = false</strong> + <strong>Physics.Simulate(dt)</strong> gives you manual control over physics stepping. Essential for: (1) Deterministic netcode rollback. (2) Fast-forward simulations (precompute trajectories). (3) Turn-based games with physics previews."},
+
+{t:"Game Design",d:"hard",q:"What is the 'Bartle Taxonomy of Player Types' and name all four types?",
+ opts:["A physics taxonomy","A classification of MUD/game player motivations: Achievers (beat the game), Explorers (discover everything), Socialisers (interact with players), Killers (dominate others) — helps design features appealing to different player motivations"],
+ ans:1,exp:"<strong>Bartle (1996)</strong>: <strong>Achievers</strong> want points/levels/rewards. <strong>Explorers</strong> want to discover the world's secrets. <strong>Socialisers</strong> want player interaction. <strong>Killers</strong> want to dominate/affect others. Good MMOs/live games design content for all four archetypes."},
+
+{t:"Animation",d:"hard",q:"What is 'Procedural Animation' and give a Unity implementation example?",
+ opts:["Importing animation from Maya","Generating animation at runtime via code rather than pre-authored keyframes — e.g., spring-based camera bobbing, IK-driven limb placement, or physics-based secondary motion (jigglebones)"],
+ ans:1,exp:"<strong>Procedural animation</strong> examples in Unity: (1) Spring system for camera follow (position/rotation lag). (2) <code>OnAnimatorIK()</code> for foot placement. (3) Rigidbody-driven cloth/hair secondary motion. (4) Inverse kinematics reaching for dynamic targets. These adapt to any game state without pre-baked clips."},
+
+{t:"Programming",d:"hard",q:"What is the purpose of `NativeArray<T>` in Unity's Job System?",
+ opts:["A type of List<T>","A blittable array type that can be safely passed between the main thread and Job System worker threads — regular C# arrays cannot be used in Burst-compiled jobs due to managed heap restrictions"],
+ ans:1,exp:"<strong>NativeArray<T></strong> lives in unmanaged (native) memory — safe for Burst-compiled jobs and main-thread access without GC pressure. Must be Disposed() manually. Part of Unity.Collections namespace. Required by Burst Compiler and the C# Job System for multi-threaded operations."},
+
+{t:"Lighting",d:"hard",q:"What is 'Physically Based Sky' in HDRP and how does it differ from a Skybox Material?",
+ opts:["They are identical","Physically Based Sky (HDRP) simulates Rayleigh and Mie atmospheric scattering in real time, producing realistic time-of-day sky with proper sun/moon, horizon color shifts, and aerial perspective — far beyond a static skybox material"],
+ ans:1,exp:"<strong>HDRP Physically Based Sky</strong> uses real atmospheric scattering equations (Rayleigh = blue sky, Mie = haze/fog), producing physically accurate sky colors at any sun angle. HDRI Sky uses a pre-captured 360° image. Both are Volume-controlled in HDRP."},
+
+{t:"Materials",d:"hard",q:"What is 'GPU Skinning' and why is it important for character animation performance?",
+ opts:["A texture compression technique","Moving mesh deformation (bone weight sampling, vertex transformation) from CPU to GPU — dramatically reducing CPU cost for animated characters, critical when many animated characters are in view simultaneously"],
+ ans:1,exp:"By default, Unity skins meshes on CPU. <strong>GPU Skinning</strong> (enabled in Player Settings) offloads vertex skinning to the GPU via compute shaders — much faster for many characters. Essential for crowd simulations. Not available on all mobile hardware."},
+
+{t:"UI",d:"hard",q:"What is the 'Navigation' system on Selectable components used for?",
+ opts:["NavMesh AI navigation","Keyboard/controller UI traversal — defines which Selectable is selected when pressing Up/Down/Left/Right on a gamepad or arrow keys. Modes: Automatic (Unity computes neighbors), Explicit (manual assignment), None (disabled)"],
+ ans:1,exp:"<strong>Selectable.navigation</strong> enables controller/keyboard-friendly UI: Automatic = Unity finds nearest Selectable in each direction. Explicit = you assign each direction manually. Used for controller UI menus, pause screens, and settings."},
+
+// More cross-topic advanced
+{t:"Programming",d:"hard",q:"What is the 'Command Pattern' and how is it used in game development?",
+ opts:["A physics command line tool","Encapsulates actions as objects — enabling undo/redo systems, replay recording, and input buffering. Each Command object has Execute() and Undo() methods"],
+ ans:1,exp:"<strong>Command Pattern</strong>: wrap each action (Move, Attack, UseItem) as a Command object with Execute()/Undo(). Store in a queue for: (1) Undo/redo (execute backward). (2) Replay systems (serialize commands). (3) Input queuing. Widely used in strategy/RPG games."},
+
+{t:"Programming",d:"hard",q:"What is the 'Observer Pattern' in Unity and how does it relate to C# Events?",
+ opts:["A camera follow system","Defines a one-to-many dependency: when one object (Subject) changes state, all registered observers are notified. C# events/delegates implement this — e.g., player health changes notify UI, audio, and game manager"],
+ ans:1,exp:"<strong>Observer Pattern</strong> via C# events: <code>public static event Action<float> OnHealthChanged;</code> Listeners: <code>Player.OnHealthChanged += UpdateHealthBar;</code> Publisher: <code>OnHealthChanged?.Invoke(newHealth);</code> Decouples systems completely — HealthBar doesn't need a Player reference."},
+
+{t:"Physics",d:"hard",q:"What is the Kinematic Rigidbody use case and limitation?",
+ opts:["Same as non-kinematic","A Kinematic Rigidbody is moved by script/Transform, not physics. It CAN affect non-kinematic Rigidbodies (push them) but IS NOT affected by them or gravity. Perfect for moving platforms, doors, elevators — things that move deterministically but should push physics objects"],
+ ans:1,exp:"<strong>Kinematic Rigidbodies</strong> move via script (MovePosition/MoveRotation in FixedUpdate or Transform). They push non-kinematic Rigidbodies but are not pushed back. Do NOT use Transform.position directly on kinematic Rigidbodies — use rb.MovePosition() to maintain collision accuracy."},
+
+{t:"Game Design",d:"hard",q:"What is 'Save Scumming' and what design approach mitigates it?",
+ opts:["A type of game compression","Repeatedly saving before a risky action and reloading on failure to bypass consequences. Mitigated by autosave-only systems, persistent consequences (Ironman mode), or making failure a rewarding learning experience rather than a punishment"],
+ ans:1,exp:"<strong>Save scumming</strong> is a player behavior exploiting liberal save systems to eliminate risk. Designers counter with: (1) Autosave checkpoints only. (2) Permadeath/Ironman modes. (3) Embracing failure as learning (Dark Souls 'YOU DIED' → retry). (4) Making failures interesting narrative branches."},
+
+{t:"Editor Interface",d:"hard",q:"What is the difference between 'Editor Script' and 'Custom Editor' in Unity Editor programming?",
+ opts:["They are identical","An Editor Script is any script in the Editor folder using EditorWindow (standalone tools). A Custom Editor ([CustomEditor(typeof(X))]) overrides how a specific component displays in the Inspector — different extension points for different needs"],
+ ans:1,exp:"<strong>EditorWindow</strong>: standalone tool windows (custom panels, batch tools). <strong>Custom Editor (Editor class)</strong>: overrides the Inspector for a specific component type — adding buttons, custom sliders, scene handles. Both live in Editor folders, both use UnityEditor namespace."},
+
+{t:"Asset Management",d:"hard",q:"What is 'Async Scene Loading with progress reporting' and how is it implemented?",
+ code:"AsyncOperation op = SceneManager.LoadSceneAsync(\"Level1\");\nop.allowSceneActivation = false;",
+ opts:["This code instantly loads the scene","LoadSceneAsync loads in background; progress is op.progress (0→0.9). Setting allowSceneActivation=false pauses at 90% until you set it true — enables a loading bar that completes before the scene activates"],
+ ans:1,exp:"<code>allowSceneActivation = false</code> holds the scene at progress=0.9 (90% = fully loaded, waiting). Use a Coroutine: <code>while (op.progress < 0.9f) { loadingBar.fillAmount = op.progress; yield return null; }</code> Then show 'Press Any Key', set <code>op.allowSceneActivation = true</code>."},
+
+{t:"Programming",d:"hard",q:"What does `[HideInInspector]` do differently from making a field private?",
+ opts:["Same effect","[HideInInspector] hides a PUBLIC field from the Inspector while keeping it public (accessible by other scripts and serialized). Making it private hides it AND makes it inaccessible to other scripts"],
+ ans:1,exp:"<strong>[HideInInspector]</strong> is for public fields you want accessible in code but don't want designers to accidentally edit in the Inspector. Useful for read-only runtime data (current state, computed values) that other systems need to read."},
+
+{t:"Lighting",d:"hard",q:"What is a 'Light Probe Group' and how do you place probes effectively?",
+ opts:["A group of real-time lights","A component holding multiple Light Probe sample positions baked into irradiance data. Effective placement: dense near surfaces and transitions, sparse in open areas. Avoid placing inside solid geometry"],
+ ans:1,exp:"<strong>Light Probe placement</strong> best practices: (1) Place at head height of dynamic objects. (2) Dense placement at lighting transitions (shadow→light). (3) Sparse in uniformly-lit areas. (4) Never inside walls. (5) Use Tetrahedralization — interior probes must be enclosed by outer probes."},
+
+{t:"Materials",d:"hard",q:"What does 'Stencil Buffer' in Unity shaders enable?",
+ opts:["Depth testing","A per-pixel 8-bit mask allowing custom rendering logic — one pass writes a stencil value, another renders only where the stencil matches (or doesn't). Used for: portals, outlines, UI masks, reflections"],
+ ans:1,exp:"The <strong>Stencil Buffer</strong> enables multi-pass rendering tricks: (1) Render room to stencil, then render reflection only where stencil is set = portal. (2) Render outline on stencil, then draw thick version only where stencil is unset = outline shader. Very powerful for special effects."},
+
+{t:"Programming",d:"hard",q:"What is the difference between `Start()` and `OnEnable()`?",
+ opts:["They are identical","Start() runs once after Awake when the object is first enabled and the scene starts; OnEnable() runs every time the component is enabled — including on scene start AND whenever SetActive(true) is called on a previously disabled object"],
+ ans:1,exp:"<strong>OnEnable()</strong> fires every time the component becomes active — at scene load AND when re-enabled. Perfect for subscribing to events and resetting object state. <strong>Start()</strong> runs only once — good for one-time initialization. Pair OnEnable with OnDisable for event subscription/unsubscription."},
+
+{t:"Game Design",d:"hard",q:"What is 'Rubber Banding' in racing game design and its game feel tradeoff?",
+ opts:["A physics simulation technique","AI scaling difficulty based on the player's race position — AI speeds up when player leads, slows when player trails. Creates closer races but can feel unfair to skilled players who feel their skill is not rewarded"],
+ ans:1,exp:"<strong>Rubber banding</strong> scales AI difficulty dynamically to keep races competitive. Pro: exciting close finishes, accessible to new players. Con: punishes skilled players (winning feels pointless). Modern approach: subtle rubber banding (item distribution, not speed) to balance accessibility vs skill reward."},
+
+{t:"Navigation",d:"hard",q:"What is the NavMesh Link component (AI Navigation package) used for?",
+ opts:["It links multiple NavMesh surfaces","A NavMesh Link creates a manual connection between two NavMesh surfaces or points — replacing the older OffMeshLink system with more explicit control over link direction, width, and bidirectionality"],
+ ans:1,exp:"<strong>NavMesh Link</strong> (com.unity.ai.navigation package) explicitly connects two NavMesh points with configurable width, bidirectional flag, and area type. More powerful than legacy OffMeshLink. Use for drops, climbs, jumps, teleporters, doors connecting separate NavMesh islands."},
+
+{t:"Programming",d:"hard",q:"What is `TryGetComponent<T>()` and why prefer it over `GetComponent<T>()`?",
+ code:"if (TryGetComponent(out Health h)) {\n    h.TakeDamage(10f);\n}",
+ opts:["They are identical","TryGetComponent is allocation-free in Editor and Runtime — GetComponent<T>() allocates a small amount when the component is NOT found. TryGetComponent returns bool and outputs the component — cleaner, faster null check"],
+ ans:1,exp:"<strong>TryGetComponent<T>(out T component)</strong> is the preferred allocation-free alternative. Returns bool (found/not found) and sets the out parameter. Zero allocation whether found or not. Available since Unity 2019.2."},
+
+{t:"Materials",d:"hard",q:"What is 'SRP Batcher' in Unity and how does it reduce draw call overhead?",
+ opts:["A physics batching system","A rendering optimization in URP/HDRP that reduces per-draw-call CPU cost by binding all material properties in large GPU buffers upfront — CPU just issues 'draw' commands without re-uploading shader properties each call"],
+ ans:1,exp:"<strong>SRP Batcher</strong> works differently from classic batching: instead of merging meshes, it organizes shader constant data into persistent GPU buffers. The CPU still issues one draw call per mesh, but material property upload is done once — reducing CPU overhead significantly for URP/HDRP scenes."},
+
+{t:"Physics",d:"hard",q:"What is 'Burst Compiler' and how does it relate to physics in Unity?",
+ opts:["A texture compression tool","A Unity compiler that transforms IL/.NET code to highly optimized native SIMD code via LLVM — used with the Job System for parallel physics queries, spatial hashing, and custom simulation that runs 10-50× faster than regular C#"],
+ ans:1,exp:"<strong>Burst Compiler</strong> compiles C# jobs to native SIMD code. For physics: ScheduleBatchedRaycasts, SphereCast batch queries, and custom collision detection jobs run in parallel Burst-compiled jobs. Requires NativeArray, no managed heap, no reference types."},
+
+{t:"Editor Interface",d:"hard",q:"What does the 'Addressables Profiler' window show and why is it important?",
+ opts:["Editor frame time breakdown","Displays which Addressable assets are currently loaded in memory, their load count/references, groups, and labels — critical for finding memory leaks where Addressables are loaded but never released"],
+ ans:1,exp:"The <strong>Addressables Profiler</strong> (Window > Asset Management > Addressables > Profiler) shows runtime load state of all Addressable assets. Essential for debugging: if an asset shows loaded with refcount > 0 after the scene ends, you have an Addressables memory leak (missing Addressables.Release call)."},
+
+{t:"Programming",d:"hard",q:"What is the purpose of `OnValidate()` in MonoBehaviour?",
+ opts:["Called on scene validation build","Called in the Editor when the script is loaded or a value is changed in the Inspector — perfect for clamping values, enforcing constraints, and triggering Editor-time setup without entering Play Mode"],
+ ans:1,exp:"<strong>OnValidate()</strong> runs in Editor (not in builds) whenever an Inspector value changes or the script is loaded. Use to: clamp health to [0,maxHealth], validate references, auto-generate names, or trigger editor-time setup. Do NOT call expensive operations — it runs frequently."},
+
+{t:"Game Art",d:"hard",q:"What is the purpose of 'Mesh.RecalculateNormals()' and when should it be called?",
+ opts:["Rebuilds the NavMesh","Recomputes vertex normals from triangle geometry after procedural mesh modification — must be called after changing Mesh.vertices/triangles to ensure correct lighting on the modified mesh"],
+ ans:1,exp:"After modifying <code>Mesh.vertices</code> or <code>Mesh.triangles</code> procedurally, call <strong>RecalculateNormals()</strong> to recompute smooth normals, then optionally <code>RecalculateBounds()</code> for correct frustum culling. Required for correct lighting on runtime-generated geometry."},
+
+{t:"Services",d:"hard",q:"What is Unity's 'Multiplay' hosting service used for?",
+ opts:["Hosting Unity's website","A dedicated game server hosting solution integrated with Unity Gaming Services — spin up, scale, and manage dedicated game servers for multiplayer titles with auto-scaling based on player demand"],
+ ans:1,exp:"<strong>Unity Multiplay</strong> (now part of Game Server Hosting in UGS) provides dedicated server infrastructure. Integrates with Unity Game Services SDK for matchmaking (Matchmaker) → server allocation → player connection. Supports Unity, Unreal, and custom binaries."},
+
+{t:"Programming",d:"hard",q:"What is the state machine pattern and how does it differ from Unity's Animator state machine?",
+ opts:["They are identical","A code-level state machine (switch-case or class-per-state) controls game logic states (e.g., AI: Idle/Patrol/Chase/Attack). Unity's Animator state machine controls animation playback. Both can exist in parallel — code state drives Animator parameters"],
+ ans:1,exp:"<strong>Code state machines</strong> manage game logic. <strong>Animator state machines</strong> manage visual animation. Best practice: AI code state machine sets Animator parameters (<code>animator.SetFloat('Speed', speed)</code>), letting the Animator independently handle animation blending — separation of concerns."},
+
+{t:"UI",d:"hard",q:"What is the 'TextMeshPro RichText' system and name 3 supported tags?",
+ opts:["A 3D mesh text system","TMP supports HTML-like rich text tags inline: <b>=bold, <i>=italic, <color=#hex>=color, <size=N>=font size, <link=id>=clickable links, <sprite=N>=embedded sprites — enabling complex formatted text without multiple Text components"],
+ ans:1,exp:"<strong>TMP Rich Text</strong> tags: <code>&lt;b&gt;</code> bold, <code>&lt;color=#FF0000&gt;</code> color, <code>&lt;size=24&gt;</code> font size, <code>&lt;i&gt;</code> italic, <code>&lt;sprite=0&gt;</code> inline sprite, <code>&lt;link=\"url\"&gt;</code> clickable links, <code>&lt;alpha=#80&gt;</code> transparency. Supports nesting."},
+
+{t:"Lighting",d:"hard",q:"What is 'Probe Volume' (APV - Adaptive Probe Volumes) in Unity 2022+?",
+ opts:["An upgrade to Reflection Probes","A volumetric lighting system replacing manually-placed Light Probe Groups — automatically fills scene volumes with probes at adaptive density, providing much better coverage without manual placement work"],
+ ans:1,exp:"<strong>Adaptive Probe Volumes (APV)</strong> in Unity 2022+ (URP/HDRP) automatically compute probe placement based on scene geometry, eliminating manual Light Probe Group placement. Provides per-pixel GI on dynamic objects (vs per-object interpolation), dramatically improving GI quality."},
+
+{t:"Programming",d:"hard",q:"What does `Physics.OverlapSphereNonAlloc(center, radius, results)` do differently from `Physics.OverlapSphere`?",
+ opts:["They are identical","OverlapSphereNonAlloc writes results into a pre-allocated Collider[] array (no heap allocation) and returns the count — OverlapSphere allocates a new array every call. Use NonAlloc in Update/FixedUpdate to avoid GC pressure"],
+ ans:1,exp:"All <strong>NonAlloc physics queries</strong> (OverlapSphereNonAlloc, RaycastNonAlloc, etc.) write into pre-allocated arrays, returning the result count. Zero allocation vs the standard versions which allocate a new array each call. Pre-allocate a Collider[] buffer: <code>Collider[] cols = new Collider[20];</code>"},
+
+{t:"Asset Management",d:"hard",q:"What is the Unity Plastic SCM (now Unity Version Control) and how does it differ from Git?",
+ opts:["An audio mixer tool","A centralized+distributed version control system optimized for large binary game assets (textures, models, audio) with visual merge tools and Unity Editor integration — Git struggles with large binary files without LFS"],
+ ans:1,exp:"<strong>Unity Version Control (Plastic SCM)</strong> handles large binary files natively (no LFS), has visual scene/prefab diff/merge tools, centralized workspace model (good for artists), and integrated Unity Editor status. Git with LFS can work but has limitations for large binary-heavy game repositories."},
+
+{t:"Game Design",d:"hard",q:"What is the 'Compulsion Loop' and give an example from a successful mobile game?",
+ opts:["A physics loop","A short, highly satisfying action sequence that players repeat compulsively: Action → Variable Reward → Anticipation → Action. Example: Candy Crush: match candies (action) → cascade combos/stars (variable reward) → next puzzle anticipation"],
+ ans:1,exp:"<strong>Compulsion Loop</strong>: a tight action-feedback-reward cycle leveraging variable ratio reinforcement. Clash of Clans: attack (action) → loot + destruction (variable reward) → build/upgrade anticipation → attack again. The variable reward (sometimes big win, sometimes small) is the psychological driver."},
+
+{t:"Programming",d:"hard",q:"What is the Flyweight Pattern and how is it applied to Unity game objects?",
+ opts:["A physics flight simulation","Shares common immutable data between many similar objects instead of duplicating it — Unity's Mesh/Material/Prefab system IS flyweight: many GameObjects share one Mesh asset and one Material asset instance"],
+ ans:1,exp:"<strong>Flyweight Pattern</strong>: separate intrinsic (shared) state from extrinsic (per-instance) state. In Unity: Mesh (shared geometry data) + MeshRenderer (per-instance transform, material property block) is flyweight. MaterialPropertyBlock allows per-renderer property overrides without creating new Material instances."},
+
+{t:"UI",d:"hard",q:"What is 'UI Toolkit Runtime' vs 'UGUI' and which should you choose for a new project?",
+ opts:["They are identical","UGUI (Canvas/Rect Transform) is mature, widely documented, Component-based. UI Toolkit is newer, uses UXML/USS (web-like), better for complex data-driven UI, superior Editor tooling. UGUI for 2D games/HUDs, UI Toolkit for complex data panels and Editor extensions"],
+ ans:1,exp:"<strong>UGUI</strong>: battle-tested, Component-based, vast Asset Store support, best for typical game HUDs. <strong>UI Toolkit</strong>: UXML layout + USS styling, data binding, superior for complex inventory/settings/editor screens. As of Unity 2023, UI Toolkit is recommended for Editor UI; UGUI remains standard for game runtime UI."},
+
+// Final wrap batch
+{t:"Physics",d:"hard",q:"What is 'Cloth Simulation' in Unity and what component handles it?",
+ opts:["Simulated cloth via particle systems","The Cloth component on a SkinnedMeshRenderer — simulates fabric physics using a particle constraint system, responding to wind zones, gravity, and character movement"],
+ ans:1,exp:"<strong>Unity Cloth</strong> component works with SkinnedMeshRenderer. Define 'paint' vertices as pinned or free. It uses a constraint-based particle system (XPBD-like) supporting: Gravity, Wind Zones, Damping, and collision with Sphere/Capsule colliders. Expensive — limit polygon count."},
+
+{t:"Animation",d:"hard",q:"What does `Animator.MatchTarget()` do?",
+ opts:["Matches animation speed to movement","Adjusts an animation's root position/rotation during playback to precisely place a specified body part at a target position — used for climbing ledges, vaulting, and synchronized action animations"],
+ ans:1,exp:"<strong>Animator.MatchTarget(targetPos, targetRot, bodyPart, weightMask, normalizedStartTime, normalizedEndTime)</strong> warps the character's root transform during the specified clip time range to ensure a body part (e.g., right hand) arrives exactly at the target — essential for procedural ledge climbing."},
+
+{t:"Programming",d:"hard",q:"What is 'ECS (Entity Component System)' in Unity DOTS?",
+ opts:["The classic GameObject/Component system","A data-oriented paradigm separating data (Components) from behavior (Systems). Entities are lightweight IDs, Components are plain data structs, Systems process matching entity arrays — enables Burst-compiled parallel iteration over millions of entities"],
+ ans:1,exp:"<strong>Unity DOTS ECS</strong> (com.unity.entities): Entities = integer IDs (no classes). Components = unmanaged structs (data only). Systems = classes processing all entities with matching component sets. Data is stored contiguously (chunks) for cache-friendly iteration. Enables 10-100× more entities than MonoBehaviour at equivalent performance."},
+
+{t:"Materials",d:"hard",q:"What is a 'Render Texture' in Unity and give 2 use cases?",
+ opts:["A type of baked lightmap","A texture that is rendered to at runtime by a Camera — enables: (1) Security camera/minimap (render a scene view into a UI Image), (2) Portals (render destination camera into a surface mesh), (3) Dynamic reflections, (4) Post-process effects"],
+ ans:1,exp:"<strong>Render Texture</strong>: set as Camera.targetTexture. Camera renders into it instead of screen. Use cases: (1) Minimap camera → RenderTexture → UI RawImage. (2) Portal camera → RenderTexture → quad material. (3) Security screen in 3D world. (4) Reflection camera for water planes."},
+
+{t:"Editor Interface",d:"hard",q:"What is the 'Test Runner' window in Unity used for?",
+ opts:["Performance benchmarking only","Running unit tests (Edit Mode) and integration tests (Play Mode) using Unity Test Framework (NUnit). Enables TDD workflows, CI regression testing, and validating game logic without manual testing"],
+ ans:1,exp:"<strong>Unity Test Runner</strong> (Window > General > Test Runner) runs: <strong>Edit Mode Tests</strong> (instant, no Play Mode, test pure logic). <strong>Play Mode Tests</strong> (runs full game loop, test coroutines, physics, scene loading). Uses NUnit attributes: [Test], [UnityTest], [SetUp], [TearDown]."},
+
+{t:"Game Design",d:"hard",q:"What is 'Skeumorphism' vs 'Flat Design' in game UI design?",
+ opts:["Physics vs art terms","Skeumorphism mimics real-world objects (leather journal, wooden inventory, glass buttons) to aid recognition. Flat Design uses minimal abstraction, bold colors, no depth. Games choose based on genre tone — RPGs often skeumorphic, puzzle games flat"],
+ ans:1,exp:"<strong>Skeumorphic UI</strong> (Fallout 4 PipBoy, Hearthstone): real-world textures aid immersion and intuitive use. <strong>Flat/Material Design</strong> (mobile puzzle games): clean, scalable, fast to render. Modern games often mix: flat layout with subtle skeumorphic accents for genre-appropriate feel."},
+
+{t:"Programming",d:"hard",q:"What is 'Message Passing' in Unity and why can it be dangerous?",
+ opts:["Network packet system","SendMessage()/BroadcastMessage() call methods by string name on a GameObject — convenient but uses reflection (slow), has no compile-time safety, silently fails if method doesn't exist, and is deprecated in favor of direct references or events"],
+ ans:1,exp:"<strong>SendMessage('MethodName')</strong> uses reflection to find and call the named method — O(n) component scan, no compile-time check, silent failure. Avoid in performance-critical paths. Use: cached GetComponent references, UnityEvents, C# events/delegates, or interfaces instead."},
+
+{t:"Physics",d:"hard",q:"What is the purpose of 'Simulation Mode: Fixed Update vs Update vs Script' on Physics settings?",
+ opts:["Controls shadow update rate","Controls WHEN physics simulation runs: FixedUpdate (deterministic, default), Update (tied to frame rate, non-deterministic), Script (you call Physics.Simulate() manually for full control)"],
+ ans:1,exp:"<strong>Physics.simulationMode</strong>: FixedUpdate = deterministic, frame-rate independent (standard). Update = physics tied to frame rate (non-deterministic, variable timestep). Script = manual via Physics.Simulate() — needed for turn-based prediction, rollback networking, and editor-time simulation."},
+
+{t:"Asset Management",d:"hard",q:"What is 'Preloaded Assets' in Unity Player Settings used for?",
+ opts:["Pre-loading audio files","Forces specified assets to be loaded into memory at application startup before any scene loads — useful for critical configuration ScriptableObjects, default audio, or font assets needed globally from frame 1"],
+ ans:1,exp:"<strong>Preloaded Assets</strong> (Edit > Project Settings > Player > Other Settings) ensures specified assets are in memory before any scene loads. Use for: global config ScriptableObjects, default TextMeshPro settings, audio mixers that must exist before any scene is active."},
+
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let mode='exam', curQ=0, answered=false, fcIdx=0;
+let score={c:0,w:0,s:0}, topicS={}, flagged=new Set(), wrongQ=[];
+let session=[], diffFilter=['easy','medium','hard'];
+
+function toggleDiff(el,d){
+  el.classList.toggle('active');
+  if(diffFilter.includes(d)) diffFilter=diffFilter.filter(x=>x!==d);
+  else diffFilter.push(d);
+  if(diffFilter.length===0){diffFilter=[d];el.classList.add('active');}
+}
+
+function selMode(el,m){
+  document.querySelectorAll('.mcard').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); mode=m;
+  document.getElementById('topic-sel').style.display=(m==='topic')?'block':'none';
+}
+
+function buildNav(){
+  const nav=document.getElementById('side-nav');
+  const sel=document.getElementById('topic-sel');
+  const topics=[...new Set(Q.map(q=>q.t))].sort();
+  const counts={easy:0,medium:0,hard:0};
+  Q.forEach(q=>counts[q.d]++);
+  nav.innerHTML=`<div class="nav-t">Difficulty</div>
+    <div class="nav-i"><span>🟢 Easy</span><span class="nav-cnt">${counts.easy}</span></div>
+    <div class="nav-i"><span>🟡 Medium</span><span class="nav-cnt">${counts.medium}</span></div>
+    <div class="nav-i"><span>🔴 Hard</span><span class="nav-cnt">${counts.hard}</span></div>
+    <div class="nav-t" style="margin-top:16px">Domains</div>`;
+  topics.forEach(t=>{
+    const c=Q.filter(q=>q.t===t).length;
+    const d=document.createElement('div');
+    d.className='nav-i';
+    d.innerHTML=`<span>${t}</span><span class="nav-cnt">${c}</span>`;
+    d.onclick=()=>{
+      document.getElementById('topic-sel').value=t;
+      selMode(document.querySelector('[data-mode="topic"]'),'topic');
+      document.getElementById('side-nav').classList.remove('open');
+      startExam();
+    };
+    nav.appendChild(d);
+    const opt=document.createElement('option');
+    opt.value=t;opt.textContent=`${t} (${c})`;
+    sel.appendChild(opt);
+  });
+  document.getElementById('total-count').textContent=Q.length;
+}
+
+document.getElementById('nav-toggle').addEventListener('click',()=>{
+  document.getElementById('side-nav').classList.toggle('open');
+});
+
+function startExam(){
+  score={c:0,w:0,s:0}; topicS={}; flagged=new Set(); wrongQ=[]; curQ=0; answered=false;
+  const filtered=Q.filter(q=>diffFilter.includes(q.d));
+  if(mode==='exam') session=[...filtered];
+  else if(mode==='random') session=[...filtered].sort(()=>Math.random()-.5).slice(0,60);
+  else if(mode==='hard') session=Q.filter(q=>q.d==='hard').sort(()=>Math.random()-.5);
+  else if(mode==='topic'){
+    const sel=document.getElementById('topic-sel').value;
+    session=Q.filter(q=>q.t===sel&&diffFilter.includes(q.d));
+    if(!session.length) session=[...filtered];
+  }
+  else if(mode==='flash'){session=[...filtered].sort(()=>Math.random()-.5).slice(0,60);startFlash();return;}
+  else if(mode==='weak'){
+    if(wrongQ.length===0){alert('No wrong answers yet. Complete a session first!');return;}
+    session=[...wrongQ];
+  }
+  if(!session.length){alert('No questions match selected difficulty filters.');return;}
+  document.getElementById('hero').style.display='none';
+  document.getElementById('exam-screen').style.display='block';
+  document.getElementById('results-screen').style.display='none';
+  document.getElementById('flash-screen').style.display='none';
+  document.getElementById('hstats').style.display='flex';
+  renderQ();
+}
+
+function renderQ(){
+  const q=session[curQ];
+  answered=false;
+  const pct=(curQ/session.length)*100;
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('qnum').textContent=`Q${curQ+1} / ${session.length}`;
+  document.getElementById('qtopic').textContent=q.t;
+  const dd=document.getElementById('qdiff');
+  dd.textContent=q.d.toUpperCase(); dd.className='qdiff '+q.d;
+  document.getElementById('qtext').textContent=q.q;
+  const sub=document.getElementById('qsub');
+  if(q.sub){sub.textContent=q.sub;sub.style.display='block';}else sub.style.display='none';
+  const code=document.getElementById('qcode');
+  if(q.code){code.textContent=q.code;code.style.display='block';}else code.style.display='none';
+  const fi=document.getElementById('flag-indicator');
+  fi.style.display=flagged.has(curQ)?'inline':'none';
+  const opts=document.getElementById('opts');
+  opts.innerHTML='';
+  const letters=['A','B','C','D'];
+  q.opts.forEach((o,i)=>{
+    const d=document.createElement('div');
+    d.className='opt';
+    d.innerHTML=`<div class="ol">${letters[i]}</div><div>${o}</div>`;
+    d.addEventListener('click',()=>selectAns(i));
+    opts.appendChild(d);
+  });
+  document.getElementById('expbox').className='exp-box';
+  document.getElementById('exptext').innerHTML='';
+  document.getElementById('expcode').style.display='none';
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('btn-skip').style.display='inline-block';
+  updateH();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectAns(idx){
+  if(answered)return;
+  answered=true;
+  const q=session[curQ];
+  const opts=document.querySelectorAll('.opt');
+  opts.forEach(o=>o.classList.add('dis'));
+  if(!topicS[q.t]) topicS[q.t]={c:0,t:0};
+  topicS[q.t].t++;
+  if(idx===q.ans){
+    opts[idx].classList.add('ok');
+    score.c++; topicS[q.t].c++;
+  } else {
+    opts[idx].classList.add('bad');
+    opts[q.ans].classList.add('ok');
+    score.w++;
+    wrongQ.push(q);
+  }
+  const eb=document.getElementById('expbox');
+  document.getElementById('exptext').innerHTML=q.exp;
+  if(q.expcode){
+    const ec=document.getElementById('expcode');
+    ec.textContent=q.expcode; ec.style.display='block';
+  }
+  eb.classList.add('show');
+  document.getElementById('btn-next').style.display='inline-block';
+  document.getElementById('btn-skip').style.display='none';
+  updateH();
+}
+
+function flagQuestion(){
+  if(flagged.has(curQ)) flagged.delete(curQ);
+  else flagged.add(curQ);
+  document.getElementById('flag-indicator').style.display=flagged.has(curQ)?'inline':'none';
+  document.getElementById('h-f').textContent=flagged.size;
+}
+
+function skipQ(){
+  score.s++;
+  wrongQ.push(session[curQ]);
+  if(!topicS[session[curQ].t]) topicS[session[curQ].t]={c:0,t:0};
+  topicS[session[curQ].t].t++;
+  nextQ();
+}
+
+function nextQ(){
+  curQ++;
+  if(curQ>=session.length){showResults();return;}
+  renderQ();
+}
+
+function updateH(){
+  const tot=score.c+score.w+score.s;
+  const p=tot>0?Math.round((score.c/tot)*100):0;
+  document.getElementById('h-q').textContent=tot;
+  document.getElementById('h-c').textContent=score.c;
+  document.getElementById('h-w').textContent=score.w;
+  document.getElementById('h-p').textContent=tot>0?p+'%':'—';
+  document.getElementById('h-f').textContent=flagged.size;
+}
+
+// FLASH
+function startFlash(){
+  fcIdx=0;
+  document.getElementById('hero').style.display='none';
+  document.getElementById('exam-screen').style.display='none';
+  document.getElementById('results-screen').style.display='none';
+  document.getElementById('flash-screen').style.display='block';
+  renderFC();
+}
+function renderFC(){
+  const q=session[fcIdx];
+  document.getElementById('fc-q').textContent=q.q;
+  document.getElementById('fc-a').innerHTML=`<strong>${q.opts[q.ans]}</strong><br><br><small style="color:var(--mut);font-size:12px">${q.exp}</small>`;
+  const dd=document.getElementById('fc-diff');
+  dd.textContent=q.d.toUpperCase();
+  dd.style.color=q.d==='easy'?'var(--ok)':q.d==='medium'?'var(--gold)':'var(--err)';
+  document.getElementById('fc-meta').textContent=`${fcIdx+1} / ${session.length} — ${q.t}`;
+  document.getElementById('fcwrap').classList.remove('flipped');
+}
+function flipFC(){document.getElementById('fcwrap').classList.toggle('flipped');}
+function fcMove(d){
+  fcIdx=Math.max(0,Math.min(session.length-1,fcIdx+d));
+  renderFC();
+}
+
+// RESULTS
+function showResults(){
+  document.getElementById('exam-screen').style.display='none';
+  document.getElementById('results-screen').style.display='block';
+  const tot=score.c+score.w+score.s;
+  const pct=tot>0?Math.round((score.c/tot)*100):0;
+  document.getElementById('r-pct').textContent=pct+'%';
+  document.getElementById('r-c').textContent=score.c;
+  document.getElementById('r-w').textContent=score.w;
+  document.getElementById('r-s').textContent=score.s;
+  document.getElementById('r-f').textContent=flagged.size;
+  const ring=document.getElementById('score-ring');
+  ring.style.setProperty('--pct',pct+'%');
+  ring.style.border='none';
+  ring.style.background=`conic-gradient(${pct>=70?'var(--ok)':'var(--err)'} ${pct}%, var(--brd) 0)`;
+  const badge=document.getElementById('pass-badge');
+  if(pct>=70){badge.textContent='✓ PASS — Well Done!';badge.className='pass-badge pass';}
+  else{badge.textContent='✗ NEEDS MORE PRACTICE';badge.className='pass-badge fail';}
+  const bars=document.getElementById('domain-bars');
+  bars.innerHTML='';
+  Object.keys(topicS).sort().forEach(t=>{
+    const d=topicS[t];
+    const p=d.t>0?Math.round((d.c/d.t)*100):0;
+    const col=p>=70?'var(--ok)':p>=50?'var(--gold)':'var(--err)';
+    bars.innerHTML+=`<div class="drow"><div class="dname">${t}</div><div class="dbar-bg"><div class="dbar" style="width:${p}%;background:${col}"></div></div><div class="dpct" style="color:${col}">${p}%</div></div>`;
+  });
+  const fs=document.getElementById('flagged-section');
+  if(flagged.size>0){
+    fs.style.display='block';
+    const fi=document.getElementById('flagged-items');
+    fi.innerHTML='';
+    [...flagged].forEach(i=>{
+      const q=session[i];
+      fi.innerHTML+=`<div style="margin-bottom:8px;font-size:12px;color:var(--mut)">Q${i+1}: ${q.q.substring(0,80)}...</div>`;
+    });
+  } else fs.style.display='none';
+  const ri=document.getElementById('review-items');
+  ri.innerHTML='';
+  const revSession=Array.from({length:Math.min(session.length,120)},(_,i)=>i);
+  revSession.forEach(i=>{
+    if(i>=session.length)return;
+    const q=session[i];
+    const userAnswered=i<curQ;
+    if(!userAnswered)return;
+  });
+  // build review from answers tracking
+  document.querySelectorAll('#exam-screen').forEach(()=>{});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function retakeWrong(){
+  if(wrongQ.length===0){alert('No wrong answers to retake!');return;}
+  session=[...wrongQ];
+  wrongQ=[]; score={c:0,w:0,s:0}; topicS={}; flagged=new Set(); curQ=0; answered=false;
+  document.getElementById('results-screen').style.display='none';
+  document.getElementById('exam-screen').style.display='block';
+  renderQ();
+}
+
+function restartExam(){document.getElementById('results-screen').style.display='none';startExam();}
+
+function quitExam(){showResults();}
+
+function goHome(){
+  ['hero','exam-screen','flash-screen','results-screen'].forEach(id=>{
+    document.getElementById(id).style.display=id==='hero'?'flex':'none';
+  });
+  document.getElementById('hstats').style.display='none';
+  document.getElementById('side-nav').classList.remove('open');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('stb').classList.toggle('show',window.scrollY>400);
+});
+
+buildNav();
+</script>
+</body>
+</html>
